@@ -60,8 +60,10 @@ export async function handler(event){
     const node=body.conceptId?value.guide.nodes.find(n=>n.id===body.conceptId):value.guide.nodes.find(n=>n.chapterIndex===chapter)||value.guide.nodes[0];
     if(!node) return invalid('Select a concept from this guide.');
     const query=body.question.toLowerCase();
-    const answer=query.includes('example')?node.example||node.explanation:/simple|explain|what|how|why|mean/.test(query)?node.explanation:'This sample has a prepared explanation and example for each concept. Try “Explain simply” or “Give an example”, or explore the supporting passage.';
-    return json(200,{id:randomUUID(),question:body.question,answer,sourceIds:node.sourceIds,conceptId:node.id,contextLabel:node.label,sample:true,createdAt:Date.now()/1000});
+    const example=/example|例子|举例/.test(query);
+    const explain=/simple|explain|what|how|why|mean|解释|什么|为何|怎么/.test(query);
+    const answer=example?node.example||node.explanation:explain?node.explanation:'Choose a question above.';
+    return json(200,{id:randomUUID(),question:body.question,answer,sourceIds:example||explain?node.sourceIds:[],conceptId:node.id,contextLabel:node.label,sample:true,createdAt:Date.now()/1000});
   }
   return json(405,{detail:'Method not allowed.'});
 }

@@ -77,6 +77,28 @@ def save(session: dict):
     temp.write_text(json.dumps(session, ensure_ascii=False), "utf-8")
     os.replace(temp, dest)
 
+def load_sample_audio(session: dict):
+    sample_id = session.get("sampleId", "bicycle")
+    audio_path = WEB / "assets" / f'sample-{sample_id}-{session["mode"]}.mp3'
+    if not audio_path.is_file():
+        raise FileNotFoundError("Sample narration has not been built")
+    audio = json.loads(audio_path.with_suffix(".json").read_text("utf-8-sig"))
+    audio["url"] = f'/api/clarity/sessions/{session["id"]}/audio'
+    session["audioFile"] = str(audio_path)
+    session["audio"] = audio
+
+def load_session_file(file: Path) -> dict:
+    session = json.loads(file.read_text("utf-8"))
+    # Reviewed sample assets are shared across sessions and can be refreshed in a build.
+    if session.get("sample") and session.get("sampleId") in {"bicycle", "flatland", "boids"}:
+        if session["stages"]["guide"]["status"] == "ready":
+            with contextlib.suppress(ValueError):
+                session["guide"] = validate_guide(catalog.guide(session["sampleId"], session["mode"]), session["passages"])
+        if session["stages"]["audio"]["status"] == "ready":
+            with contextlib.suppress(OSError, ValueError):
+                load_sample_audio(session)
+    return session
+
 def get_session(sid: str) -> dict:
     if not re.fullmatch(r"[0-9a-f]{32}", sid):
         raise HTTPException(404, "Learning session not found.")
@@ -84,7 +106,7 @@ def get_session(sid: str) -> dict:
         file = DATA / (sid + ".json")
         if not file.exists():
             raise HTTPException(404, "Learning session not found.")
-        SESSIONS[sid] = json.loads(file.read_text("utf-8"))
+        SESSIONS[sid] = load_session_file(file)
     return SESSIONS[sid]
 
 def public(session: dict) -> dict:
@@ -239,12 +261,7 @@ async def make_audio(session: dict, models: dict | None):
     save(session)
     try:
         if session["sample"]:
-            audio_path = WEB / "assets" / f'sample-{session.get("sampleId", "bicycle")}-{session["mode"]}.mp3'
-            metadata_path = audio_path.with_suffix(".json")
-            if not audio_path.exists() or not metadata_path.exists():
-                raise FileNotFoundError("Sample narration has not been built")
-            session["audioFile"] = str(audio_path)
-            session["audio"] = json.loads(metadata_path.read_text("utf-8-sig"))
+            load_sample_audio(session)
         else:
             if not session.get("jobId"):
                 briefing = "Make a concise overview of the main ideas." if session["mode"] == "quick" else "Explain relationships, reasoning and illustrative examples in more detail."
@@ -285,7 +302,7 @@ async def make_audio(session: dict, models: dict | None):
                 await asyncio.sleep(2.5)
             else:
                 raise asyncio.TimeoutError()
-        session["audio"]["url"] = f'/api/clarity/sessions/{session["id"]}/audio'
+            session["audio"]["url"] = f'/api/clarity/sessions/{session["id"]}/audio'
         stage.update(status="ready")
     except Exception as error:
         fail(stage, error_code(error))
@@ -330,11 +347,14 @@ def start_task(sid: str, part="all"):
 async def lifespan(app):
     for path in DATA.glob("*.json"):
         try:
-            session = json.loads(path.read_text("utf-8"))
-            for stage in session["stages"].values():
-                if stage["status"] in ("working", "waiting"):
-                    fail(stage, "interrupted")
-            save(session)
+            session = load_session_file(path)
+            unfinished = [stage for stage in session["stages"].values() if stage["status"] in ("working", "waiting")]
+            for stage in unfinished:
+                fail(stage, "interrupted")
+            if unfinished:
+                save(session)
+            else:
+                SESSIONS[session["id"]] = session
         except (ValueError, KeyError):
             continue
     yield
@@ -448,13 +468,13 @@ async def read_audio(sid: str):
         raise HTTPException(409, "The podcast is not ready yet.")
     return FileResponse(session["audioFile"], media_type="audio/mpeg", filename="clarity-podcast.mp3")
 
-def sample_answer(session: dict, question: QuestionRequest, node: dict) -> tuple[str, list[str]]:
+def sample_answer(question: QuestionRequest, node: dict) -> tuple[str, list[str]]:
     query = question.question.lower()
-    if "example" in query:
+    if "example" in query or "例子" in query or "举例" in query:
         return node["example"] or node["explanation"], node["sourceIds"]
-    if any(word in query for word in ("simple", "explain", "what", "how", "why", "mean")):
+    if any(word in query for word in ("simple", "explain", "what", "how", "why", "mean", "解释", "什么", "为何", "怎么")):
         return node["explanation"], node["sourceIds"]
-    return "This sample has a prepared explanation and example for each concept. Try “Explain simply” or “Give an example”, or explore the supporting passage.", node["sourceIds"]
+    return "Choose a question above.", []
 
 @app.post("/api/clarity/sessions/{sid}/ask")
 async def ask(sid: str, request: QuestionRequest):
@@ -475,7 +495,7 @@ async def ask(sid: str, request: QuestionRequest):
     async with lock:
         try:
             if session["sample"]:
-                answer, source_ids = sample_answer(session, request, node)
+                answer, source_ids = sample_answer(request, node)
             else:
                 models = await ensure_models()
                 if not session.get("chatSessionId"):

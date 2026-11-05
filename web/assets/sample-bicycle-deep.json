@@ -1,4 +1,6 @@
 {
+    "approximateCues":  false,
+    "narration":  "Prepared sample | local system voice",
     "transcript":  [
                        {
                            "chapterIndex":  0,
@@ -17,8 +19,148 @@
                        }
                    ],
     "duration":  141.12435374149661,
-    "narration":  "Prepared sample 路 local system voice",
-    "approximateCues":  false,
+    "captions":  [
+                     {
+                         "start":  0,
+                         "text":  "Inside a bicycle."
+                     },
+                     {
+                         "start":  2.074,
+                         "text":  "Start with the whole bicycle in the guide, then follow the four drivetrain details below it."
+                     },
+                     {
+                         "start":  7.943,
+                         "text":  "First, your foot presses a pedal."
+                     },
+                     {
+                         "start":  11.043,
+                         "text":  "That force turns the crank and the front chainring."
+                     },
+                     {
+                         "start":  14.422,
+                         "text":  "The front chainring pulls on the chain."
+                     },
+                     {
+                         "start":  17.242,
+                         "text":  "The moving chain turns a selected rear sprocket."
+                     },
+                     {
+                         "start":  20.601,
+                         "text":  "When the drivetrain is engaged, that sprocket drives the rear wheel."
+                     },
+                     {
+                         "start":  25.335,
+                         "text":  "There is one final connection: the tire and the road."
+                     },
+                     {
+                         "start":  29.175,
+                         "text":  "The tire pushes backward on the road."
+                     },
+                     {
+                         "start":  31.964,
+                         "text":  "The road pushes forward on the tire, carrying the bicycle forward."
+                     },
+                     {
+                         "start":  36.644,
+                         "text":  "The arrows in the guide trace the same sequence."
+                     },
+                     {
+                         "start":  39.813,
+                         "text":  "Now change the leverage."
+                     },
+                     {
+                         "start":  42.177,
+                         "text":  "The gear ratio is front teeth divided by rear teeth."
+                     },
+                     {
+                         "start":  45.972,
+                         "text":  "In our example, forty-two divided by twenty-eight equals one point five."
+                     },
+                     {
+                         "start":  51.251,
+                         "text":  "That means one complete turn of the pedals produces one and a half turns of the rear wheel."
+                     },
+                     {
+                         "start":  56.605,
+                         "text":  "Choose fourteen rear teeth and the ratio is three."
+                     },
+                     {
+                         "start":  60.064,
+                         "text":  "The wheel travels farther per pedal turn, but the rear-wheel torque is lower for the same crank torque."
+                     },
+                     {
+                         "start":  66.323,
+                         "text":  "A larger rear sprocket reverses that trade-off."
+                     },
+                     {
+                         "start":  69.712,
+                         "text":  "It gives more rear-wheel torque and less distance per pedal turn."
+                     },
+                     {
+                         "start":  73.782,
+                         "text":  "The derailleur selects the sprocket and takes up chain slack."
+                     },
+                     {
+                         "start":  77.796,
+                         "text":  "Try the seven gear positions, then change the cadence."
+                     },
+                     {
+                         "start":  82.011,
+                         "text":  "The displayed speed is calculated using a two point one metre wheel circumference."
+                     },
+                     {
+                         "start":  87.224,
+                         "text":  "This is an ideal illustration, not a prediction of a real ride, and the gears never create additional power."
+                     },
+                     {
+                         "start":  94.188,
+                         "text":  "Finally, explore the frame, wheels and controls."
+                     },
+                     {
+                         "start":  98.662,
+                         "text":  "The diamond frame connects two triangles."
+                     },
+                     {
+                         "start":  101.826,
+                         "text":  "The wheels rotate around their hubs, and the tires are the bicycle\u0027s contact with the road."
+                     },
+                     {
+                         "start":  107.53,
+                         "text":  "The handlebar turns the front wheel."
+                     },
+                     {
+                         "start":  110.31,
+                         "text":  "This example uses rim brakes."
+                     },
+                     {
+                         "start":  112.989,
+                         "text":  "Pulling a lever tensions a cable."
+                     },
+                     {
+                         "start":  115.489,
+                         "text":  "The caliper brings the brake pads against the rim."
+                     },
+                     {
+                         "start":  118.873,
+                         "text":  "Friction then resists rotation."
+                     },
+                     {
+                         "start":  121.493,
+                         "text":  "Braking and steering depend on tire grip."
+                     },
+                     {
+                         "start":  124.658,
+                         "text":  "Return to the drivetrain and trace the whole chain of events: your foot, the crank, the chain, a rear sprocket, the"
+                     },
+                     {
+                         "start":  132.061,
+                         "text":  "wheel, and finally the road."
+                     },
+                     {
+                         "start":  134.456,
+                         "text":  "A useful visual guide lets you see each part in the whole, then explore what changes when you adjust one thing."
+                     }
+                 ],
     "cues":  [
                  0,
                  39.813151927437644,

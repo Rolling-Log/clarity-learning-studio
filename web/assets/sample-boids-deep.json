@@ -1,45 +1,155 @@
 {
-  "transcript": [
-    {
-      "chapterIndex": 0,
-      "speaker": "Clarity",
-      "dialogue": "Craig Reynolds's 1987 paper asks how a flock can move together without giving every bird a scripted path. Begin with separation. Each simulated agent steers away from close neighbors. Turn this rule off, reset the same seed, and compare the next few seconds. A steering preference reduces crowding, but it is not a guarantee that agents can never overlap."
-    },
-    {
-      "chapterIndex": 1,
-      "speaker": "Clarity",
-      "dialogue": "Alignment matches the average velocity of nearby agents. It gradually coordinates their headings. Turn alignment off while leaving the other two rules on. The agents can still gather and avoid crowding, yet travel in less coordinated directions. The order score measures mean heading agreement. It is a measurement of this teaching model, not an experimental value copied from the paper."
-    },
-    {
-      "chapterIndex": 2,
-      "speaker": "Clarity",
-      "dialogue": "Cohesion steers an agent toward the local center of its neighbors. It is different from alignment: location and heading are different information. It is also different from attraction toward one global center. Turn cohesion off and watch how the flock spreads. Resetting keeps the same initial conditions, making the comparison more useful."
-    },
-    {
-      "chapterIndex": 3,
-      "speaker": "Clarity",
-      "dialogue": "Select follow one agent. Its halo marks the distance limit, while the links identify neighbors within the forward-biased field of view. In this model that field spans two hundred and seventy degrees. Agents outside the neighborhood do not contribute to its three steering rules. Change the perception radius and observe how the local information changes."
-    },
-    {
-      "chapterIndex": 4,
-      "speaker": "Clarity",
-      "dialogue": "The group pattern emerges from repeated local decisions. No agent sees the whole flock and no leader assigns its route. Compare all three rules with a one-rule condition over several seconds. A global order score can be low even when several smaller groups are locally well organized. The score is useful evidence, but it is not a complete description of flocking."
-    },
-    {
-      "chapterIndex": 5,
-      "speaker": "Clarity",
-      "dialogue": "Finally, keep the limits visible. This example uses a small three-dimensional flock, weighted steering, a fixed time step and wrapping boundaries. Reynolds's paper describes richer flight dynamics, prioritized behavior, obstacle avoidance and animation control. Our controls explain the central idea; they do not recreate every detail of the original implementation or validate a model of real birds. The source links lead back to the original paper."
-    }
-  ],
-  "duration": 149.81913832199547,
-  "narration": "Prepared sample | local system voice",
-  "approximateCues": false,
-  "cues": [
-    0,
-    25.195102040816327,
-    51.029750566893426,
-    73.10997732426304,
-    96.30984126984127,
-    119.25528344671201
-  ]
+    "approximateCues":  false,
+    "narration":  "Prepared sample | local system voice",
+    "transcript":  [
+                       {
+                           "chapterIndex":  0,
+                           "speaker":  "Clarity",
+                           "dialogue":  "Craig Reynolds\u0027s 1987 paper asks how a flock can move together without giving every bird a scripted path. Begin with separation. Each simulated agent steers away from close neighbors. Turn this rule off, reset the same seed, and compare the distance between agents over the next few seconds."
+                       },
+                       {
+                           "chapterIndex":  1,
+                           "speaker":  "Clarity",
+                           "dialogue":  "Alignment matches the average velocity of nearby agents. It gradually coordinates their headings. Turn alignment off while leaving the other two rules on. The agents can still gather and avoid crowding, yet travel in less coordinated directions. Watch the order score change as those headings spread apart."
+                       },
+                       {
+                           "chapterIndex":  2,
+                           "speaker":  "Clarity",
+                           "dialogue":  "Cohesion steers an agent toward the local center of its neighbors. It is different from alignment: location and heading are different information. It is also different from attraction toward one global center. Turn cohesion off and watch how the flock spreads. Resetting keeps the same initial conditions, making the comparison more useful."
+                       },
+                       {
+                           "chapterIndex":  3,
+                           "speaker":  "Clarity",
+                           "dialogue":  "Select follow one agent. Its halo marks the distance limit, while the links identify neighbors within the forward-biased field of view. In this model that field spans two hundred and seventy degrees. Agents outside the neighborhood do not contribute to its three steering rules. Change the perception radius and observe how the local information changes."
+                       },
+                       {
+                           "chapterIndex":  4,
+                           "speaker":  "Clarity",
+                           "dialogue":  "The group pattern emerges from repeated local decisions. Each agent steers using only its neighbors. Compare all three rules with a one-rule condition over several seconds. Look at the headings within each small group and compare them with the direction of the whole flock."
+                       },
+                       {
+                           "chapterIndex":  5,
+                           "speaker":  "Clarity",
+                           "dialogue":  "What happens when the flock meets an obstacle? In Reynolds\u0027s paper, the agent can give a turn to avoid the obstacle priority over flock centering. That allows the group to split around the obstacle. Once the way is clear, agents steer back toward their neighbors and the flock can regroup."
+                       }
+                   ],
+    "duration":  122.13913832199546,
+    "captions":  [
+                     {
+                         "start":  0,
+                         "text":  "Craig Reynolds\u0027s 1987 paper asks how a flock can move together without giving every bird a scripted path."
+                     },
+                     {
+                         "start":  7.323,
+                         "text":  "Begin with separation."
+                     },
+                     {
+                         "start":  9.363,
+                         "text":  "Each simulated agent steers away from close neighbors."
+                     },
+                     {
+                         "start":  13.192,
+                         "text":  "Turn this rule off, reset the same seed, and compare the distance between agents over the next few seconds."
+                     },
+                     {
+                         "start":  20.496,
+                         "text":  "Alignment matches the average velocity of nearby agents."
+                     },
+                     {
+                         "start":  24.61,
+                         "text":  "It gradually coordinates their headings."
+                     },
+                     {
+                         "start":  27.614,
+                         "text":  "Turn alignment off while leaving the other two rules on."
+                     },
+                     {
+                         "start":  31.374,
+                         "text":  "The agents can still gather and avoid crowding, yet travel in less coordinated directions."
+                     },
+                     {
+                         "start":  37.557,
+                         "text":  "Watch the order score change as those headings spread apart."
+                     },
+                     {
+                         "start":  41.357,
+                         "text":  "Cohesion steers an agent toward the local center of its neighbors."
+                     },
+                     {
+                         "start":  45.67,
+                         "text":  "It is different from alignment: location and heading are different information."
+                     },
+                     {
+                         "start":  50.584,
+                         "text":  "It is also different from attraction toward one global center."
+                     },
+                     {
+                         "start":  54.588,
+                         "text":  "Turn cohesion off and watch how the flock spreads."
+                     },
+                     {
+                         "start":  58.168,
+                         "text":  "Resetting keeps the same initial conditions, making the comparison more useful."
+                     },
+                     {
+                         "start":  63.437,
+                         "text":  "Select follow one agent."
+                     },
+                     {
+                         "start":  65.936,
+                         "text":  "Its halo marks the distance limit, while the links identify neighbors within the forward-biased field of view."
+                     },
+                     {
+                         "start":  72.715,
+                         "text":  "In this model that field spans two hundred and seventy degrees."
+                     },
+                     {
+                         "start":  77.014,
+                         "text":  "Agents outside the neighborhood do not contribute to its three steering rules."
+                     },
+                     {
+                         "start":  81.898,
+                         "text":  "Change the perception radius and observe how the local information changes."
+                     },
+                     {
+                         "start":  86.637,
+                         "text":  "The group pattern emerges from repeated local decisions."
+                     },
+                     {
+                         "start":  90.496,
+                         "text":  "Each agent steers using only its neighbors."
+                     },
+                     {
+                         "start":  93.7,
+                         "text":  "Compare all three rules with a one-rule condition over several seconds."
+                     },
+                     {
+                         "start":  98.129,
+                         "text":  "Look at the headings within each small group and compare them with the direction of the whole flock."
+                     },
+                     {
+                         "start":  103.318,
+                         "text":  "What happens when the flock meets an obstacle?"
+                     },
+                     {
+                         "start":  106.487,
+                         "text":  "In Reynolds\u0027s paper, the agent can give a turn to avoid the obstacle priority over flock centering."
+                     },
+                     {
+                         "start":  113.196,
+                         "text":  "That allows the group to split around the obstacle."
+                     },
+                     {
+                         "start":  116.61,
+                         "text":  "Once the way is clear, agents steer back toward their neighbors and the flock can regroup."
+                     }
+                 ],
+    "cues":  [
+                 0,
+                 20.49596371882086,
+                 41.356689342403627,
+                 63.436916099773242,
+                 86.636780045351472,
+                 103.31818594104308
+             ]
 }

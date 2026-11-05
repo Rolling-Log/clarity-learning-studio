@@ -1,45 +1,99 @@
 {
-  "transcript": [
-    {
-      "chapterIndex": 0,
-      "speaker": "Clarity",
-      "dialogue": "Craig Reynolds's 1987 paper asks how a flock can move together without giving every bird a scripted path  Begin with separation."
-    },
-    {
-      "chapterIndex": 1,
-      "speaker": "Clarity",
-      "dialogue": "Alignment matches the average velocity of nearby agents  It gradually coordinates their headings."
-    },
-    {
-      "chapterIndex": 2,
-      "speaker": "Clarity",
-      "dialogue": "Cohesion steers an agent toward the local center of its neighbors  It is different from alignment: location and heading are different information."
-    },
-    {
-      "chapterIndex": 3,
-      "speaker": "Clarity",
-      "dialogue": "Select follow one agent  Its halo marks the distance limit, while the links identify neighbors within the forward-biased field of view."
-    },
-    {
-      "chapterIndex": 4,
-      "speaker": "Clarity",
-      "dialogue": "The group pattern emerges from repeated local decisions  No agent sees the whole flock and no leader assigns its route."
-    },
-    {
-      "chapterIndex": 5,
-      "speaker": "Clarity",
-      "dialogue": "Finally, keep the limits visible  This example uses a small three-dimensional flock, weighted steering, a fixed time step and wrapping boundaries."
-    }
-  ],
-  "duration": 46.99219954648526,
-  "narration": "Prepared sample | local system voice",
-  "approximateCues": false,
-  "cues": [
-    0,
-    8.317913832199546,
-    14.326077097505667,
-    22.44866213151927,
-    30.631383219954643,
-    37.40943310657596
-  ]
+    "approximateCues":  false,
+    "narration":  "Prepared sample | local system voice",
+    "transcript":  [
+                       {
+                           "chapterIndex":  0,
+                           "speaker":  "Clarity",
+                           "dialogue":  "Craig Reynolds\u0027s 1987 paper asks how a flock can move together without giving every bird a scripted path  Begin with separation."
+                       },
+                       {
+                           "chapterIndex":  1,
+                           "speaker":  "Clarity",
+                           "dialogue":  "Alignment matches the average velocity of nearby agents  It gradually coordinates their headings."
+                       },
+                       {
+                           "chapterIndex":  2,
+                           "speaker":  "Clarity",
+                           "dialogue":  "Cohesion steers an agent toward the local center of its neighbors  It is different from alignment: location and heading are different information."
+                       },
+                       {
+                           "chapterIndex":  3,
+                           "speaker":  "Clarity",
+                           "dialogue":  "Select follow one agent  Its halo marks the distance limit, while the links identify neighbors within the forward-biased field of view."
+                       },
+                       {
+                           "chapterIndex":  4,
+                           "speaker":  "Clarity",
+                           "dialogue":  "The group pattern emerges from repeated local decisions  Each agent steers using only its neighbors."
+                       },
+                       {
+                           "chapterIndex":  5,
+                           "speaker":  "Clarity",
+                           "dialogue":  "What happens when the flock meets an obstacle? In Reynolds\u0027s paper, the agent can give a turn to avoid the obstacle priority over flock centering  That allows the group to split around the obstacle."
+                       }
+                   ],
+    "duration":  48.77659863945577,
+    "captions":  [
+                     {
+                         "start":  0,
+                         "text":  "Craig Reynolds\u0027s 1987 paper asks how a flock can move together without giving every bird a scripted path"
+                     },
+                     {
+                         "start":  6.378,
+                         "text":  "Begin with separation."
+                     },
+                     {
+                         "start":  8.318,
+                         "text":  "Alignment matches the average velocity of nearby agents"
+                     },
+                     {
+                         "start":  11.447,
+                         "text":  "It gradually coordinates their headings."
+                     },
+                     {
+                         "start":  14.326,
+                         "text":  "Cohesion steers an agent toward the local center of its neighbors"
+                     },
+                     {
+                         "start":  17.65,
+                         "text":  "It is different from alignment: location and heading are different information."
+                     },
+                     {
+                         "start":  22.449,
+                         "text":  "Select follow one agent"
+                     },
+                     {
+                         "start":  23.973,
+                         "text":  "Its halo marks the distance limit, while the links identify neighbors within the forward-biased field of view."
+                     },
+                     {
+                         "start":  30.631,
+                         "text":  "The group pattern emerges from repeated local decisions"
+                     },
+                     {
+                         "start":  33.485,
+                         "text":  "Each agent steers using only its neighbors."
+                     },
+                     {
+                         "start":  36.58,
+                         "text":  "What happens when the flock meets an obstacle?"
+                     },
+                     {
+                         "start":  39.749,
+                         "text":  "In Reynolds\u0027s paper, the agent can give a turn to avoid the obstacle priority over flock centering"
+                     },
+                     {
+                         "start":  45.502,
+                         "text":  "That allows the group to split around the obstacle."
+                     }
+                 ],
+    "cues":  [
+                 0,
+                 8.3179138321995456,
+                 14.326077097505667,
+                 22.448662131519271,
+                 30.631383219954643,
+                 36.579637188208608
+             ]
 }

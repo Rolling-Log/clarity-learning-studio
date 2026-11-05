@@ -64,29 +64,28 @@ def fragment(guide: dict) -> str:
         lines.append(f'<path d="M{x1*6.8} {y1*4.2} C{(x1+x2)*3.4} {y1*4.2} {(x1+x2)*3.4} {y2*4.2} {x2*6.8} {y2*4.2}" marker-end="url(#arr)"/>')
         label = edge.get("label", "").strip()[:36]
         if label:
-            lines.append(f'<text x="{(x1+x2)*3.4}" y="{(y1+y2)*2.1-9}" text-anchor="middle" fill="#617e70" font-size="9">{esc(label)}</text>')
+            lines.append(f'<text x="{(x1+x2)*3.4}" y="{(y1+y2)*2.1-9}" text-anchor="middle" fill="#6354a5" font-size="9">{esc(label)}</text>')
     nodes = "".join(
         f'<button class="concept" data-id="{esc(node["id"])}" style="left:{positions[i][0]}%;top:{positions[i][1]}%" aria-pressed="false">'
         f'<span class="orb"><span>{i+1:02}</span></span><strong>{esc(node["label"])}</strong></button>'
         for i, node in enumerate(guide["nodes"])
     )
     return """<style>
-:root{--color-text-primary:#24453e;--color-text-secondary:#5c716a;--color-background-primary:transparent;--color-background-secondary:#e6eeea;--color-border-tertiary:#c9d8d2}
-html,body{margin:0;padding:0;background:transparent!important;font-family:Inter,Arial,sans-serif;color:#24453e}
+:root{--color-text-primary:#292630;--color-text-secondary:#716b7b;--color-background-primary:transparent;--color-background-secondary:#edeaf5;--color-border-tertiary:#dedbe5}
+html,body{margin:0;padding:0;background:transparent!important;font-family:Inter,Arial,sans-serif;color:#292630}
 #content{padding:0!important;overflow:hidden}*{box-sizing:border-box}
-.canvas{position:relative;height:100dvh;min-height:260px;overflow:hidden;background:radial-gradient(#8bab9b28 .8px,transparent .8px) 0 0/19px 19px;border-radius:14px}
+.canvas{position:relative;height:100dvh;min-height:260px;overflow:hidden;background:radial-gradient(#9e90b928 .8px,transparent .8px) 0 0/19px 19px;border-radius:14px}
 .stage{position:relative;width:100%;height:100%;transform-origin:50% 50%;transition:transform .2s}
-.connections{position:absolute;inset:0;width:100%;height:100%;overflow:visible}.connections path{fill:none;stroke:#9cbdb0;stroke-width:1.2}
-.concept{position:absolute;transform:translate(-50%,-34px);display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:12px;width:28%;max-width:172px;min-height:98px;padding:8px 3px;border:0;background:transparent;cursor:pointer;color:#355b4e;font:inherit}
+.connections{position:absolute;inset:0;width:100%;height:100%;overflow:visible}.connections path{fill:none;stroke:#b1a5cf;stroke-width:1.2}
+.concept{position:absolute;transform:translate(-50%,-34px);display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:12px;width:28%;max-width:172px;min-height:98px;padding:8px 3px;border:0;background:transparent;cursor:pointer;color:#4a3f6b;font:inherit}
 .concept:hover{background:transparent}.concept:active{transform:translate(-50%,-34px) scale(.97)}
-.orb{display:grid;place-items:center;width:52px;height:52px;border:1px solid #aec8bd;border-radius:50%;background:#eef4f0;box-shadow:0 0 0 9px #eef4f073;transition:box-shadow .2s,background .2s}
+.orb{display:grid;place-items:center;width:52px;height:52px;border:1px solid #bcb2d2;border-radius:50%;background:#edeaf5;box-shadow:0 0 0 9px #edeaf573;transition:box-shadow .2s,background .2s}
 .orb span{font:11px ui-monospace,monospace;letter-spacing:.03em}.concept strong{font-size:13px;font-weight:500;line-height:1.4;max-width:165px}
-.concept[aria-pressed=true] .orb{color:white;background:#21685f;border-color:#21685f;box-shadow:0 0 0 9px #21685f10,0 0 0 10px #21685f25}
-.concept[aria-pressed=true] strong{color:#164e44}.concept:focus-visible{outline:2px solid #21685f;outline-offset:3px;border-radius:16px}
-.map-foot{position:absolute;left:18px;bottom:15px;color:#698375;font:9px ui-monospace,monospace;letter-spacing:.025em}
-@media(max-width:460px){.concept{width:31%;gap:13px;transform:translate(-50%,-29px)}.concept:active{transform:translate(-50%,-29px) scale(.97)}.orb{width:42px;height:42px;box-shadow:0 0 0 6px #eef4f073}.concept strong{font-size:12px;line-height:1.5}.connections path{stroke-width:1.5}.map-foot{font-size:8px}}
+.concept[aria-pressed=true] .orb{color:white;background:#6354a5;border-color:#6354a5;box-shadow:0 0 0 9px #6354a510,0 0 0 10px #6354a525}
+.concept[aria-pressed=true] strong{color:#514087}.concept:focus-visible{outline:2px solid #6354a5;outline-offset:3px;border-radius:16px}
+@media(max-width:460px){.concept{width:31%;gap:13px;transform:translate(-50%,-29px)}.concept:active{transform:translate(-50%,-29px) scale(.97)}.orb{width:42px;height:42px;box-shadow:0 0 0 6px #edeaf573}.concept strong{font-size:12px;line-height:1.5}.connections path{stroke-width:1.5}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
-</style><div class="canvas"><div class="stage" id="diagram-stage"><svg class="connections" viewBox="0 0 680 420" preserveAspectRatio="none" aria-hidden="true"><defs><marker id="arr" markerWidth="7" markerHeight="7" refX="4" refY="3.5" orient="auto"><path d="M1 1 5 3.5 1 6" style="stroke:#8eafa1;fill:none"/></marker></defs>""" + "".join(lines) + "</svg>" + nodes + """</div><span class="map-foot">SELECT A CONCEPT TO EXPLORE</span></div><script>
+</style><div class="canvas"><div class="stage" id="diagram-stage"><svg class="connections" viewBox="0 0 680 420" preserveAspectRatio="none" aria-hidden="true"><defs><marker id="arr" markerWidth="7" markerHeight="7" refX="4" refY="3.5" orient="auto"><path d="M1 1 5 3.5 1 6" style="stroke:#a699c5;fill:none"/></marker></defs>""" + "".join(lines) + "</svg>" + nodes + """</div></div><script>
 function selectConcept(id){document.querySelectorAll('.concept').forEach(function(el){el.setAttribute('aria-pressed',String(el.dataset.id===id))})}
 document.querySelectorAll('.concept').forEach(function(el){el.addEventListener('click',function(){selectConcept(el.dataset.id);window.sendPrompt(JSON.stringify({action:'concept',id:el.dataset.id}))})});
 document.addEventListener('keydown',function(event){if(event.key==='Escape')window.parent.postMessage({type:'clarity:escape'},'*')});

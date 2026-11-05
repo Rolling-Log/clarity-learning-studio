@@ -6,12 +6,16 @@
   const $ = (s) => document.querySelector(s);
   const $$ = (s) => [...document.querySelectorAll(s)];
   const area = $("#learning"), audio = $("#learning-audio");
+  const mobile = window.ClarityMobile;
+  const transcript = $("#transcript-reader"), transcriptHome = transcript.parentElement;
   const apiBase = window.CLARITY_API_BASE || (location.protocol === "file:" ? "http://127.0.0.1:4317" : "");
   const phoneMode = new URLSearchParams(location.search).get("phone") === "1";
   const L = { session: null, view: "podcast", expanded: false, node: null, chapter: 0, zoom: 1,
     audioSid: null, guideSid: null, poll: null, busy: false, asking: false, panel: null,
-    sourceFromAsk: false, returnFocus: null, pendingQuestion: "", failedQuestion: "",
-    savedAt: 0, ended: false, inView: false, restoreTime: null };
+    returnFocus: null, showTranscript: false, captions: false, pendingQuestion: "", failedQuestion: "",
+    savedAt: 0, ended: false, hasPlayed: false, restoreTime: null };
+  let transcriptLines = [], activeCaption = -1;
+  let openSetting = null, sleepTimer = null;
   const errors = {
     service_unavailable: "The local service is unavailable. Start Clarity and try again.",
     service_timeout: "This is taking longer than expected. You can try again.",
@@ -22,9 +26,9 @@
     generation_failed: "This part couldn't be prepared. Try again."
   };
   const stages = {
-    source: ["Reading the source", ""],
-    guide: ["Creating the guide", ""],
-    audio: ["Creating the podcast", ""]
+    source: "Reading the source",
+    guide: "Creating the guide",
+    audio: "Creating the podcast"
   };
   const esc = (v) => String(v ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
   function store(key, value) { try { localStorage.setItem(key, JSON.stringify(value)); } catch {} }
@@ -34,7 +38,7 @@
     if (!L.session) return;
     store("clarity:learning:" + L.session.id, {
       view:L.view, node:L.node, zoom:L.zoom, time:L.restoreTime ?? (Number.isFinite(audio.currentTime) ? audio.currentTime : 0),
-      speed:audio.playbackRate, chapter:L.chapter
+      speed:audio.playbackRate, chapter:L.chapter, captions:L.captions
     });
   }
   function clock(value) {
@@ -52,7 +56,9 @@
       const value = await result.json();
       if (!result.ok) {
         const detail = value.detail;
-          throw new Error(tr(typeof detail === "object" && !Array.isArray(detail) ? detail.message : typeof detail === "string" ? detail : "Something couldn't be completed. Please try again."));
+        const message = detail?.code === "live_generation_paused" ? "Choose an example to generate a result." :
+          detail?.message || (typeof detail === "string" ? detail : "Something couldn't be completed. Please try again.");
+        throw new Error(tr(message));
       }
       return value;
     } catch (error) {
@@ -62,6 +68,7 @@
     } finally { clearTimeout(timer); }
   }
   function goToLearning(focus = false) {
+    if (mobile.navigate("learning", {reset:focus, focus})) return;
     area.hidden = false;
     history.replaceState(null, "", "#learning");
     area.scrollIntoView({behavior:matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth", block:"start"});
@@ -72,14 +79,18 @@
     const text = setup.source.text.split(/\n/).find(line => line.trim()) || "Your text";
     return text.length > 72 ? text.slice(0,69) + "…" : text;
   }
-  async function generate(setup) {
-    if (L.busy) return;
+  function showGenerationFeedback(message) {
+    $("#generation-feedback").textContent = message;
+    $("#generation-feedback").hidden = false;
+  }
+  async function generate(setup, expectedSample = null) {
+    if (L.busy) return false;
     L.busy = true;
     $("#continue-button").disabled = true;
     $("#continue-button").firstChild.nodeValue = tr("Preparing") + " ";
     $("#generation-feedback").hidden = true;
     try {
-      const sampleId = await window.ClarityExamples.identify(setup.source.text);
+      const sampleId = expectedSample || await window.ClarityExamples.identify(setup.source.text);
       const session = await api("/sessions", {
         method:"POST", body:{text:setup.source.text, name:sourceName(setup), mode:setup.mode,
           sample:!!sampleId, sampleId, inputType:setup.source.type}
@@ -88,17 +99,60 @@
       adoptSession(session, true);
       goToLearning(true);
       beginPolling();
+      return true;
     } catch (error) {
-      $("#generation-feedback").textContent = error.message;
-      $("#generation-feedback").hidden = false;
+      showGenerationFeedback(error.message);
+      return false;
     } finally { L.busy = false; updateSetup(); }
   }
+  async function openExample(id) {
+    if (L.busy || createState.openingExample) return;
+    createState.openingExample = true;
+    const form = $("#create-form");
+    const sampleButton = $('[data-action="sample"]');
+    form.inert = true;
+    sampleButton.disabled = true;
+    sampleButton.textContent = tr("Opening…");
+    $("#generation-feedback").hidden = true;
+    window.ClarityExamples.setOpening(id);
+    let opened;
+    try {
+      const setup = await window.ClarityExamples.load(id);
+      opened = await generate(setup, id);
+    } catch {
+      showGenerationFeedback(tr("Couldn't open this example. Try again."));
+    } finally {
+      createState.openingExample = false;
+      form.inert = false;
+      sampleButton.disabled = false;
+      sampleButton.textContent = tr("Explore a sample");
+      window.ClarityExamples.setOpening(null);
+      updateSetup();
+    }
+    if (!opened && location.hash !== "#source") $('[data-action="add-source"]').click();
+  }
+  $$("[data-example]").forEach(button => { button.onclick = () => openExample(button.dataset.example); });
   document.addEventListener("clarity:generate", event => { event.preventDefault(); generate(event.detail); });
   function adoptSession(session, fresh = false) {
     area.hidden = false;
     const changed = L.session?.id !== session.id;
     if (changed) {
+      if (L.guideSid) {
+        const previousFrame = $("#guide-frame");
+        const frame = previousFrame.cloneNode(false);
+        frame.removeAttribute("srcdoc");
+        frame.removeAttribute("src");
+        frame.addEventListener("load", sendGuideState);
+        previousFrame.replaceWith(frame);
+      }
       L.audioSid = null; L.guideSid = null; L.expanded = false; L.ended = false;
+      L.hasPlayed = false;
+      $("#guide-content").style.removeProperty("--guide-natural-height");
+      $("#learning-recap").hidden = true;
+      L.showTranscript = false;
+      closePlaybackSetting();
+      setSleepTimer(0);
+      $("#transcript-search").value = "";
       audio.pause(); audio.removeAttribute("src"); audio.load();
       L.session = session;
       if(session.sessionStorage === "browser") L.session.questions = retrieve("clarity:questions:" + session.id, []);
@@ -106,10 +160,10 @@
       L.view = p.view || session.initialView; L.node = p.node || null; L.zoom = p.zoom || 1;
       L.chapter = p.chapter || 0;
       L.restoreTime = p.time || 0;
+      L.captions = p.captions === true;
       audio.defaultPlaybackRate = p.speed || 1;
       audio.playbackRate = p.speed || 1;
-      $("#speed-button").textContent = audio.playbackRate + "×";
-      $$("[data-speed]").forEach(b => b.setAttribute("aria-pressed", String(Number(b.dataset.speed) === audio.playbackRate)));
+      syncPlaybackRate();
       if (fresh) store("clarity:learning:" + session.id, {view:L.view, time:0, zoom:1, speed:1});
       store("clarity:last-session", session.id);
       if (session.inputType !== "file" && !sourceText.value.trim() && !createState.file) {
@@ -123,16 +177,17 @@
     renderSession();
   }
   async function loadSession(sid, scroll = false) {
+    const currentId = L.session?.id;
     try {
       const session = await api("/sessions/" + sid);
+      if (L.session?.id !== currentId) return;
       adoptSession(session);
       if (scroll) goToLearning();
       beginPolling();
     } catch (error) {
-      if (scroll) {
+      if (scroll && L.session?.id === currentId) {
         area.hidden = false;
         $("#learning-empty").hidden = false;
-        $("#empty-title").textContent = "Let's pick up your next idea.";
         $("#empty-title").textContent = error.message;
         goToLearning();
       }
@@ -144,8 +199,12 @@
     const sid = L.session.id;
     L.poll = setTimeout(async () => {
       if (L.session?.id !== sid) return;
-      try { adoptSession(await api("/sessions/" + sid)); }
-      catch (error) {
+      try {
+        const session = await api("/sessions/" + sid);
+        if (L.session?.id !== sid) return;
+        adoptSession(session);
+      } catch (error) {
+        if (L.session?.id !== sid) return;
         $("#task-strip").classList.add("is-error");
         $("#task-strip").innerHTML = '<span class="status-dot"></span><p>' + esc(error.message) + '</p><button class="text-link" data-reconnect type="button">' + tr("Reconnect") + '</button>';
         $("#task-strip [data-reconnect]").onclick = () => loadSession(sid);
@@ -158,7 +217,7 @@
     const working = stage.status === "working", ready = stage.status === "ready", error = stage.status === "error";
     return '<div class="generation-step" data-status="' + stage.status + '"><span class="step-indicator">' +
       (ready ? "✓" : error ? "!" : String(Object.keys(stages).indexOf(name) + 1).padStart(2,"0")) +
-      '</span><div class="step-copy"><strong>' + tr(stages[name][0]) + '</strong><p>' +
+      '</span><div class="step-copy"><strong>' + tr(stages[name]) + '</strong><p>' +
       esc(error ? tr(errors[stage.error] || errors.generation_failed) : tr(ready ? "Finished" : working ? "Working" : "Waiting")) +
       '</p></div>' + (error ? '<button class="text-link" data-retry="' + name + '" type="button">' + tr("Retry") + '</button>' : "") + '</div>';
   }
@@ -170,37 +229,21 @@
     $("#learning-workspace").hidden = false;
     const ready = s.stages.guide.status === "ready" || s.stages.audio.status === "ready";
     const failed = Object.values(s.stages).some(part => part.status === "error");
-    $("#result-eyebrow").textContent = "";
-    $("#learning-title").textContent = ready ? (s.sample ? tr(s.title) : s.title) : tr("Preparing your learning");
-    $("#learning-summary").textContent = ready ? (s.sample ? tr(s.guide?.summary || "") : s.guide?.summary || tr("Start listening while we prepare the visual guide.")) : "";
-    $("#result-source-name").textContent = s.sourceName;
-    $("#result-source-name").title = s.sourceName;
-    $("#result-mode").textContent = tr(s.mode === "quick" ? "Quick Overview" : "Deep Dive");
-    $("#sample-label").hidden = !s.sample;
+    $("#learning-title").textContent = s.sample ? tr(s.title) : s.title;
     $("#generation-scene").hidden = ready;
     $("#result-scene").hidden = !ready;
     $("#generation-steps").innerHTML = Object.entries(s.stages).map(([name, stage]) => stageHTML(name, stage)).join("");
-    $("#generation-source").textContent = s.sourceName;
     $("#generation-scene").classList.toggle("is-error", failed && !s.active);
     $("#generation-title").textContent = tr(failed && !s.active ? "Preparation interrupted" : "Preparing your learning");
-    $("#generation-description").textContent = failed && !s.active ? tr("Your source is saved. Retry the unfinished step.") : "";
-    $("#task-strip").classList.toggle("is-error", failed);
-    const failedPart = Object.keys(s.stages).find(name => s.stages[name].status === "error");
-    if (ready && (s.active || failed)) {
-      const preparing = tr(s.stages.audio.status === "ready" ? "Your podcast is ready. The visual guide is still being prepared." : "Your guide is ready. The podcast is still being prepared.");
-      const text = failed ? tr(s.stages.audio.status === "ready" ? "Your podcast is ready. " : "Your guide is ready. ") + tr(errors[s.stages[failedPart].error] || errors.generation_failed) : preparing;
-      $("#task-strip").innerHTML = '<span class="status-dot ' + (s.active ? "working" : "") + '"></span><p>' + esc(text) + '</p>' +
-        (failed && !s.active ? '<button class="text-link" type="button" data-retry="' + failedPart + '">' + tr("Retry") + '</button>' : "");
-    } else $("#task-strip").replaceChildren();
+    $("#task-strip").replaceChildren();
     if (ready) {
       renderPart("audio");
       renderPart("guide");
+      $("#ask-concept").hidden = !s.guide;
+      $("#mini-ask").hidden = !s.guide;
       if (s.guide) renderGuideDetails();
-      else {
-        $("#concept-card").hidden = true; $("#chapters-card").hidden = true;
-      }
-      $("#result-footnote").textContent = tr(s.sample ? "Prepared sample · system narration · source-linked visual guide" : s.audio?.narrationProvider === "local" ? "AI-written podcast · local system voice · grounded in your source" : "AI-generated audio · grounded in your source");
-      $("#audio-label").textContent = tr(s.sample ? "Sample narration" : s.audio?.narrationProvider === "local" ? "System voice" : "AI voice");
+      else $("#playing-chapter").textContent = tr("Podcast");
+      $("#chapters-toggle").hidden = !s.guide?.chapters.length;
       applyView();
     }
     $$("[data-retry]").forEach(button => { button.onclick = () => retry(button.dataset.retry, button); });
@@ -214,33 +257,31 @@
     placeholder.hidden = ready;
     if (!ready) {
       const error = stage.status === "error";
-      placeholder.innerHTML = (error ? '<span class="empty-symbol">' + icon("alert") + '</span>' : '<span class="small-spinner" aria-hidden="true"></span>') +
-        '<p>' + esc(tr(error ? errors[stage.error] || errors.generation_failed : part === "audio" ? "Your podcast is taking shape." : "Your visual guide is taking shape.")) + '</p>' +
-        (error ? '<button class="outline-button" data-retry="' + part + '" type="button">' + tr("Try again") + '</button>' : "");
+      placeholder.innerHTML = (error ? icon("alert") : '<span class="small-spinner" aria-hidden="true"></span>') +
+        '<p>' + esc(tr(error ? errors[stage.error] || errors.generation_failed : stages[part])) + '</p>' +
+        (error ? '<button class="lesson-action" data-retry="' + part + '" type="button">' + tr("Retry") + '</button>' : "");
     }
     if (part === "audio" && ready && L.audioSid !== L.session.id) {
       L.audioSid = L.session.id;
       audio.src = apiBase + L.session.audio.url;
       $("#audio-error").hidden = true;
-      $("#audio-label").textContent = tr(L.session.sample ? "Sample narration" : L.session.audio.narrationProvider === "local" ? "System voice" : "AI voice");
-      renderTranscript();
+      loadTranscript();
     }
     if (part === "guide") {
-      $("#expand-guide").disabled = !ready;
       if (ready && L.guideSid !== L.session.id) {
         L.guideSid = L.session.id;
         const frame = $("#guide-frame"), sid = L.session.id;
-        if (L.session.guideUrl) {
-          // Keep reviewed HTML in the existing isolated frame, without a cross-document redirect.
-          frame.removeAttribute("src"); frame.srcdoc = "";
-          fetch(apiBase + L.session.guideUrl, {signal:AbortSignal.timeout(30000)})
+        const sampleId = L.session.sampleId || (L.session.sample && L.session.guideTemplate === "bicycle-v1" ? "bicycle" : "");
+        const guideUrl = L.session.guideUrl || (L.session.sample && sampleId ? "/prepared/" + sampleId + ".html" : "");
+        if (guideUrl) {
+          fetch(apiBase + guideUrl, {cache:"no-cache",signal:AbortSignal.timeout(30000)})
             .then(response => { if (!response.ok) throw new Error("Guide unavailable"); return response.text(); })
             .then(html => { if (L.guideSid === sid) frame.srcdoc = html; })
             .catch(() => {
               if (L.guideSid !== sid) return;
               L.guideSid = null;
               L.session.stages.guide = {status:"error", error:"service_unavailable"};
-              renderPart("guide");
+              renderSession();
             });
         } else {
           frame.removeAttribute("srcdoc");
@@ -262,33 +303,32 @@
   }
   function currentNode() { return L.session?.guide?.nodes.find(n => n.id === L.node) || L.session?.guide?.nodes[0]; }
   function renderGuideDetails() {
-    $("#concept-card").hidden = false; $("#chapters-card").hidden = false;
     const guide = L.session.guide;
-    if (!guide.nodes.some(n => n.id === L.node)) L.node = guide.nodes[0].id;
+    if (L.node && !guide.nodes.some(n => n.id === L.node)) L.node = null;
     const signature = L.session.id + "|" + window.ClarityUI.language + "|" + (L.session.audio?.url || "") + "|" + JSON.stringify(guide.chapters);
     if ($("#chapter-list").dataset.signature !== signature) {
       $("#chapter-list").dataset.signature = signature;
       $("#chapter-list").innerHTML = guide.chapters.map((chapter, i) =>
         '<button class="chapter-button" type="button" data-chapter="' + i + '"><span class="chapter-number">' + String(i+1).padStart(2,"0") +
-        '</span><span class="chapter-description"><strong>' + esc(L.session.sample ? tr(chapter.title) : chapter.title) + '</strong><small>' + esc(L.session.sample ? tr(chapter.summary) : chapter.summary) +
-        '</small></span><span class="chapter-time" id="chapter-time-' + i + '"></span></button>').join("");
-      $$(".chapter-button").forEach(button => { button.onclick = () => selectChapter(Number(button.dataset.chapter)); });
+        '</span><span>' + esc(L.session.sample ? tr(chapter.title) : chapter.title) +
+        '</span><span class="chapter-time" id="chapter-time-' + i + '"></span></button>').join("");
+      $$(".chapter-button").forEach(button => {
+        button.onclick = () => { selectChapter(Number(button.dataset.chapter)); closePanel(); };
+      });
       $("#recap-list").innerHTML = guide.takeaways.map(text => '<li>' + esc(L.session.sample ? tr(text) : text) + '</li>').join("");
     }
-    $("#cue-note").hidden = !L.session.audio?.approximateCues;
-    $("#guide-type").textContent = "";
-    updateConcept(); updateChapter(); updateCueLabels(); sendGuideState();
+    updateConcept(); updateChapter(); updateCueLabels();
   }
   function updateConcept() {
     const node = currentNode();
     if (!node) return;
-    const index = L.session.guide.nodes.indexOf(node);
-    $("#concept-index").textContent = tr("CONCEPT") + " · " + String(index+1).padStart(2,"0");
-    $("#concept-title").textContent = L.session.sample ? tr(node.label) : node.label;
-    $("#concept-explanation").textContent = L.session.sample ? tr(node.explanation) : node.explanation;
-    $("#concept-example").textContent = L.session.sample ? tr(node.example) : node.example;
-    $("#concept-example").hidden = !node.example;
-    if (L.panel === "ask") $("#question-context").textContent = L.session.sample ? tr(node.label) : node.label;
+    const sample = L.session.sample;
+    const overview = sample && !L.node;
+    const label = sample ? tr(node.label) : node.label;
+    $("#concept-title").textContent = overview ? tr(L.session.guide.takeaways[0]) : label;
+    $("#concept-explanation").hidden = overview;
+    $("#concept-explanation").textContent = sample ? tr(node.explanation) : node.explanation;
+    if (L.panel === "ask") $("#question-context").textContent = label;
   }
   function selectNode(id) {
     if (!L.session?.guide?.nodes.some(n => n.id === id)) return;
@@ -297,21 +337,24 @@
   function cues() {
     const data = L.session?.audio;
     if (data?.cues) return data.cues;
-    const duration = audio.duration || data?.duration || 0;
-    return (data?.cueFractions || []).map(f => f * duration);
+    return (data?.cueFractions || []).map(f => f * audioDuration());
   }
   function updateCueLabels() {
-    cues().forEach((time, i) => {
+    const positions = cues(), duration = audioDuration();
+    positions.forEach((time, i) => {
       const label = $("#chapter-time-" + i);
       if (label) label.textContent = (L.session.audio.approximateCues ? "~" : "") + clock(time);
     });
+    $("#chapter-marks").innerHTML = L.session?.audio?.approximateCues ? "" : positions
+      .filter(time => time > 0 && time < duration)
+      .map(time => '<i style="--at:' + time / duration * 100 + '%"></i>').join("");
   }
   function selectChapter(index) {
     if (!L.session?.guide?.chapters[index]) return;
     L.chapter = index;
     const nodeId = L.session.guide.chapters[index].nodeIds[0];
     if (nodeId) selectNode(nodeId);
-    if (audio.readyState && cues()[index] !== undefined) audio.currentTime = cues()[index];
+    seekTo(cues()[index]);
     L.ended = false; $("#learning-recap").hidden = true;
     updateChapter(); savePref();
   }
@@ -322,14 +365,14 @@
     $$(".chapter-button").forEach((b, i) => { b.classList.toggle("active", i === L.chapter); b.setAttribute("aria-current", i === L.chapter ? "step" : "false"); });
     const chapterTitle = guide.chapters[L.chapter]?.title || L.session.title;
     $("#playing-chapter").textContent = L.session.sample ? tr(chapterTitle) : chapterTitle;
-    $("#chapter-count").textContent = String(L.chapter+1).padStart(2,"0") + " / " + String(guide.chapters.length).padStart(2,"0");
     $("#mini-title").textContent = L.session.sample ? tr(chapterTitle) : chapterTitle;
   }
   function sendGuideState() {
     const frame = $("#guide-frame");
-    frame.contentWindow?.postMessage({type:"clarity:select", id:L.node}, "*");
+    frame.contentWindow?.postMessage({type:"clarity:select", id:currentNode()?.id}, "*");
     frame.contentWindow?.postMessage({type:"clarity:language", language:window.ClarityUI.language}, "*");
     frame.contentWindow?.postMessage({type:"clarity:zoom", zoom:L.zoom}, "*");
+    frame.contentWindow?.postMessage({type:"clarity:layout", active:L.view === "visual-guide" && (!mobile.active || mobile.tab === "learning"), expanded:L.expanded, viewportHeight:innerHeight}, "*");
     $("#zoom-reset").textContent = Math.round(L.zoom * 100) + "%";
     $("#zoom-out").disabled = L.zoom <= .7;
     $("#zoom-in").disabled = L.zoom >= 1.6;
@@ -342,8 +385,8 @@
       return;
     }
     if (event.source === $("#guide-frame").contentWindow && event.data?.type === "clarity:guide-size") {
-      if (["bicycle-v1","explorable-v1"].includes(L.session?.guideTemplate) && Number.isFinite(event.data.height)) {
-        $("#guide-content").style.setProperty("--guide-natural-height",Math.max(450,Math.min(1600,event.data.height))+"px");
+      if (["bicycle-v1","explorable-v1"].includes(L.session?.guideTemplate) && Number.isFinite(event.data.height) && event.data.height > 0) {
+        $("#guide-content").style.setProperty("--guide-natural-height",Math.min(2200,event.data.height)+"px");
       }
       return;
     }
@@ -360,18 +403,25 @@
   $("#zoom-out").onclick = () => { L.zoom = Math.max(.7, Math.round((L.zoom-.1)*10)/10); sendGuideState(); savePref(); };
   $("#zoom-reset").onclick = () => { L.zoom = 1; sendGuideState(); savePref(); };
   function applyView() {
-    area.dataset.view = L.view; area.classList.toggle("is-expanded", L.expanded);
+    const guideView = L.view === "visual-guide";
+    if (guideView) closePlaybackSetting();
+    const authoredGuide = ["bicycle-v1","explorable-v1"].includes(L.session?.guideTemplate);
+    area.dataset.view = L.view;
+    area.classList.toggle("is-expanded", L.expanded);
+    area.classList.toggle("has-authored-guide", authoredGuide);
+    $("#guide-card").hidden = !guideView;
+    $("#expand-guide").hidden = !guideView || L.session.stages.guide.status !== "ready";
+    $("#guide-zoom").hidden = authoredGuide;
     $$("button[data-view]").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.view === L.view)));
     $("#expand-guide").setAttribute("aria-expanded", String(L.expanded));
-    $("#expand-guide").setAttribute("aria-label", tr(L.expanded ? "Restore visual guide" : "Expand visual guide"));
-    $("#expand-guide span").textContent = tr(L.expanded ? "Restore" : "Expand");
-    $("#learning-hint").textContent = "";
+    $("#expand-guide span").textContent = $("#expand-guide").title = tr(L.expanded ? "Restore visual guide" : "Expand visual guide");
+    $("#expand-guide use").setAttribute("href", L.expanded ? "#icon-collapse" : "#icon-expand");
+    sendGuideState();
     updateMiniPlayer(); savePref();
   }
   $$("button[data-view]").forEach(button => { button.onclick = () => { L.view = button.dataset.view; L.expanded = false; applyView(); }; });
   $("#expand-guide").onclick = () => {
     L.expanded = !L.expanded; applyView();
-    if (L.expanded) $("#guide-card").scrollIntoView({behavior:matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth",block:"start"});
   };
   async function togglePlay() {
     if (!L.session?.audio || L.session.stages.audio.status !== "ready") return;
@@ -389,11 +439,13 @@
   $("#play-button").onclick = togglePlay; $("#mini-play").onclick = togglePlay;
   function syncPlayback() {
     const playing = !audio.paused;
+    if (playing) L.hasPlayed = true;
     area.classList.toggle("is-playing", playing);
     $("#play-button").setAttribute("aria-label", tr(playing ? "Pause podcast" : "Play podcast"));
     $("#play-button").innerHTML = icon(playing ? "pause" : "play");
-    $("#mini-play").textContent = playing ? "Ⅱ" : "▶";
+    $("#mini-play").innerHTML = icon(playing ? "pause" : "play");
     $("#mini-play").setAttribute("aria-label", tr(playing ? "Pause podcast" : "Play podcast"));
+    updateMiniPlayer();
   }
   audio.addEventListener("play", syncPlayback); audio.addEventListener("pause", syncPlayback);
   audio.addEventListener("loadedmetadata", () => {
@@ -407,12 +459,26 @@
     $("#audio-error").textContent = tr("The audio couldn't load. Check the connection and try again.");
     $("#audio-error").hidden = false;
   });
+  function audioDuration() {
+    return Number.isFinite(audio.duration) ? audio.duration : L.session?.audio?.duration || 0;
+  }
+  function seekTo(time) {
+    if (!Number.isFinite(time) || L.session?.stages.audio.status !== "ready") return;
+    L.ended = false;
+    $("#learning-recap").hidden = true;
+    if (audio.readyState && Number.isFinite(audio.duration)) {
+      audio.currentTime = Math.min(audio.duration, Math.max(0, time));
+      updateAudioTime();
+    } else L.restoreTime = Math.max(0, time);
+    savePref();
+  }
   function updateAudioTime() {
-    const duration = Number.isFinite(audio.duration) ? audio.duration : L.session?.audio?.duration || 0;
+    const duration = audioDuration();
     const progress = duration ? audio.currentTime / duration * 100 : 0;
     $("#audio-elapsed").textContent = clock(audio.currentTime);
     $("#audio-duration").textContent = clock(duration);
     $("#audio-seek").value = String(progress);
+    $("#audio-seek").setAttribute("aria-valuetext", clock(audio.currentTime) + " / " + clock(duration));
     $("#audio-seek").style.setProperty("--progress", progress + "%");
     $("#mini-time").textContent = clock(audio.currentTime) + " / " + clock(duration);
     $("#mini-progress").style.setProperty("--mini-progress", progress + "%");
@@ -420,99 +486,251 @@
     if (positions.length) {
       let chapter = 0;
       positions.forEach((time, i) => { if (audio.currentTime + .1 >= time) chapter = i; });
-      if (chapter !== L.chapter) { L.chapter = chapter; const id=L.session.guide?.chapters[chapter]?.nodeIds[0];if(id)selectNode(id);updateChapter(); }
+      if (chapter !== L.chapter) {
+        L.chapter = chapter;
+        const id = L.session.guide?.chapters[chapter]?.nodeIds[0];
+        if (id && L.view === "podcast" && !L.panel) selectNode(id);
+        updateChapter();
+      }
     }
+    updateCaption();
+    if (sleepTimer) syncSleepTimer();
     if (Date.now() - L.savedAt > 700) { L.savedAt = Date.now(); savePref(); }
   }
   audio.addEventListener("timeupdate", updateAudioTime);
   audio.addEventListener("ended", () => {
+    setSleepTimer(0);
     L.ended = true; $("#learning-recap").hidden = false; savePref(); syncPlayback();
   });
   $("#audio-seek").oninput = event => {
-    if (!Number.isFinite(audio.duration)) return;
-    audio.currentTime = Number(event.target.value) / 100 * audio.duration;
-    L.ended = false; $("#learning-recap").hidden = true; updateAudioTime();
+    seekTo(Number(event.target.value) / 100 * audioDuration());
   };
-  $("#skip-back").onclick = () => { audio.currentTime = Math.max(0, audio.currentTime - 15); };
-  $("#skip-forward").onclick = () => { if (Number.isFinite(audio.duration)) audio.currentTime = Math.min(audio.duration, audio.currentTime + 15); };
-  $("#speed-button").onclick = () => {
-    $("#speed-menu").hidden = !$("#speed-menu").hidden;
-    $("#speed-button").setAttribute("aria-expanded", String(!$("#speed-menu").hidden));
-  };
+  $("#skip-back").onclick = () => seekTo(audio.currentTime - 15);
+  $("#skip-forward").onclick = () => seekTo(audio.currentTime + 15);
+  function closePlaybackSetting(restoreFocus = false) {
+    if (!openSetting) return;
+    const button = openSetting;
+    openSetting = null;
+    $("#" + button.getAttribute("aria-controls")).hidden = true;
+    button.setAttribute("aria-expanded", "false");
+    if (restoreFocus) button.focus({preventScroll:true});
+  }
+  $$(".playback-setting > button").forEach(button => {
+    button.onclick = () => {
+      const opening = openSetting !== button;
+      closePlaybackSetting();
+      if (!opening) return;
+      openSetting = button;
+      $("#" + button.getAttribute("aria-controls")).hidden = false;
+      button.setAttribute("aria-expanded", "true");
+    };
+  });
+  function dismissPlaybackSetting(event) {
+    if (openSetting && !openSetting.parentElement.contains(event.target)) closePlaybackSetting();
+  }
+  document.addEventListener("click", dismissPlaybackSetting);
+  document.addEventListener("focusin", dismissPlaybackSetting);
+  function syncPlaybackRate() {
+    const rate = audio.playbackRate;
+    $("#speed-value").textContent = rate + "×";
+    $("#speed-button").setAttribute("aria-label", tr("Playback speed") + " · " + rate + "×");
+    $$("[data-speed]").forEach(button => button.setAttribute("aria-pressed", String(Number(button.dataset.speed) === rate)));
+  }
   $$("[data-speed]").forEach(button => { button.onclick = () => {
     audio.playbackRate = Number(button.dataset.speed);
     audio.defaultPlaybackRate = audio.playbackRate;
-    $("#speed-button").textContent = button.textContent;
-    $$("[data-speed]").forEach(b => b.setAttribute("aria-pressed", String(b === button)));
-    $("#speed-menu").hidden = true; $("#speed-button").setAttribute("aria-expanded", "false"); savePref();
+    syncPlaybackRate();
+    closePlaybackSetting(true);
+    savePref();
   }; });
-  document.addEventListener("click", event => { if (!event.target.closest(".speed-wrap")) { $("#speed-menu").hidden = true; $("#speed-button").setAttribute("aria-expanded","false"); } });
-  function renderTranscript() {
-    $("#transcript-list").innerHTML = (L.session.audio?.transcript || []).map(entry =>
-      '<div class="transcript-entry"><strong>' + esc(entry.speaker || tr("Speaker")) + '</strong>' + esc(entry.dialogue || entry.text || "") + '</div>').join("");
-    $("#transcript-toggle").hidden = !L.session.audio?.transcript?.length;
+  function setSleepTimer(minutes) {
+    clearInterval(sleepTimer?.interval);
+    sleepTimer = minutes ? {end:Date.now() + minutes * 60000, interval:setInterval(syncSleepTimer, 1000)} : null;
+    $$("[data-timer]").forEach(button => button.setAttribute("aria-pressed", String(Number(button.dataset.timer) === minutes)));
+    $("#timer-button").classList.toggle("is-timed", !!sleepTimer);
+    syncSleepTimer();
   }
-  $("#transcript-toggle").onclick = () => {
-    const show = $("#transcript-list").hidden;
-    $("#transcript-list").hidden = !show; $("#chapter-list").hidden = show;
-    $("#transcript-toggle").setAttribute("aria-expanded", String(show));
-    $("#transcript-toggle").textContent = tr(show ? "Chapters" : "Transcript");
+  function syncSleepTimer() {
+    const remaining = sleepTimer ? Math.ceil((sleepTimer.end - Date.now()) / 1000) : 0;
+    if (sleepTimer && remaining <= 0) {
+      audio.pause();
+      setSleepTimer(0);
+      savePref();
+      return;
+    }
+    const text = sleepTimer ? clock(remaining) : "";
+    const value = $("#timer-value"), button = $("#timer-button");
+    const label = sleepTimer ? tr("Pause in {time}", {time:text}) : tr("Sleep timer");
+    value.hidden = !sleepTimer;
+    if (value.textContent !== text) value.textContent = text;
+    if (button.getAttribute("aria-label") !== label) button.setAttribute("aria-label", label);
+  }
+  $$("[data-timer]").forEach(button => { button.onclick = () => {
+    setSleepTimer(Number(button.dataset.timer));
+    closePlaybackSetting(true);
+  }; });
+  document.addEventListener("visibilitychange", syncSleepTimer);
+  function loadTranscript() {
+    const data = L.session.audio;
+    const timed = (data.captions || []).filter(line => Number.isFinite(line.start) && line.start >= 0 && line.text?.trim())
+      .sort((a,b) => a.start - b.start);
+    transcriptLines = timed.length ? timed : (data.transcript || []).map(entry => ({
+      speaker:entry.speaker, text:entry.dialogue || entry.text || ""
+    })).filter(line => line.text.trim());
+    activeCaption = -1;
+    $("#captions-line").textContent = "";
+    $("#captions-line").lang = data.language || (L.session.sample ? "en" : "");
+    $("#transcript-list").lang = $("#captions-line").lang;
+    renderTranscript();
+    updateReadingControls();
+    updateCaption();
+  }
+  function updateReadingControls() {
+    const hasTiming = Number.isFinite(transcriptLines[0]?.start);
+    $("#captions-toggle").hidden = !hasTiming;
+    $("#captions-toggle").setAttribute("aria-pressed", String(L.captions));
+    $("#captions-line").hidden = !hasTiming || !L.captions;
+    $("#transcript-toggle").hidden = !transcriptLines.length;
+    $("#transcript-toggle").setAttribute("aria-expanded", String(L.showTranscript));
+    $("#transcript-reader").hidden = !L.showTranscript;
+    $("#transcript-current").hidden = !hasTiming;
+  }
+  function updateCaption() {
+    if (!Number.isFinite(transcriptLines[0]?.start)) return;
+    const index = transcriptLines.findLastIndex(line => line.start <= audio.currentTime + .005);
+    if (index === activeCaption) return;
+    const previous = $("#transcript-list [aria-current=true]");
+    if (previous) previous.removeAttribute("aria-current");
+    activeCaption = index;
+    $("#captions-line").textContent = transcriptLines[index]?.text || "";
+    $("#transcript-list [data-line='" + index + "']")?.setAttribute("aria-current", "true");
+  }
+  function renderTranscript() {
+    const query = $("#transcript-search").value.trim().toLocaleLowerCase();
+    const list = $("#transcript-list");
+    list.innerHTML = transcriptLines.map((line, i) => {
+      if (query && !line.text.toLocaleLowerCase().includes(query)) return "";
+      const time = clock(line.start);
+      return '<div class="transcript-entry" data-line="' + i + '"' + (i === activeCaption ? ' aria-current="true"' : '') + '>' +
+        (Number.isFinite(line.start) ? '<button class="transcript-time" type="button" aria-label="' + esc(tr("Play from {time}", {time})) + '" data-play-line="' + i + '">' + time + '</button>' : "") +
+        '<div>' + (line.speaker ? '<strong>' + esc(line.speaker) + '</strong>' : "") + '<p>' + esc(line.text) + '</p></div></div>';
+    }).join("");
+    $("#transcript-empty").hidden = !!list.childElementCount;
+  }
+  function showCurrentLine() {
+    const list = $("#transcript-list"), row = list.querySelector("[aria-current=true]");
+    if (row) list.scrollTop = row.offsetTop - (list.clientHeight - row.offsetHeight) / 2;
+  }
+  $("#transcript-search").oninput = () => {
+    renderTranscript();
+    $("#transcript-list").scrollTop = 0;
   };
+  $("#transcript-current").onclick = () => {
+    if ($("#transcript-search").value) {
+      $("#transcript-search").value = "";
+      renderTranscript();
+    }
+    showCurrentLine();
+  };
+  $("#transcript-list").onclick = event => {
+    const button = event.target.closest("[data-play-line]");
+    if (!button) return;
+    seekTo(transcriptLines[Number(button.dataset.playLine)].start);
+    if (audio.paused) togglePlay();
+  };
+  $("#captions-toggle").onclick = () => {
+    L.captions = !L.captions;
+    updateReadingControls();
+    savePref();
+  };
+  $("#transcript-toggle").onclick = () => {
+    if (mobile.active) showPanel("transcript");
+    else {
+      L.showTranscript = !L.showTranscript;
+      updateReadingControls();
+      if (L.showTranscript) showCurrentLine();
+    }
+  };
+  function mountTranscript(inPanel) {
+    (inPanel ? $("#learning-panel") : transcriptHome).append(transcript);
+    L.showTranscript = inPanel;
+    updateReadingControls();
+  }
+  function panelTitle() {
+    if (L.panel === "chapters") return "Chapters";
+    if (L.panel === "transcript") return "Transcript";
+    return L.panel === "ask" ? "Ask Clarity" : "View source";
+  }
   $("#replay-button").onclick = () => { audio.currentTime = 0; L.ended = false; $("#learning-recap").hidden = true; togglePlay(); };
   $("#recap-guide").onclick = () => { L.view = "visual-guide"; L.expanded = false; applyView(); $("#guide-card").scrollIntoView({behavior:"smooth",block:"center"}); };
   function setBackgroundInert(value) {
     $("main").inert = value; $(".site-header").inert = value;
+    $(".skip-link").inert = value; $("#mobile-nav").inert = value;
     $("#phone-preview-toggle").inert = value; $("#mobile-player").inert = value;
   }
   function showPanel(type) {
     if (!L.session) return;
+    closePlaybackSetting();
     if (!L.panel) L.returnFocus = document.activeElement;
+    if (L.panel === "transcript") mountTranscript(false);
     L.panel = type;
+    $("#learning-panel").dataset.panel = type;
     $("#learning-panel").hidden = false; $("#panel-backdrop").hidden = false;
     document.body.classList.add("panel-open"); setBackgroundInert(true);
     $("#question-panel").hidden = type !== "ask"; $("#source-panel").hidden = type !== "source";
-    $("#panel-title").textContent = tr(type === "ask" ? "Ask Clarity" : "View source");
-    $("#panel-kicker").textContent = "";
+    $("#chapters-panel").hidden = type !== "chapters";
+    $("#back-to-question").hidden = true;
+    $("#panel-title").textContent = tr(panelTitle());
+    if (type === "transcript") {
+      mountTranscript(true);
+      showCurrentLine();
+    }
     $("#close-panel").focus({preventScroll:true});
   }
   function closePanel() {
+    if (L.panel === "transcript") mountTranscript(false);
     $("#learning-panel").hidden = true; $("#panel-backdrop").hidden = true;
     document.body.classList.remove("panel-open"); setBackgroundInert(false); L.panel = null;
     if (L.returnFocus?.isConnected && !L.returnFocus.closest("[hidden]")) L.returnFocus.focus({preventScroll:true});
   }
   function openAsk() {
     if (!currentNode()) return;
-    showPanel("ask"); L.sourceFromAsk = false;
+    showPanel("ask");
     $("#question-context").textContent = L.session.sample ? tr(currentNode().label) : currentNode().label;
-    $("#sample-question-note").hidden = !L.session.sample;
     renderQuestions();
   }
   function openSource(ids = [], fromAsk = false) {
     if (!L.session) return;
-    L.sourceFromAsk = fromAsk;
     showPanel("source");
     $("#back-to-question").hidden = !fromAsk;
     $("#panel-source-name").textContent = L.session.sourceName;
-    $("#source-passages").innerHTML = L.session.passages.map(p =>
-      '<div class="source-passage ' + (ids.includes(p.id) ? "is-highlighted" : "") + '" id="passage-' + esc(p.id) + '"><strong>' + (p.section ? tr("Section {number}",{number:esc(p.section)}) : p.page ? tr("Page {number}",{number:esc(p.page)}) : tr("PASSAGE {number}", {number:esc(p.id.slice(1))})) + ' · ' + esc(p.id) + '</strong>' + esc(p.text) + '</div>').join("");
+    $("#source-passages").innerHTML = L.session.passages.map(p => {
+      const label = p.section ? tr("Section {number}", {number:p.section}) :
+        p.page ? tr("Page {number}", {number:p.page}) : tr("Passage {number}", {number:p.id.slice(1)});
+      return '<div class="source-passage ' + (ids.includes(p.id) ? "is-highlighted" : "") + '" id="passage-' + esc(p.id) +
+        '"><strong>' + esc(label) + '</strong>' + esc(p.text) + '</div>';
+    }).join("");
     requestAnimationFrame(() => {
       const target = ids.length ? $("#passage-" + ids[0]) : null;
       if (target) target.scrollIntoView({block:"center",behavior:"instant"});
       else $("#source-panel").scrollTop = 0;
     });
   }
-  $("#ask-concept").onclick = openAsk; $("#mini-ask").onclick = openAsk; $("#guide-ask").onclick = openAsk;
-  $("#view-source").onclick = () => openSource();
-  $("#concept-source").onclick = () => openSource(currentNode()?.sourceIds || []);
+  $("#ask-concept").onclick = openAsk; $("#mini-ask").onclick = openAsk;
+  $("#chapters-toggle").onclick = () => {
+    showPanel("chapters");
+    $("#chapters-panel").scrollTop = 0;
+  };
+  $("#view-source").onclick = () => openSource(L.view === "visual-guide" ? currentNode()?.sourceIds : []);
   $("#close-panel").onclick = closePanel; $("#panel-backdrop").onclick = closePanel;
   $("#back-to-question").onclick = () => { showPanel("ask"); renderQuestions(); };
   function renderQuestions() {
     if (!L.session) return;
     let html = L.session.questions.map(item =>
-      '<article class="question-item"><p class="question-user">' + esc(item.question) + '</p><div class="answer-label">CLARITY · ' +
-      esc(item.sample ? tr(item.contextLabel) : item.contextLabel) + '</div><p class="question-answer">' + esc(item.sample ? tr(item.answer) : item.answer) + '</p><div class="answer-sources">' +
+      '<article class="question-item"><p class="question-user">' + esc(tr(item.question)) +
+      '</p><p class="question-answer">' + esc(item.sample ? tr(item.answer) : item.answer) + '</p><div class="answer-sources">' +
       item.sourceIds.map(id => '<button type="button" data-source-id="' + esc(id) + '">' + tr("Source {number}", {number:esc(id.slice(1))}) + ' ↗</button>').join("") + '</div></article>').join("");
-    if (L.asking) html += '<article class="question-item"><p class="question-user">' + esc(L.pendingQuestion) + '</p><div class="answer-label">CLARITY</div><div class="question-pending" role="status" aria-label="' + tr("Preparing an answer") + '"><i></i><i></i><i></i></div></article>';
+    if (L.asking) html += '<article class="question-item"><p class="question-user">' + esc(tr(L.pendingQuestion)) + '</p><div class="question-pending" role="status" aria-label="' + tr("Preparing an answer") + '"><i></i><i></i><i></i></div></article>';
     if (L.failedQuestion) html += '<div class="question-failure" role="status">' + tr("Couldn’t answer. Try again.") + '<button type="button" id="retry-question">' + tr("Try again") + '</button></div>';
     $("#question-history").innerHTML = html;
     $$("[data-source-id]").forEach(button => { button.onclick = () => openSource([button.dataset.sourceId], true); });
@@ -544,24 +762,30 @@
   };
   $$("[data-question]").forEach(button => { button.onclick = () => askQuestion(button.dataset.question); });
   function updateMiniPlayer() {
-    const mobile = matchMedia("(max-width:760px)").matches;
-    const cardOffscreen = $("#podcast-card").getBoundingClientRect().bottom < 100;
-    const show = mobile && L.inView && L.session?.stages.audio.status === "ready" && (L.view === "visual-guide" || L.expanded || cardOffscreen);
-    $("#mobile-player").hidden = !show; area.classList.toggle("has-mini-player", show);
+    const controlsAboveScreen = $("#play-button").getBoundingClientRect().bottom < 16;
+    const show = mobile.active && L.session?.stages.audio.status === "ready" &&
+      (mobile.tab === "learning" ? L.view === "visual-guide" || controlsAboveScreen : L.hasPlayed && !L.ended);
+    $("#mobile-player").hidden = !show;
   }
-  $("#mini-now").onclick = () => { L.view = "podcast"; L.expanded = false; applyView(); $("#podcast-card").scrollIntoView({behavior:"smooth",block:"center"}); };
-  new IntersectionObserver(([entry]) => { L.inView = entry.isIntersecting; updateMiniPlayer(); },{threshold:0}).observe(area);
-  window.addEventListener("scroll", updateMiniPlayer, {passive:true}); window.addEventListener("resize", updateMiniPlayer);
+  $("#mini-now").onclick = () => { L.view = "podcast"; L.expanded = false; applyView(); mobile.navigate("learning", {reset:true}); };
+  document.addEventListener("clarity:tab", () => {
+    if (!mobile.active && L.panel === "transcript") closePanel();
+    else if (mobile.active && L.showTranscript && !L.panel) mountTranscript(false);
+    closePlaybackSetting();
+    sendGuideState();
+    updateMiniPlayer();
+  });
+  window.addEventListener("scroll", updateMiniPlayer, {passive:true});
+  window.addEventListener("hashchange", () => { if (mobile.active && L.panel) closePanel(); });
+  window.addEventListener("resize", () => { sendGuideState(); updateMiniPlayer(); });
   $$('[data-action="add-source"]').forEach(button => { button.onclick = () => {
     if (L.panel) closePanel();
+    if (mobile.navigate("source", {focus:true})) return;
     history.replaceState(null, "", "#source");
     $("#source").scrollIntoView({behavior:matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth",block:"start"});
     $("#source-title").focus({preventScroll:true});
   }; });
-  $$('[data-action="sample"]').forEach(button => { button.onclick = () => {
-    $("#try-example").click();
-    generate(buildLearningSetup());
-  }; });
+  $('[data-action="sample"]').onclick = () => openExample("bicycle");
   $('.nav-links a[href="#learning"]').addEventListener("click", () => {
     area.hidden = false; updateNavigationLocation();
     if (!L.session) {
@@ -570,12 +794,15 @@
     }
   }, true);
   $$('a[href="#home"], a[href="#source"], a[href="#learning"]').forEach(link => {
-    link.addEventListener("click", () => history.replaceState(null, "", link.getAttribute("href")), true);
+    link.addEventListener("click", () => {
+      if (!mobile.active) history.replaceState(null, "", link.getAttribute("href"));
+    }, true);
   });
-  $("#audio-wave").innerHTML = Array.from({length:69}, (_, i) => {
-    const distance = Math.abs(i-34) / 34, envelope = Math.pow(1-distance,1.3);
-    const height = 6 + envelope * (45 + 23*Math.pow(Math.cos((i-34)*.82),2));
-    return '<i style="--h:' + height + 'px;--d:' + (-(i*.173)%2) + 's"></i>';
+  $("#audio-wave").innerHTML = Array.from({length:81}, (_, i) => {
+    const envelope = Math.sin(Math.PI * i / 80) ** 1.5;
+    const height = 5 + envelope * (40 + 32 * Math.cos(i * .23) ** 2 + 18 * Math.sin(i * .89) ** 2);
+    const alpha = .44 + envelope * .37;
+    return '<i style="--h:' + height + 'px;--alpha:' + alpha + ';--d:' + (-(i*.173)%2) + 's"></i>';
   }).join("");
   function closePhone() {
     $("#phone-preview").hidden = true;
@@ -584,18 +811,32 @@
     $("#phone-preview-toggle").focus({preventScroll:true});
     if (L.session && Number.isFinite(audio.duration)) audio.currentTime = Math.min(pref().time || 0, audio.duration);
   }
+  const phonePreview = $("#phone-preview");
+  function fitPhone() {
+    if (!phonePreview.hidden) {
+      phonePreview.style.setProperty("--phone-scale", Math.min(1, (innerHeight - 40) / 866, (innerWidth - 36) / 407));
+    }
+  }
+  window.addEventListener("resize", () => {
+    if (!phonePreview.hidden && mobile.active) closePhone();
+    else fitPhone();
+  });
+  $("#phone-preview-toggle").hidden = false;
   $("#phone-preview-toggle").onclick = () => {
     audio.pause(); savePref();
     const url = new URL(location.href);
     url.searchParams.set("phone", "1");
+    url.searchParams.delete("demo");
+    url.searchParams.delete("session");
     if (L.session) url.searchParams.set("session", L.session.id);
-    url.hash = L.inView ? "learning" : $("#source").getBoundingClientRect().top < innerHeight/2 ? "source" : "home";
+    url.hash = updateNavigationLocation();
     $("#phone-frame").src = url.href; $("#phone-preview").hidden = false;
+    fitPhone();
     setBackgroundInert(true); document.body.classList.add("panel-open"); $("#phone-close").focus();
   };
   $("#phone-close").onclick = closePhone;
   function handleEscape() {
-    if (!$("#speed-menu").hidden) { $("#speed-menu").hidden = true; $("#speed-button").setAttribute("aria-expanded","false"); $("#speed-button").focus(); }
+    if (openSetting) closePlaybackSetting(true);
     else if (!$("#phone-preview").hidden) closePhone();
     else if (L.panel) closePanel();
     else if (phoneMode && window.parent !== window) { savePref(); window.parent.postMessage({type:"clarity:escape"},location.origin); }
@@ -604,7 +845,7 @@
     const dialog = !$("#phone-preview").hidden ? $("#phone-preview") : L.panel ? $("#learning-panel") : null;
     if (event.key === "Escape") handleEscape();
     if (event.key === "Tab" && dialog) {
-      const controls = [...dialog.querySelectorAll('button:not(:disabled), textarea, input, a[href], iframe')].filter(e => e.getClientRects().length);
+      const controls = [...dialog.querySelectorAll('button:not(:disabled), textarea, input, a[href], iframe, [tabindex="0"]')].filter(e => e.getClientRects().length);
       const first = controls[0], last = controls.at(-1);
       if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
       else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
@@ -614,17 +855,18 @@
   document.addEventListener("clarity:language", () => {
     if (L.session) renderSession();
     syncPlayback();
-    $("#transcript-toggle").textContent = tr($("#transcript-list").hidden ? "Transcript" : "Chapters");
-    if (L.panel) $("#panel-title").textContent = tr(L.panel === "ask" ? "Ask Clarity" : "View source");
+    syncPlaybackRate();
+    syncSleepTimer();
+    if (L.showTranscript) renderTranscript();
+    if (L.panel) $("#panel-title").textContent = tr(panelTitle());
     if (L.panel === "ask") renderQuestions();
     if (!$("#audio-error").hidden) $("#audio-error").textContent = tr($("#audio-error").textContent);
   });
-  if (phoneMode) document.body.classList.add("phone-mode");
   const requested = new URLSearchParams(location.search).get("session");
   const resume = requested || retrieve("clarity:last-session", null);
   const demo = new URLSearchParams(location.search).get("demo");
   if (["bicycle","flatland","boids"].includes(demo)) {
-    window.ClarityExamples.load(demo).then(()=>generate(buildLearningSetup())).catch(()=>{});
+    openExample(demo);
   } else if (resume) loadSession(resume, location.hash === "#learning");
   else if (location.hash === "#learning") goToLearning();
 })();

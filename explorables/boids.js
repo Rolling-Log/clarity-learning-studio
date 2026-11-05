@@ -1,5 +1,5 @@
 export function boidsScene(c){
- const {THREE:T,$,$$,scene,mat,mesh,line,text,views,cameraTo,info,metric,select}=c;
+ const {THREE:T,$,$$,scene,mat,mesh,line,text,cameraTo,actionIcon,metric,select}=c;
  const COUNT=96,LIMIT=3.6,RNG_SEED=3917;let randomState=RNG_SEED;
  function random(){randomState=(randomState*1664525+1013904223)>>>0;return randomState/4294967296;}
  let agents=[],rule=[true,true,true],radius=1.25,follow=true,elapsed=0,accumulator=0,order=0,neighbors=[],selected=0,frame=0;
@@ -13,16 +13,34 @@ export function boidsScene(c){
  const bounds=new T.Box3(new T.Vector3(-LIMIT,-LIMIT*.58,-LIMIT),new T.Vector3(LIMIT,LIMIT*.58,LIMIT));const box=new T.Box3Helper(bounds,0xc8bdd7);box.material.transparent=true;box.material.opacity=.3;scene.add(box);
  for(let i=-3;i<=3;i++){line([[-LIMIT,-LIMIT*.58,i],[LIMIT,-LIMIT*.58,i]],0xcdbfdb,scene,.25);line([[i,-LIMIT*.58,-LIMIT],[i,-LIMIT*.58,LIMIT]],0xcdbfdb,scene,.25);}
  function reset(){randomState=RNG_SEED;agents=Array.from({length:COUNT},()=>({p:new T.Vector3((random()-.5)*5.2,(random()-.5)*2.8,(random()-.5)*5.2),v:new T.Vector3(random()-.5,(random()-.5)*.55,random()-.5).normalize().multiplyScalar(.85)}));elapsed=0;accumulator=0;draw();}
- const glyphs=[`<path d="m17 18-9-7m9 7 11-8m-11 8 1 13"/><path d="m7 15 1-4 4 1m12 0 4-2 1 4m-14 13 3 4 3-4"/>`,`<path d="m7 9 9 0m-4-4 5 4-5 4M17 20h13m-5-4 5 4-5 4M6 30h10m-4-4 5 4-5 4"/>`,`<path d="m5 5 8 8m17-7-9 8M18 33l-1-10"/><path d="m8 13h5V8m8 1v5h5m-13 13 4-4 4 4"/><circle cx="17" cy="18" r="3"/>`];
- const names=[['Separation','分离','Make space','保持间距'],['Alignment','对齐','Match heading','协调方向'],['Cohesion','聚合','Stay together','保持联系']];
- $('#controls-area').innerHTML=`<div class="rule-controls">${names.map((n,i)=>`<button type="button" class="rule-control" data-rule="${i}" aria-pressed="true"><svg viewBox="0 0 36 38" fill="none" stroke="#6354a5" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${glyphs[i]}</svg><div><strong>${text(n[0],n[1])}</strong><span>${text(n[2],n[3])}</span></div><i class="rule-switch" aria-hidden="true"></i></button>`).join('')}</div><div class="boids-lab"><div><label class="label-row" for="perception-radius"><span>${text('Perception radius','感知半径')}${info('96 agents · 270° field of view · fixed 60 Hz steps · wrapping space. Steering is a weighted teaching model, not the paper’s full flight model.','96 个个体 · 270° 视野 · 60 Hz 固定步长 · 循环空间。采用加权转向教学模型，并非论文完整飞行模型。')}</span><output id="radius-value"></output></label><input class="range" id="perception-radius" type="range" min=".45" max="2.5" value="1.25" step=".05"><div class="agent-legend"><span><i class="selected"></i>${text('Selected agent','选中个体')}</span><span><i></i>${text('Local neighbors','局部邻居')}</span></div></div><div class="metrics boids-metrics">${metric('order','heading agreement · 0–1','方向一致度 · 0–1')}${metric('neighbor-count','selected agent’s neighbors','选中个体的邻居')}${metric('agent-count','agents','个体')}</div></div>`;
+ const glyphs=[
+   'M9 12H3m3-3-3 3 3 3m9-3h6m-3-3 3 3-3 3',
+   'M4 6h14m-2-2 2 2-2 2M6 12h14m-2-2 2 2-2 2M4 18h14m-2-2 2 2-2 2',
+   'M3 12h6m-3-3 3 3-3 3m15-3h-6m3-3-3 3 3 3'
+ ];
+ const names=[['Separation','分离'],['Alignment','对齐'],['Cohesion','聚合']];
+ $('#controls-area').innerHTML=`
+   <div class="boids-lab">
+     <div>
+       <div class="rule-controls">${names.map((name,i)=>`
+         <button type="button" class="rule-control" data-rule="${i}" aria-pressed="true">
+           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${glyphs[i]}"/></svg>
+           <strong>${text(...name)}</strong><i class="rule-switch" aria-hidden="true"></i>
+         </button>`).join('')}
+       </div>
+       <label class="label-row" for="perception-radius">${text('Perception radius','感知半径')}<output id="radius-value"></output></label>
+       <input class="range" id="perception-radius" type="range" min=".45" max="2.5" value="1.25" step=".05">
+       <div class="agent-legend"><span><i class="selected"></i>${text('Selected agent','选中个体')}</span><span><i></i>${text('Local neighbors','局部邻居')}</span></div>
+     </div>
+     <div class="metrics boids-metrics">${metric('order','heading agreement · 0–1','方向一致度 · 0–1')}${metric('neighbor-count','Neighbors','邻居')}${metric('agent-count','Agents','个体')}</div>
+   </div>`;
  function ruleSet(index){rule[index]=!rule[index];$$('[data-rule]').forEach(b=>b.setAttribute('aria-pressed',String(rule[Number(b.dataset.rule)])));select('b'+(index+1),true);}
  $$('[data-rule]').forEach(b=>b.onclick=()=>ruleSet(Number(b.dataset.rule)));
  $('#perception-radius').oninput=e=>{radius=Number(e.target.value);select('b4',true);draw();};
  $('#view-options').innerHTML=`<button type="button" id="follow-agent" aria-pressed="true">${text('Inspect an agent','观察一个个体')}</button><button type="button" id="flock-view" aria-pressed="false">${text('Whole flock','整个群体')}</button>`;
  $('#follow-agent').onclick=()=>{follow=true;$('#follow-agent').setAttribute('aria-pressed','true');$('#flock-view').setAttribute('aria-pressed','false');select('b4',true);draw();};
  $('#flock-view').onclick=()=>{follow=false;$('#follow-agent').setAttribute('aria-pressed','false');$('#flock-view').setAttribute('aria-pressed','true');draw();};
- $('#reset-camera').insertAdjacentHTML('beforebegin',`<button class="round-button" type="button" id="reset-flock" title="Reset same seed" aria-label="Reset same seed">⟲</button><button class="round-button" type="button" id="step-flock" title="Advance one step" aria-label="Advance one step">▹</button>`);
+ $('#reset-camera').insertAdjacentHTML('beforebegin',`<button class="round-button" type="button" id="reset-flock" aria-label="Reset flock">${actionIcon('reset')}</button><button class="round-button" type="button" id="step-flock" aria-label="Advance one step">${actionIcon('step')}</button>`);
  $('#reset-flock').onclick=reset;$('#step-flock').onclick=()=>{step(1/60);draw();};
  function displacement(a,b){const d=b.clone().sub(a);for(const axis of ['x','y','z']){const limit=axis==='y'?LIMIT*.58:LIMIT;if(d[axis]>limit)d[axis]-=limit*2;if(d[axis]<-limit)d[axis]+=limit*2;}return d;}
  function seen(a,b){const d=displacement(a.p,b.p),distance=d.length();return distance>0&&distance<radius&&a.v.dot(d)/(a.v.length()*distance)>-.70710678?{d,distance}:null;}
@@ -35,7 +53,7 @@ export function boidsScene(c){
  function update(dt){accumulator+=dt;let steps=0;while(accumulator>=1/60&&steps<3){step(1/60);accumulator-=1/60;steps++;}if(steps||frame++%3===0)draw();}
  const ray=new T.Raycaster();let start=null;
  if(c.renderer){const el=c.renderer.domElement;el.addEventListener('pointerdown',e=>{start=[e.clientX,e.clientY]});el.addEventListener('pointerup',e=>{if(!start||Math.hypot(e.clientX-start[0],e.clientY-start[1])>4)return;const rect=el.getBoundingClientRect();ray.setFromCamera(new T.Vector2((e.clientX-rect.left)/rect.width*2-1,-(e.clientY-rect.top)/rect.height*2+1),c.camera);const hit=ray.intersectObject(flock)[0];if(hit&&hit.instanceId!==undefined){selected=hit.instanceId;follow=true;$('#follow-agent').setAttribute('aria-pressed','true');$('#flock-view').setAttribute('aria-pressed','false');select('b4',true);draw();}});}
- function translate(){draw();$('#reset-flock').title=$('#reset-flock').ariaLabel=c.t('Reset same seed','重置同一种子');$('#step-flock').title=$('#step-flock').ariaLabel=c.t('Advance one step','前进一步');$('#view-caption').textContent=c.t('96 AGENTS · LOCAL RULES · LIVE MODEL','96 个体 · 局部规则 · 实时模型');}
+ function translate(){draw();$('#reset-flock').title=$('#reset-flock').ariaLabel=c.t('Reset flock','重置群体');$('#step-flock').title=$('#step-flock').ariaLabel=c.t('Advance one step','前进一步');}
  function fallback(){fallbackCanvas=document.createElement('canvas');fallbackCanvas.className='fallback-art';fallbackCanvas.width=800;fallbackCanvas.height=420;fallbackContext=fallbackCanvas.getContext('2d');$('#viewport').append(fallbackCanvas);draw();}
  function drawFallback(){const g=fallbackContext;g.clearRect(0,0,800,420);agents.forEach((a,i)=>{const x=400+a.p.x*80,y=220+a.p.z*39;g.save();g.translate(x,y);g.rotate(Math.atan2(a.v.z,a.v.x));g.beginPath();g.moveTo(7,0);g.lineTo(-4,-3);g.lineTo(-4,3);g.closePath();g.fillStyle=i===selected?'#6354a5':'#ac9abd';g.fill();g.restore();});}
  reset();resetCamera();translate();

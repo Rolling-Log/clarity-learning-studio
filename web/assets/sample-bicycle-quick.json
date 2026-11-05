@@ -1,4 +1,6 @@
 {
+    "approximateCues":  false,
+    "narration":  "Prepared sample | local system voice",
     "transcript":  [
                        {
                            "chapterIndex":  0,
@@ -17,8 +19,84 @@
                        }
                    ],
     "duration":  76.9902947845805,
-    "narration":  "Prepared sample 路 local system voice",
-    "approximateCues":  false,
+    "captions":  [
+                     {
+                         "start":  0,
+                         "text":  "Inside a bicycle."
+                     },
+                     {
+                         "start":  2.074,
+                         "text":  "Follow the power from your feet to the road."
+                     },
+                     {
+                         "start":  4.989,
+                         "text":  "A pedal turns the crank and the front chainring."
+                     },
+                     {
+                         "start":  8.308,
+                         "text":  "The chain pulls a rear sprocket, which drives the rear wheel."
+                     },
+                     {
+                         "start":  12.637,
+                         "text":  "The tire pushes the road backward, and the road pushes the bicycle forward."
+                     },
+                     {
+                         "start":  17.752,
+                         "text":  "Select a numbered part in the guide to see where each step happens."
+                     },
+                     {
+                         "start":  21.761,
+                         "text":  "Gears change the trade-off."
+                     },
+                     {
+                         "start":  24.145,
+                         "text":  "With forty-two teeth at the front and twenty-eight at the rear, one pedal turn gives one point five wheel turns."
+                     },
+                     {
+                         "start":  31.119,
+                         "text":  "Choose a smaller rear sprocket and you travel farther per pedal turn."
+                     },
+                     {
+                         "start":  35.473,
+                         "text":  "A larger rear sprocket gives less distance, but more wheel torque for the same crank torque."
+                     },
+                     {
+                         "start":  41.417,
+                         "text":  "Try changing the gear in the guide."
+                     },
+                     {
+                         "start":  43.912,
+                         "text":  "The derailleur moves the chain to the chosen rear sprocket."
+                     },
+                     {
+                         "start":  47.561,
+                         "text":  "Gears do not create extra power."
+                     },
+                     {
+                         "start":  50.225,
+                         "text":  "The frame holds the wheels and controls in place."
+                     },
+                     {
+                         "start":  53.734,
+                         "text":  "Your handlebar steers the front wheel."
+                     },
+                     {
+                         "start":  56.579,
+                         "text":  "On this example, the brake lever pulls a cable, and the brake pads squeeze the rim."
+                     },
+                     {
+                         "start":  62.428,
+                         "text":  "Friction resists the wheel\u0027s rotation."
+                     },
+                     {
+                         "start":  65.292,
+                         "text":  "Remember three connections: pedals to chain, chain to rear wheel, and tire to road."
+                     },
+                     {
+                         "start":  71.701,
+                         "text":  "The guide\u0027s speed values come from its stated ideal model, not a measured ride."
+                     }
+                 ],
     "cues":  [
                  0,
                  21.76077097505669,

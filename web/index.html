@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#EEF0F2">
   <meta name="description" content="Turn papers, books, and long reads into podcasts and visual guides.">
   <link rel="icon" href="data:,">
@@ -200,7 +200,7 @@
     #source-text { display: block; width: 100%; height: 174px; min-height: 174px; padding: 0; resize: vertical; border: 0; border-radius: 0; background: transparent; color: #383546; font: 14px/1.65 var(--serif); }
     #source-text::placeholder { color: #95949a; }
     #source-text:focus-visible { outline-offset: 5px; }
-    .text-meta { display: flex; align-items: center; justify-content: space-between; margin-top: 9px; gap: 12px; color: #64616d; font: 8px/1.5 var(--mono); }
+    .text-meta { display: flex; align-items: center; justify-content: flex-end; margin-top: 9px; color: #64616d; font: 8px/1.5 var(--mono); }
     .source-support { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding-top: 9px; font-size: 9px; color: #64616d; }
     .source-error { margin: 10px 0 0; color: #8b3c34; font-size: 11px; line-height: 1.55; }
     .mode-hint { margin: -3px 0 16px; font-size: 11px; line-height: 1.6; color: #625f6b; }
@@ -393,16 +393,22 @@
       .file-ready.is-reading .file-emblem::after { animation: none; }
     }
   </style>
-  <link rel="stylesheet" href="learning.css?v=37d0cd01cb6d">
-  <link rel="stylesheet" href="web-refinement.css?v=4dd0f1ad5352">
-  <link rel="stylesheet" href="iris-theme.css?v=6f0f1ae6aa90">
+  <link rel="stylesheet" href="learning.css?v=7825a67223ff">
+  <link rel="stylesheet" href="web-refinement.css?v=9196c645f14d">
+  <link rel="stylesheet" href="iris-theme.css?v=54f1180b2944">
+  <link rel="stylesheet" href="mobile.css?v=542c4976938f">
 </head>
 <body>
   <svg class="glass-defs" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
     <defs>
+      <symbol id="icon-home" viewBox="0 0 24 24"><path d="m3 10 9-7 9 7M5 9v10a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V9"/></symbol>
       <symbol id="icon-upload" viewBox="0 0 24 24"><path d="M12 16V4m-4 4 4-4 4 4M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></symbol>
       <symbol id="icon-file" viewBox="0 0 24 24"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9Z"/><path d="M14 3v6h6M8 13h8m-8 4h6"/></symbol>
       <symbol id="icon-text" viewBox="0 0 24 24"><path d="M4 5h16M4 10h12M4 15h16M4 20h9"/></symbol>
+      <symbol id="icon-list" viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01"/></symbol>
+      <symbol id="icon-captions" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M6.5 11h5m2.5 0h3.5m-11 3h2.5m2.5 0h6"/></symbol>
+      <symbol id="icon-timer" viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M10 2h4m-2 7v4l2 1m4-7 1-1"/></symbol>
+      <symbol id="icon-chevron" viewBox="0 0 24 24"><path d="m7 10 5 5 5-5"/></symbol>
       <symbol id="icon-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
       <symbol id="icon-close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
       <symbol id="icon-arrow" viewBox="0 0 24 24"><path d="M4 12h16m-5-5 5 5-5 5"/></symbol>
@@ -413,12 +419,15 @@
       <symbol id="icon-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10h.01"/></symbol>
       <symbol id="icon-alert" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v6m0 4h.01"/></symbol>
       <symbol id="icon-expand" viewBox="0 0 24 24"><path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5"/></symbol>
+      <symbol id="icon-collapse" viewBox="0 0 24 24"><path d="M3 8h5V3m13 5h-5V3M8 21v-5H3m13 5v-5h5"/></symbol>
       <symbol id="icon-message" viewBox="0 0 24 24"><path d="M21 11.5A8.5 8.5 0 0 1 8.5 19L3 21l2-5.5A8.5 8.5 0 1 1 21 11.5Z"/><path d="M8 9h8m-8 4h5"/></symbol>
       <symbol id="icon-send" viewBox="0 0 24 24"><path d="m5 12 7-7 7 7m-7-7v15"/></symbol>
       <symbol id="icon-play" viewBox="0 0 24 24"><path d="m8 5 11 7-11 7z"/></symbol>
       <symbol id="icon-pause" viewBox="0 0 24 24"><path d="M6 5h4v14H6zm8 0h4v14h-4z"/></symbol>
-      <symbol id="icon-back" viewBox="0 0 24 24"><path d="M3 10a9 9 0 1 1 1.7 8M3 4v6h6"/></symbol>
-      <symbol id="icon-forward" viewBox="0 0 24 24"><path d="M21 10a9 9 0 1 0-1.7 8M21 4v6h-6"/></symbol>
+      <path id="skip-arc" d="M4.7 8A8.35 8.35 0 1 1 4 14.4M4.7 3.8V8H9"/>
+      <path id="skip-digits" d="m8.8 10.5 1.25-.85v4.7m5.15-4.7h-2.6v2.15h1.5a1.275 1.275 0 0 1 0 2.55h-1.55" stroke-width="1.15"/>
+      <symbol id="icon-back" viewBox="0 0 24 24"><use href="#skip-arc"/><use href="#skip-digits"/></symbol>
+      <symbol id="icon-forward" viewBox="0 0 24 24"><use href="#skip-arc" transform="translate(24 0) scale(-1 1)"/><use href="#skip-digits"/></symbol>
       <filter id="nav-glass" x="-5%" y="-50%" width="110%" height="200%" color-interpolation-filters="sRGB">
         <feTurbulence type="fractalNoise" baseFrequency=".008 .06" numOctaves="2" seed="8" result="noise"/>
         <feGaussianBlur in="noise" stdDeviation="2" result="smoothNoise"/>
@@ -442,7 +451,7 @@
         <a href="#learning">My podcasts</a>
       </div>
       <div class="nav-actions">
-<button class="language-button" id="language-toggle" type="button" aria-label="Switch to Chinese"><svg class="ui-icon" aria-hidden="true"><use href="#icon-globe"/></svg><span>EN</span></button>
+        <button class="language-button" id="language-toggle" type="button" aria-label="Switch to Chinese"><svg class="ui-icon" aria-hidden="true"><use href="#icon-globe"/></svg><span>EN</span></button>
         <div class="account-wrap"><button class="account-toggle" id="account-toggle" type="button" aria-label="Account" aria-haspopup="menu" aria-expanded="false" aria-controls="account-menu"><svg class="ui-icon" aria-hidden="true"><use href="#icon-user"/></svg></button><div class="account-menu" id="account-menu" role="menu" aria-label="Account" hidden><button type="button" role="menuitem" tabindex="-1">Log in</button><button type="button" role="menuitem" tabindex="-1">Sign up</button></div></div>
         <button class="menu-toggle" id="menu-toggle" type="button" aria-label="Open navigation" aria-controls="primary-navigation" aria-expanded="false">
           <svg viewBox="0 0 18 18" fill="none" aria-hidden="true"><path d="M3 6h12M3 12h12" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
@@ -453,7 +462,7 @@
   <main>
     <section class="hero" id="home" aria-labelledby="hero-title">
       <div class="hero-copy">
-        <h1 id="hero-title">Less effort.<span>More understanding.</span></h1>
+        <h1 id="hero-title" tabindex="-1">Less effort.<span>More understanding.</span></h1>
         <div class="hero-description">
           <p>Turn long reads into podcasts and visual guides.</p>
         </div>
@@ -511,12 +520,12 @@
                 <div class="paste-surface">
                   <div class="paste-topline"><label for="source-text">YOUR TEXT</label><button class="quiet-button muted" id="clear-text" type="button">Clear</button></div>
                   <textarea id="source-text" placeholder="Paste your text here…" aria-describedby="text-count source-error" spellcheck="false"></textarea>
-                  <div class="text-meta"><span>500,000 characters max</span><output id="text-count" for="source-text">0 words</output></div>
+                  <div class="text-meta"><output id="text-count" for="source-text">0 words</output></div>
                 </div>
               </div>
             </div>
             <p class="source-error" id="source-error" role="alert" hidden></p>
-            <div class="source-support"><span class="sr-only" id="source-footnote"></span><button class="quiet-button" id="try-example" type="button">Try an example <svg class="icon" aria-hidden="true"><use href="#icon-arrow"/></svg></button></div>
+            <div class="source-support"><button class="quiet-button" id="try-example" type="button">Try an example <svg class="icon" aria-hidden="true"><use href="#icon-arrow"/></svg></button></div>
           </section>
           <fieldset class="mode-panel">
             <legend class="panel-heading"><span class="step-number">02</span><span>Learning mode</span><span class="info-tip"><button class="info-button" type="button" aria-label="About learning modes" aria-describedby="mode-help"><svg class="ui-icon" aria-hidden="true"><use href="#icon-info"/></svg></button><span class="tooltip" role="tooltip" id="mode-help">Both modes include a podcast and a visual guide. You can switch views without generating again.</span></span></legend>
@@ -549,21 +558,12 @@
           <div><button class="button" type="button" data-action="add-source">Add your source <span aria-hidden="true">↗</span></button><button class="text-link" type="button" data-action="sample">Explore a sample</button></div>
         </div>
         <div id="learning-workspace" hidden>
-          <div class="learning-heading">
-            <button class="back-button" type="button" data-action="add-source"><span aria-hidden="true">←</span> Your source</button>
-            <div class="learning-title-row">
-              <div><p class="sr-only" id="result-eyebrow">Your learning</p><h2 id="learning-title" tabindex="-1">Preparing your learning</h2><p class="learning-summary" id="learning-summary"></p></div>
-              <button class="outline-button" id="view-source" type="button"><svg class="icon" aria-hidden="true"><use href="#icon-file"/></svg> View source</button>
-            </div>
-            <div class="source-meta"><span id="result-source-name"></span><span class="pill-label" id="result-mode"></span><span class="pill-label sample-label" id="sample-label" hidden>Prepared sample</span></div>
-          </div>
+          <h2 class="learning-title" id="learning-title" tabindex="-1"></h2>
           <div class="task-strip" id="task-strip" aria-live="polite"></div>
           <div class="generation-scene" id="generation-scene">
             <div class="generation-signal" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
             <h3 id="generation-title">Preparing your learning</h3>
-            <p class="sr-only" id="generation-description"></p>
             <div class="generation-steps" id="generation-steps"></div>
-            <p class="generation-source" id="generation-source"></p>
           </div>
           <div id="result-scene" hidden>
             <div class="result-toolbar">
@@ -571,60 +571,120 @@
                 <button type="button" data-view="podcast" aria-pressed="true"><svg class="ui-icon" aria-hidden="true"><use href="#icon-audio"/></svg> Podcast</button>
                 <button type="button" data-view="visual-guide" aria-pressed="false"><svg class="ui-icon" aria-hidden="true"><use href="#icon-visual"/></svg> Visual Guide</button>
               </div>
-              <span class="sr-only" id="learning-hint">A little listening. A clearer picture.</span>
+              <div class="lesson-actions">
+                <button class="lesson-action" id="chapters-toggle" type="button" aria-haspopup="dialog" aria-controls="learning-panel" hidden><svg class="ui-icon" aria-hidden="true"><use href="#icon-list"/></svg><span>Chapters</span></button>
+                <button class="lesson-action" id="view-source" type="button" aria-haspopup="dialog" aria-controls="learning-panel"><svg class="ui-icon" aria-hidden="true"><use href="#icon-file"/></svg><span class="desktop-action-label">View source</span><span class="mobile-action-label">Source</span></button>
+                <button class="lesson-action" id="ask-concept" type="button" aria-haspopup="dialog" aria-controls="learning-panel"><svg class="ui-icon" aria-hidden="true"><use href="#icon-message"/></svg><span class="desktop-action-label">Ask about this</span><span class="mobile-action-label">Ask</span></button>
+                <button class="lesson-action" id="expand-guide" type="button" aria-controls="guide-frame" aria-expanded="false" hidden><svg class="ui-icon" aria-hidden="true"><use href="#icon-expand"/></svg><span class="sr-only">Expand</span></button>
+              </div>
             </div>
-            <div class="result-grid" id="result-grid">
-              <article class="learn-card podcast-card" id="podcast-card" aria-labelledby="podcast-title">
-                <div class="card-heading"><div><h3 id="podcast-title">Podcast</h3></div><span class="audio-label" id="audio-label">Podcast</span></div>
-                <div class="audio-content" id="audio-content" hidden>
-                  <div class="player-visual" aria-hidden="true"><div class="audio-wave" id="audio-wave"></div></div>
-                  <div class="player-caption"><span id="playing-chapter">Recognition isn't understanding</span><span id="chapter-count">01 / 03</span></div>
-                  <div class="seek-control"><label class="sr-only" for="audio-seek">Playback position</label><input type="range" id="audio-seek" min="0" max="100" step=".1" value="0"><div class="audio-times"><span id="audio-elapsed">0:00</span><span id="audio-duration">0:00</span></div></div>
-                  <div class="player-controls">
-                    <button class="icon-button skip-control" type="button" id="skip-back" aria-label="Back 15 seconds"><svg class="ui-icon" aria-hidden="true"><use href="#icon-back"/></svg><span>15</span></button>
-                    <button class="play-button" type="button" id="play-button" aria-label="Play podcast"><svg class="ui-icon" aria-hidden="true"><use href="#icon-play"/></svg></button>
-                    <button class="icon-button skip-control" type="button" id="skip-forward" aria-label="Forward 15 seconds"><svg class="ui-icon" aria-hidden="true"><use href="#icon-forward"/></svg><span>15</span></button>
-                    <div class="speed-wrap"><button class="speed-button" id="speed-button" type="button" aria-expanded="false" aria-controls="speed-menu">1×</button><div class="speed-menu" id="speed-menu" hidden role="group" aria-label="Playback speed"><button type="button" data-speed=".75">0.75×</button><button type="button" data-speed="1" aria-pressed="true">1×</button><button type="button" data-speed="1.25">1.25×</button><button type="button" data-speed="1.5">1.5×</button><button type="button" data-speed="2">2×</button></div></div>
+            <section class="guide-card" id="guide-card" aria-label="Visual Guide" hidden>
+              <div id="guide-content" hidden>
+                <div class="concept-lead">
+                  <div class="concept-copy" aria-live="polite">
+                    <h3 id="concept-title"></h3>
+                    <p id="concept-explanation" hidden></p>
                   </div>
-                  <p class="audio-error" id="audio-error" role="status" hidden></p>
                 </div>
-                <div class="part-placeholder" id="audio-placeholder"></div>
-              </article>
-              <article class="learn-card guide-card" id="guide-card" aria-labelledby="guide-title">
-                <div class="card-heading"><div><h3 id="guide-title">Visual Guide</h3></div><button class="icon-text-button" type="button" id="expand-guide" aria-expanded="false" aria-label="Expand visual guide"><svg class="ui-icon" aria-hidden="true"><use href="#icon-expand"/></svg><span>Expand</span></button></div>
-                <div class="guide-content" id="guide-content" hidden><div class="guide-frame-wrap"><iframe id="guide-frame" title="Interactive visual guide" sandbox="allow-scripts" referrerpolicy="no-referrer"></iframe></div><div class="guide-bottom"><span class="sr-only" id="guide-type"></span><button class="text-link guide-ask" type="button" id="guide-ask">Ask about this ↗</button><div class="zoom-controls" role="group" aria-label="Guide zoom"><button type="button" id="zoom-out" aria-label="Zoom out">−</button><button type="button" id="zoom-reset" aria-label="Reset zoom">100%</button><button type="button" id="zoom-in" aria-label="Zoom in">+</button></div></div></div>
-                <div class="part-placeholder" id="guide-placeholder"></div>
-              </article>
-              <article class="learn-card chapters-card" id="chapters-card" aria-labelledby="chapters-title">
-                <div class="card-heading"><div><h3 id="chapters-title">Chapters</h3></div><button class="text-link" type="button" id="transcript-toggle" aria-expanded="false">Transcript</button></div>
-                <p class="cue-note" id="cue-note" hidden>Chapter positions are approximate.</p>
-                <div class="chapter-list" id="chapter-list"></div><div class="transcript-list" id="transcript-list" hidden></div>
-              </article>
-              <article class="learn-card concept-card" id="concept-card" aria-labelledby="concept-title">
-                <div class="concept-kicker"><span class="small-label" id="concept-index">CONCEPT · 01</span><button class="text-link" id="concept-source" type="button">Source ↗</button></div>
-                <h3 id="concept-title"></h3><p id="concept-explanation"></p><div class="concept-example" id="concept-example" hidden></div>
-                <button class="ask-concept" id="ask-concept" type="button"><svg class="ui-icon" aria-hidden="true"><use href="#icon-message"/></svg> Ask about this</button>
-              </article>
-            </div>
+                <div class="guide-frame-wrap"><iframe id="guide-frame" title="Interactive visual guide" sandbox="allow-scripts" referrerpolicy="no-referrer"></iframe></div>
+                <div class="guide-bottom" id="guide-zoom">
+                  <div class="zoom-controls" role="group" aria-label="Guide zoom"><button type="button" id="zoom-out" aria-label="Zoom out">−</button><button type="button" id="zoom-reset" aria-label="Reset zoom">100%</button><button type="button" id="zoom-in" aria-label="Zoom in">+</button></div>
+                </div>
+              </div>
+              <div class="part-placeholder" id="guide-placeholder" role="status"></div>
+            </section>
+            <section class="podcast-card" id="podcast-card" aria-label="Podcast">
+              <div class="audio-content" id="audio-content" hidden>
+                <h3 class="player-caption" id="playing-chapter"></h3>
+                <div class="player-visual">
+                  <div class="audio-wave" id="audio-wave" aria-hidden="true"></div>
+                  <p class="podcast-caption" id="captions-line" hidden></p>
+                </div>
+                <div class="seek-control">
+                  <label class="sr-only" for="audio-seek">Playback position</label>
+                  <div class="seek-track">
+                    <input type="range" id="audio-seek" min="0" max="100" step=".1" value="0">
+                    <div class="chapter-marks" id="chapter-marks" aria-hidden="true"></div>
+                  </div>
+                  <div class="audio-times"><span id="audio-elapsed">0:00</span><span id="audio-duration">0:00</span></div>
+                </div>
+                <div class="player-controls">
+                  <div class="player-transport">
+                    <button class="icon-button skip-control" type="button" id="skip-back" aria-label="Back 15 seconds" title="Back 15 seconds"><svg class="ui-icon" aria-hidden="true"><use href="#icon-back"/></svg></button>
+                    <button class="play-button" type="button" id="play-button" aria-label="Play podcast"><svg class="ui-icon" aria-hidden="true"><use href="#icon-play"/></svg></button>
+                    <button class="icon-button skip-control" type="button" id="skip-forward" aria-label="Forward 15 seconds" title="Forward 15 seconds"><svg class="ui-icon" aria-hidden="true"><use href="#icon-forward"/></svg></button>
+                  </div>
+                  <div class="player-reading">
+                    <button class="lesson-action" type="button" id="captions-toggle" aria-pressed="false" aria-controls="captions-line" hidden><svg class="ui-icon" aria-hidden="true"><use href="#icon-captions"/></svg><span>Captions</span></button>
+                    <button class="lesson-action" type="button" id="transcript-toggle" aria-expanded="false" aria-controls="transcript-reader" hidden><svg class="ui-icon" aria-hidden="true"><use href="#icon-list"/></svg><span>Transcript</span></button>
+                  </div>
+                  <div class="player-settings">
+                    <div class="playback-setting">
+                      <button class="lesson-action" id="speed-button" type="button" aria-expanded="false" aria-controls="speed-menu" aria-label="Playback speed" title="Playback speed"><span id="speed-value">1×</span><svg class="ui-icon" aria-hidden="true"><use href="#icon-chevron"/></svg></button>
+                      <div class="settings-popover" id="speed-menu" role="group" aria-label="Playback speed" hidden>
+                        <h4>Playback speed</h4>
+                        <div class="speed-options">
+                          <button type="button" data-speed=".5">0.5×</button><button type="button" data-speed=".75">0.75×</button><button type="button" data-speed="1" aria-pressed="true">1×</button><button type="button" data-speed="1.25">1.25×</button><button type="button" data-speed="1.5">1.5×</button><button type="button" data-speed="1.75">1.75×</button><button type="button" data-speed="2">2×</button>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="playback-setting">
+                      <button class="lesson-action" id="timer-button" type="button" aria-expanded="false" aria-controls="timer-menu" aria-label="Sleep timer" title="Sleep timer"><svg class="ui-icon" aria-hidden="true"><use href="#icon-timer"/></svg><span id="timer-value" hidden></span></button>
+                      <div class="settings-popover" id="timer-menu" role="group" aria-label="Sleep timer" hidden>
+                        <h4>Pause after</h4>
+                        <div class="timer-options">
+                          <button type="button" data-timer="0" aria-pressed="true">Off</button><button type="button" data-timer="5">5 min</button><button type="button" data-timer="15">15 min</button><button type="button" data-timer="30">30 min</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <p class="audio-error" id="audio-error" role="status" hidden></p>
+                <section class="transcript-reader" id="transcript-reader" aria-labelledby="transcript-title" hidden>
+                  <div class="transcript-toolbar">
+                    <h4 id="transcript-title">Transcript</h4>
+                    <input type="search" id="transcript-search" aria-label="Find in transcript" placeholder="Find in transcript…">
+                    <button class="lesson-action" type="button" id="transcript-current" hidden>Current line</button>
+                  </div>
+                  <div class="transcript-list" id="transcript-list" role="group" tabindex="0" aria-label="Transcript"></div>
+                  <p class="transcript-empty" id="transcript-empty" role="status" hidden>No matching lines</p>
+                </section>
+              </div>
+              <div class="part-placeholder" id="audio-placeholder" role="status"></div>
+            </section>
             <div class="learning-recap" id="learning-recap" hidden><h3>Recap</h3><ul id="recap-list"></ul><div><button class="outline-button" id="replay-button" type="button">Listen again ↺</button><button class="text-link" type="button" id="recap-guide">Explore the guide ↗</button></div></div>
-            <div class="result-footer"><span class="info-tip"><button class="info-button" type="button" aria-label="About this result" aria-describedby="result-footnote"><svg class="ui-icon" aria-hidden="true"><use href="#icon-info"/></svg></button><span class="tooltip" role="tooltip" id="result-footnote"></span></span><button class="text-link" type="button" data-action="add-source">New source</button></div>
           </div>
         </div>
       </div>
     </section>
+    <section class="mobile-account" id="me" aria-labelledby="mobile-account-title" hidden>
+      <h2 id="mobile-account-title" tabindex="-1">Me</h2>
+      <div class="mobile-preferences">
+        <div class="mobile-preference"><span>Account</span><div id="mobile-account-actions"></div></div>
+      </div>
+    </section>
   </main>
+  <nav class="mobile-nav" id="mobile-nav" aria-label="App navigation" hidden>
+    <a href="#home"><svg class="ui-icon" aria-hidden="true"><use href="#icon-home"/></svg><span>Home</span></a>
+    <a href="#source"><svg class="ui-icon" aria-hidden="true"><use href="#icon-upload"/></svg><span>Upload</span></a>
+    <a href="#learning"><svg class="ui-icon" aria-hidden="true"><use href="#icon-audio"/></svg><span>My podcasts</span></a>
+    <a href="#me"><svg class="ui-icon" aria-hidden="true"><use href="#icon-user"/></svg><span>Me</span></a>
+  </nav>
     <audio id="learning-audio" preload="metadata"></audio>
-    <div class="mobile-player" id="mobile-player" hidden><button class="mini-play" type="button" id="mini-play" aria-label="Play podcast">▶</button><button class="mini-now" type="button" id="mini-now"><span id="mini-title">Your podcast</span><small id="mini-time">0:00 / 0:00</small></button><button class="mini-ask" type="button" id="mini-ask" aria-label="Ask about the current idea">?</button><div class="mini-progress" id="mini-progress"></div></div>
+    <div class="mobile-player" id="mobile-player" hidden><button class="mini-play" type="button" id="mini-play" aria-label="Play podcast"><svg class="ui-icon" aria-hidden="true"><use href="#icon-play"/></svg></button><button class="mini-now" type="button" id="mini-now"><span id="mini-title">Your podcast</span><small id="mini-time">0:00 / 0:00</small></button><button class="mini-ask" type="button" id="mini-ask" aria-label="Ask about the current idea"><svg class="ui-icon" aria-hidden="true"><use href="#icon-message"/></svg></button><div class="mini-progress" id="mini-progress"></div></div>
     <div class="panel-backdrop" id="panel-backdrop" hidden></div>
     <aside class="learning-panel" id="learning-panel" role="dialog" aria-modal="true" aria-labelledby="panel-title" hidden>
-      <div class="panel-heading"><div><p class="sr-only" id="panel-kicker"></p><h2 id="panel-title">Ask Clarity</h2></div><button class="icon-button" id="close-panel" type="button" aria-label="Close panel"><svg class="ui-icon" aria-hidden="true"><use href="#icon-close"/></svg></button></div>
-      <div class="question-panel" id="question-panel"><div class="question-context"><span>ABOUT</span><strong id="question-context"></strong></div><p class="sample-question-note" id="sample-question-note" hidden>Sample · prepared explanations and examples</p><div class="question-suggestions"><button type="button" data-question="Explain simply">Explain simply</button><button type="button" data-question="Give an example">Give an example</button></div><div class="question-history" id="question-history" aria-live="polite"></div><form class="question-form" id="question-form"><label class="sr-only" for="question-input">Your question</label><textarea id="question-input" placeholder="Ask a question…" rows="2" maxlength="2000"></textarea><div><span id="question-form-hint" role="status"></span><button type="submit" id="send-question" aria-label="Send question"><svg class="ui-icon" aria-hidden="true"><use href="#icon-send"/></svg></button></div></form></div>
-      <div class="source-panel" id="source-panel" hidden><button class="text-link" id="back-to-question" type="button" hidden>← Back to your question</button><p class="panel-source-name" id="panel-source-name"></p><div id="source-passages"></div></div>
+      <div class="panel-heading"><h2 id="panel-title">Ask Clarity</h2><button class="icon-button" id="close-panel" type="button" aria-label="Close panel"><svg class="ui-icon" aria-hidden="true"><use href="#icon-close"/></svg></button></div>
+      <div class="chapters-panel" id="chapters-panel" hidden><div class="chapter-list" id="chapter-list"></div></div>
+      <div class="question-panel" id="question-panel"><p class="question-context" id="question-context"></p><div class="question-suggestions"><button type="button" data-question="Explain simply">Explain simply</button><button type="button" data-question="Give an example">Give an example</button></div><div class="question-history" id="question-history" aria-live="polite"></div><form class="question-form" id="question-form"><label class="sr-only" for="question-input">Your question</label><textarea id="question-input" placeholder="Ask a question…" rows="2" maxlength="2000"></textarea><div><span id="question-form-hint" role="status"></span><button type="submit" id="send-question" aria-label="Send question"><svg class="ui-icon" aria-hidden="true"><use href="#icon-send"/></svg></button></div></form></div>
+      <button class="text-link" id="back-to-question" type="button" hidden>← Back to your question</button>
+      <div class="source-panel" id="source-panel" hidden><p class="panel-source-name" id="panel-source-name"></p><div id="source-passages"></div></div>
     </aside>
     <button class="phone-preview-toggle" id="phone-preview-toggle" hidden type="button" aria-label="Open phone preview"><svg viewBox="0 0 16 20" fill="none" aria-hidden="true"><rect x="3" y="1" width="10" height="18" rx="2.3" stroke="currentColor"/><path d="M6 3h4M7 17h2" stroke="currentColor" stroke-linecap="round"/></svg><span>Phone</span></button>
-    <div class="phone-preview" id="phone-preview" role="dialog" aria-modal="true" aria-label="Phone preview" hidden><button class="phone-close outline-button" id="phone-close" type="button">Close preview ×</button><div class="phone-device"><div class="phone-camera" aria-hidden="true"></div><iframe id="phone-frame" title="Clarity phone preview"></iframe><div class="phone-home" aria-hidden="true"></div></div></div>
+    <div class="phone-preview" id="phone-preview" role="dialog" aria-modal="true" aria-label="iPhone 18 Pro preview" hidden><button class="phone-close outline-button" id="phone-close" type="button"><span>Close preview</span><svg class="ui-icon" aria-hidden="true"><use href="#icon-close"/></svg></button><div class="phone-stage"><div class="phone-device"><div class="phone-camera" aria-hidden="true"></div><iframe id="phone-frame" title="Clarity phone preview"></iframe><div class="phone-home" aria-hidden="true"></div></div></div></div>
 
-  <script src="i18n.js?v=c9b5f8ebeab3"></script>
+  <script src="i18n.js?v=b73730207176"></script>
+  <script src="mobile.js?v=aa128099b0da"></script>
   <script>
     const tr = (...args) => window.ClarityUI.t(...args);
     "use strict";
@@ -961,7 +1021,7 @@
 
     function arcForWidth(width) {
       let low = 0;
-      let high = 1.2;
+      let high = VIEW_ANGLE;
       for (let i = 0; i < 24; i += 1) {
         const middle = (low + high) / 2;
         if (geometry(middle).x - state.width / 2 < width / 2) low = middle;
@@ -976,13 +1036,21 @@
     }
 
     function resize() {
+      if (!belt.clientWidth || !belt.clientHeight) return;
       const phase = state.offset / state.period;
       state.width = belt.clientWidth;
       state.height = belt.clientHeight;
       const mobile = state.width < 700;
+      const tabbed = window.ClarityMobile.active;
       state.focal = state.width / 2 * (DEPTH + Math.cos(VIEW_ANGLE)) / Math.sin(VIEW_ANGLE);
-      state.cardHeight = mobile ? Math.min(state.height * .60, 220) : Math.min(state.height * .72, 440);
-      state.centerY = state.height * .55;
+      const topInset = tabbed ? 38 : 0;
+      state.centerY = topInset + (state.height - topInset) * .51;
+      const edgeScale = geometry(VIEW_ANGLE).scale;
+      const margin = Math.min(12, state.height * .04);
+      const visibleHeight = 2 * Math.max(0, Math.min(state.centerY - topInset, state.height - state.centerY) - margin);
+      const cardLimit = tabbed ? Math.min(174, state.width * .44) : 390;
+      const heightFit = visibleHeight / edgeScale;
+      state.cardHeight = Math.min(tabbed ? heightFit : heightFit * .87, cardLimit);
       const gap = mobile ? .13 : .10;
       items.forEach((item, index) => {
         item.height = state.cardHeight;
@@ -995,8 +1063,8 @@
       const scanPadding = Math.min(14, state.height * .05);
       const scanTop = state.centerY - state.cardHeight / 2 - scanPadding;
       scan.style.top = scanTop + "px";
-      scan.style.height = Math.max(0, Math.min(state.cardHeight + 40, state.height - scanTop - 4)) + "px";
-      badge.style.top = (scanTop - (mobile ? 52 : 59)) + "px";
+      scan.style.height = state.cardHeight + 2 * scanPadding + "px";
+      badge.style.top = (tabbed ? Math.max(4, scanTop - 41) : scanTop - (mobile ? 52 : 59)) + "px";
       const dpr = Math.min(devicePixelRatio || 1, 2);
       canvas.width = Math.round(state.width * dpr);
       canvas.height = Math.round(state.height * dpr);
@@ -1095,8 +1163,8 @@
     }
 
     function drawSurface(item, theta) {
-      const left = Math.max(-1.34, theta - item.arc / 2);
-      const right = Math.min(1.34, theta + item.arc / 2);
+      const left = Math.max(-VIEW_ANGLE, theta - item.arc / 2);
+      const right = Math.min(VIEW_ANGLE, theta + item.arc / 2);
       if (right <= left) return;
       const xLeft = Math.max(0, geometry(left).x);
       const xRight = Math.min(state.width, geometry(right).x);
@@ -1118,7 +1186,7 @@
       const left = theta - item.arc / 2;
       const right = theta + item.arc / 2;
       const radius = Math.min(item.width * .36, 125);
-      const screenRight = geometry(Math.min(1.34, right)).x;
+      const screenRight = geometry(Math.min(VIEW_ANGLE, right)).x;
       if (screenRight <= lineX) return;
 
       const grid = state.width < 700 ? 3.4 : 3;
@@ -1158,7 +1226,7 @@
       if (state.reduced && state.paused) return;
       item.sample.beats.forEach(([x, y], beat) => {
         const angle = theta + (x / 360 - .5) * item.arc;
-        if (Math.abs(angle) > 1.3) return;
+        if (Math.abs(angle) > VIEW_ANGLE) return;
         const point = geometry(angle);
         if (point.x < state.width / 2 + 15 || point.x > state.width) return;
         const phase = modulo(state.time * .42 - beat * .29 - index * .11, 1);
@@ -1209,11 +1277,17 @@
       if (!state.ready) return;
       let crossing = null;
       items.forEach((item, index) => {
-        const theta = modulo(item.center + state.offset + state.period / 2, state.period) - state.period / 2;
-        if (theta - item.arc / 2 > 1.34 || theta + item.arc / 2 < -1.34) return;
-        drawSurface(item, theta);
-        drawSignalMotion(item, theta, index);
-        if (Math.abs(theta) < item.arc / 2) {
+        // At wide aspect ratios, one repetition can enter the left edge
+        // while the previous repetition is still leaving the right edge.
+        const base = item.center + state.offset;
+        const halfArc = item.arc / 2;
+        const first = Math.ceil((-VIEW_ANGLE - halfArc - base) / state.period);
+        const last = Math.floor((VIEW_ANGLE + halfArc - base) / state.period);
+        for (let repeat = first; repeat <= last; repeat += 1) {
+          const theta = base + repeat * state.period;
+          drawSurface(item, theta);
+          drawSignalMotion(item, theta, index);
+          if (Math.abs(theta) >= halfArc) continue;
           crossing = { item, theta, index };
           drawDissolve(item, theta, index);
           if (state.active !== index) {
@@ -1336,7 +1410,6 @@
     const sourceText = document.querySelector("#source-text");
     const sourceError = document.querySelector("#source-error");
     const sourceStateLabel = document.querySelector("#source-state");
-    const sourceFootnote = document.querySelector("#source-footnote");
     const sourceTabs = [...document.querySelectorAll(".source-tab")];
     const dropzone = document.querySelector("#dropzone");
     const browseFile = document.querySelector("#browse-file");
@@ -1349,7 +1422,7 @@
     const generationFeedback = document.querySelector("#generation-feedback");
     const MAX_FILE_SIZE = 20 * 1024 * 1024;
     const MAX_TEXT_LENGTH = 500000;
-    const createState = { input: "file", file: null, fileText: "", fileStatus: "empty", pages: null, reading: false, readToken: 0, fileReader: null, pdfTask: null, mode: "quick" };
+    const createState = { input: "file", file: null, fileText: "", fileStatus: "empty", pages: null, reading: false, readToken: 0, fileReader: null, pdfTask: null, mode: "quick", openingExample: false };
     const modeSettings = {
       quick: { name: "Quick Overview", depth: "concise", initialView: "podcast" },
       deep: { name: "Deep Dive", depth: "detailed", initialView: "visual-guide" }
@@ -1386,7 +1459,7 @@
       if (createState.input === "text") setSourceError(tooLong ? "Keep your text under 500,000 characters." : "");
       const ready = activeSourceReady();
       const reading = createState.input === "file" && createState.reading;
-      continueButton.disabled = !ready;
+      continueButton.disabled = !ready || createState.openingExample;
       continueButton.firstChild.nodeValue = tr(createState.input === "text" && sourceText.value.trim() === exampleText || createState.input === "file" && createState.sampleId ? "Explore sample" : "Generate") + " ";
       sourceStateLabel.classList.toggle("is-ready", ready);
       sourceStateLabel.textContent = tr(reading ? "READING SOURCE" : ready ? "SOURCE READY" : createState.input === "file" && createState.fileStatus === "error" ? "CHECK SOURCE" : "NO SOURCE YET");
@@ -1412,7 +1485,6 @@
       });
       clearGenerationFeedback();
       setSourceError(input === "file" && createState.fileStatus === "error" ? createState.fileError : "");
-      sourceFootnote.textContent = "";
       updateSetup();
       if (moveFocus) sourceText.focus({ preventScroll: true });
     }
@@ -1426,12 +1498,11 @@
         sourceTabs[targetIndex].focus({ preventScroll: true });
       });
     });
-    sourceText.addEventListener("input", () => { clearGenerationFeedback(); sourceFootnote.textContent = ""; updateSetup(); });
+    sourceText.addEventListener("input", () => { clearGenerationFeedback(); updateSetup(); });
     document.querySelector("#clear-text").addEventListener("click", () => { sourceText.value = ""; clearGenerationFeedback(); updateSetup(); sourceText.focus({ preventScroll: true }); });
     document.querySelector("#try-example").addEventListener("click", () => {
       sourceText.value = exampleText;
       switchSource("text", true);
-      sourceFootnote.textContent = tr("Example · Inside a bicycle");
     });
     function cancelRead() {
       createState.readToken += 1;
@@ -1613,7 +1684,7 @@
     }
     document.querySelector("#create-form").addEventListener("submit", (event) => {
       event.preventDefault();
-      if (!activeSourceReady()) return;
+      if (!activeSourceReady() || createState.openingExample) return;
       const request = new CustomEvent("clarity:generate", { cancelable: true, detail: buildLearningSetup() });
       if (document.dispatchEvent(request)) {
         generationFeedback.textContent = tr("The learning service could not start. Refresh the page and try again.");
@@ -1644,6 +1715,7 @@
         if (link.getAttribute("href") === current) link.setAttribute("aria-current", "location");
         else link.removeAttribute("aria-current");
       });
+      return current;
     }
     window.addEventListener("scroll", () => { if (!navScrollFrame) navScrollFrame = requestAnimationFrame(updateNavigationLocation); }, { passive: true });
     function setMenu(open) {
@@ -1666,6 +1738,10 @@
         const target = document.querySelector(link.getAttribute("href"));
         if (!target) return;
         event.preventDefault();
+        if (window.ClarityMobile.navigate(target.id, {focus:!link.closest(".mobile-nav")})) {
+          if (link.classList.contains("skip-link")) sourceTabs[0].focus({preventScroll:true});
+          return;
+        }
         if (target.tagName === "DETAILS") target.open = true;
         setMenu(false);
         const clearance = siteNav.getBoundingClientRect().bottom + 24;
@@ -1694,8 +1770,8 @@
     prepareTextures().catch((error) => console.error("Could not prepare the hero preview.", error));
     state.frameId = requestAnimationFrame(tick);
   </script>
-  <script src="examples.js?v=d2218eef08f3"></script>
-  <script src="learning.js?v=7c59046177aa"></script>
+  <script src="examples.js?v=ae9896c000c1"></script>
+  <script src="learning.js?v=0b91f0889e74"></script>
   <script src="web-controls.js?v=b2f55c78c110"></script>
 </body>
 </html>

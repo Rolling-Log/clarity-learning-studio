@@ -9,71 +9,20 @@ body{background:var(--bg);color:var(--ink)}
 .account-menu{background:#fcfbfdf5;border-color:var(--learn-border)}
 .button,.play-button,.mini-play{background:var(--hot);color:#fff}
 .button:hover,.play-button:hover{background:#55468f}
-.hero-description,.source-state,.formats,.mode-description,.learning-summary,.source-meta,.audio-label,.audio-times,.chapter-description small,.chapter-number,.chapter-time,.concept-card>p,.concept-example,.small-label{color:#716b7b}
+.hero-description,.source-state,.formats,.mode-description{color:var(--learn-muted)}
 .source-section,.learning-area{color:var(--ink)}
-.source-section h2,.learning-title-row h2,.card-heading h3{color:var(--ink)}
-.create-card,.learn-card{background:#fcfbfdad;border-color:var(--learn-border)}
+.source-section h2{color:var(--ink)}
+.create-card{background:#fcfbfdad;border-color:var(--learn-border)}
 .mode-option.is-selected{border-color:#8a7eb6;background:#eeebf5}
 .mode-option .mode-title{color:#393142}
 .is-selected .mode-symbol{background:#e8e2f3;border-color:#d7cde8;color:var(--hot)}
-.text-link,.outline-button,.icon-button,.icon-text-button,.ask-concept,.concept-card h3,.view-switch button[aria-pressed=true]{color:var(--hot)}
-.view-switch{background:#eae6f1;border-color:#dcd5e6}.view-switch button{color:#71697e}.view-switch button[aria-pressed=true]{background:#fcfbfd}
-.audio-wave i{background:#9380b7}.play-button{box-shadow:0 5px 16px #6354a516}
-.seek-control input::-webkit-slider-runnable-track{background:linear-gradient(to right,var(--hot) var(--progress,0%),#ddd7e6 var(--progress,0%))}
-.seek-control input::-webkit-slider-thumb{background:var(--hot);box-shadow:0 0 0 1px var(--hot)}
-.chapter-button{color:#4e455e;border-color:#e5e0ec}.chapter-button.active{background:#ede8f58c}
+.text-link,.outline-button{color:var(--hot)}
 .info-button{color:#786e88}.tooltip{background:#fcfbfd;color:#62596f;border-color:var(--learn-border)}
-/* The authored guide owns its height. No scroll trap inside the sandbox. */
-.learning-area[data-guide-template=bicycle-v1] .learn-inner{max-width:1440px}
-.learning-area[data-guide-template=bicycle-v1] .learning-heading{margin-bottom:22px}
-#learning-title:focus{outline:none}
-.learning-area[data-guide-template=bicycle-v1] .learning-summary{display:none}
-.learning-area[data-guide-template=bicycle-v1] #result-source-name{display:none}
-.learning-area[data-guide-template=bicycle-v1] .result-toolbar{margin-bottom:16px}
-.learning-area[data-guide-template=bicycle-v1] .guide-card{padding:22px;align-self:start}
-.learning-area[data-guide-template=bicycle-v1] .guide-card>.card-heading{margin-bottom:17px}
-.learning-area[data-guide-template=bicycle-v1] .guide-card>.card-heading h3{font-size:13px;font-weight:500;color:#716b7b}
-.learning-area[data-guide-template=bicycle-v1] .guide-frame-wrap{height:var(--guide-natural-height,910px)!important}
-.learning-area[data-guide-template=bicycle-v1][data-view=visual-guide] .result-grid{grid-template-columns:minmax(0,1fr) 306px;grid-template-rows:auto auto 1fr;grid-template-areas:"guide podcast" "guide concept" "guide chapters";align-items:start;gap:18px}
-.learning-area[data-guide-template=bicycle-v1][data-view=visual-guide] .chapter-list{display:flex;gap:0}
-.learning-area[data-guide-template=bicycle-v1][data-view=visual-guide] .chapters-card{padding:22px}
-.learning-area[data-guide-template=bicycle-v1][data-view=visual-guide] .concept-card{padding:22px}
-.learning-area[data-guide-template=bicycle-v1][data-view=visual-guide] .concept-card h3{font-size:25px}
-.learning-area[data-guide-template=bicycle-v1][data-view=visual-guide] .concept-card>p{font-size:12px;line-height:1.75}
-.learning-area[data-guide-template=bicycle-v1][data-view=podcast] .result-grid{grid-template-columns:minmax(0,1fr) 306px;grid-template-areas:"podcast chapters" "guide concept";align-items:start}
-.learning-area[data-guide-template=bicycle-v1].is-expanded .result-grid{display:flex}
-.learning-area[data-guide-template=bicycle-v1].is-expanded .guide-card{width:100%}
-.learning-area[data-guide-template=bicycle-v1].is-expanded .podcast-card{width:100%;background:#fcfbfde8}
-.learning-area[data-guide-template=bicycle-v1] .guide-bottom{margin-top:16px;padding-top:12px;border-top:1px solid #e5dfec}
-.learning-area[data-guide-template=bicycle-v1] .guide-bottom .guide-ask{margin-left:0;margin-right:auto;font-size:11px}
-.learning-area[data-guide-template=bicycle-v1] .guide-bottom .zoom-controls{margin-left:auto}
-@media(min-width:851px) and (max-width:1150px){.learning-area[data-guide-template=bicycle-v1]{padding-left:25px;padding-right:25px}.learning-area[data-guide-template=bicycle-v1][data-view=visual-guide] .result-grid,.learning-area[data-guide-template=bicycle-v1][data-view=podcast] .result-grid{grid-template-columns:minmax(0,1fr) 265px;gap:14px}.learning-area[data-guide-template=bicycle-v1] .guide-card{padding:18px}}
 @media(prefers-reduced-transparency:reduce){.nav{background:#fcfbfd}}
 .example-library{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:8px;margin:18px 0 0}
 .example-load{display:inline-flex;gap:7px;align-items:center;min-height:32px;padding:5px 13px;border:1px solid #dedbe5;background:#fcfbfd73;border-radius:999px;font:inherit;font-size:11px;line-height:20px;color:#71677f;cursor:pointer;transition:border-color .18s,background .18s,color .18s}
 .example-load:hover{background:#fcfbfd;border-color:#bfb4d2;color:#6354a5}
 .example-load>svg{width:18px;height:18px;flex-shrink:0}
-.example-load[aria-pressed=true]{background:#edeaf5;border-color:#b7a9d0;color:#6354a5}
 .example-load:focus-visible{outline:2px solid #6354a5;outline-offset:3px}
 .example-load:disabled{opacity:.55;cursor:wait}
 .source-support[hidden]{display:none}
-.learning-area[data-guide-template=explorable-v1] .learn-inner{max-width:1440px}
-.learning-area[data-guide-template=explorable-v1] .learning-heading{margin-bottom:22px}
-.learning-area[data-guide-template=explorable-v1] .learning-summary,.learning-area[data-guide-template=explorable-v1] #result-source-name{display:none}
-.learning-area[data-guide-template=explorable-v1] .result-toolbar{margin-bottom:16px}
-.learning-area[data-guide-template=explorable-v1] .guide-card{padding:22px;align-self:start}
-.learning-area[data-guide-template=explorable-v1] .guide-card>.card-heading{margin-bottom:17px}
-.learning-area[data-guide-template=explorable-v1] .guide-card>.card-heading h3{font-size:13px;font-weight:500;color:#716b7b}
-.learning-area[data-guide-template=explorable-v1] .guide-frame-wrap{height:var(--guide-natural-height,850px)!important}
-.learning-area[data-guide-template=explorable-v1][data-view=visual-guide] .result-grid{grid-template-columns:minmax(0,1fr) 306px;grid-template-rows:auto auto 1fr;grid-template-areas:"guide podcast" "guide concept" "guide chapters";align-items:start;gap:18px}
-.learning-area[data-guide-template=explorable-v1][data-view=visual-guide] .chapter-list{display:flex;gap:0}
-.learning-area[data-guide-template=explorable-v1] .chapters-card,.learning-area[data-guide-template=explorable-v1] .concept-card{padding:22px}
-.learning-area[data-guide-template=explorable-v1] .concept-card h3{font-size:25px}
-.learning-area[data-guide-template=explorable-v1] .concept-card>p{font-size:12px;line-height:1.75}
-.learning-area[data-guide-template=explorable-v1][data-view=podcast] .result-grid{grid-template-columns:minmax(0,1fr) 306px;grid-template-areas:"podcast chapters" "guide concept";align-items:start}
-.learning-area[data-guide-template=explorable-v1].is-expanded .result-grid{display:flex}
-.learning-area[data-guide-template=explorable-v1].is-expanded .guide-card,.learning-area[data-guide-template=explorable-v1].is-expanded .podcast-card{width:100%}
-.learning-area[data-guide-template=explorable-v1] .guide-bottom{margin-top:16px;padding-top:12px;border-top:1px solid #e5dfec}
-.learning-area[data-guide-template=explorable-v1] .guide-bottom .guide-ask{margin-right:auto;font-size:11px}
-.learning-area[data-guide-template=explorable-v1] .guide-bottom .zoom-controls{margin-left:auto}
-@media(min-width:851px) and (max-width:1150px){.learning-area[data-guide-template=explorable-v1]{padding-left:25px;padding-right:25px}.learning-area[data-guide-template=explorable-v1] .result-grid{grid-template-columns:minmax(0,1fr) 265px!important;gap:14px}.learning-area[data-guide-template=explorable-v1] .guide-card{padding:18px}}
