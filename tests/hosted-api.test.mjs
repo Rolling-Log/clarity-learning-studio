@@ -27,12 +27,14 @@ test('all six reviewed sessions preserve citations, audio and local guides',asyn
     const result=read(await call('/sessions/'+session.id));
     assert.equal(result.mode,session.mode);
     assert.equal(result.guideTemplate,'explorable-v1');
+    assert.equal(result.guideUrl,'/prepared/'+result.sampleId+'.html');
     const ids=new Set(result.passages.map(p=>p.id));
     for(const node of result.guide.nodes) assert.ok(node.sourceIds.every(id=>ids.has(id)));
     assert.ok(result.audio.duration>20);
     assert.ok((await fs.stat(path.join(root,'web',result.audio.url))).size>1000);
     const guide=await call('/sessions/'+session.id+'/guide');
     assert.equal(guide.statusCode,302);
+    assert.equal(guide.headers.Location,result.guideUrl);
     const html=await fs.readFile(path.join(root,'web',guide.headers.Location),'utf8');
     assert.ok(html.includes('__CLARITY_MODEL__'));
     assert.ok(!html.includes('sk-proj-'));

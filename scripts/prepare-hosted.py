@@ -34,7 +34,7 @@ async def main():
                 'sample': True, 'sampleId': key, 'inputType': 'text' if key == 'bicycle' else 'file',
                 'createdAt': 1793836800, 'updatedAt': 1793836800,
                 'stages': {part: {'status': 'ready', 'error': None} for part in ('source', 'guide', 'audio')},
-                'guide': guide, 'guideTemplate': 'explorable-v1', 'audio': audio,
+                'guide': guide, 'guideTemplate': 'explorable-v1', 'guideUrl': f'/prepared/{key}.html', 'audio': audio,
                 'questions': [], 'active': False, 'sessionStorage': 'browser',
                 'deploymentMode': 'reviewed-examples',
             }

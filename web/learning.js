@@ -229,7 +229,7 @@
       $("#expand-guide").disabled = !ready;
       if (ready && L.guideSid !== L.session.id) {
         L.guideSid = L.session.id;
-        $("#guide-frame").src = apiBase + "/api/clarity/sessions/" + L.session.id + "/guide";
+        $("#guide-frame").src = apiBase + (L.session.guideUrl || "/api/clarity/sessions/" + L.session.id + "/guide");
       }
     }
   }
