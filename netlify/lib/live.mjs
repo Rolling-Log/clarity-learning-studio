@@ -1,5 +1,5 @@
 import { createHmac, randomUUID, timingSafeEqual } from 'node:crypto';
-import { connectLambda, getStore } from '@netlify/blobs';
+import { getStore } from '@netlify/blobs';
 import { createModel } from './deepseek.mjs';
 import { InvalidLesson } from './visual-contract.mjs';
 
@@ -25,13 +25,12 @@ export function validJob(key, id, attempt, signature) {
     timingSafeEqual(Buffer.from(signature,'hex'),Buffer.from(sign(key,'generate',id,attempt),'hex')));
 }
 
-export function runtime(event) {
+export function runtime({ip} = {}) {
   const key = process.env.DEEPSEEK_API_KEY;
   if (!key) return null;
-  connectLambda(event);
   return {
     key, store:getStore({name:'clarity-live',consistency:'strong'}), model:createModel(key),
-    ip:event.headers?.['x-nf-client-connection-ip'] || 'unknown',
+    ip:ip || 'unknown',
     async dispatch(id, attempt) {
       const url = new URL('/.netlify/functions/clarity-generate-background', process.env.URL);
       const response = await fetch(url, {
@@ -183,6 +182,7 @@ export async function runJob(services,id,attempt,narrate) {
     });
   } catch (error) {
     const code = error instanceof InvalidLesson ? 'invalid_result' : error.code || 'generation_failed';
+    console.error('Clarity generation failed', session.guide ? 'audio' : 'guide', code, error.name);
     await update(value => {
       value.active = false;
       for (const name of ['guide','audio']) if (value.stages[name].status !== 'ready') value.stages[name] = stage('error',code);

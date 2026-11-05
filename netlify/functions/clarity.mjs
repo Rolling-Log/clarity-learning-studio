@@ -18,7 +18,17 @@ function sessionFor(id){
   return value;
 }
 
-export const handler = createHandler();
+const handle = createHandler();
+
+export default async function handler(request, context) {
+  const result = await handle({
+    path:new URL(request.url).pathname, httpMethod:request.method, ip:context.ip,
+    headers:Object.fromEntries(request.headers),
+    body:request.method === 'POST' ? await request.text() : undefined
+  });
+  return new Response(result.isBase64Encoded ? Buffer.from(result.body,'base64') : result.body,
+    {status:result.statusCode,headers:result.headers});
+}
 
 export function createHandler(servicesFor = runtime, hasModel = () => Boolean(process.env.DEEPSEEK_API_KEY)) {
   return async function handle(event) {
@@ -27,6 +37,7 @@ export function createHandler(servicesFor = runtime, hasModel = () => Boolean(pr
     } catch (error) {
       if (error instanceof LiveError) return json(error.status,{detail:{code:error.code,message:error.message}});
       if (error.code === 'model_limit') return json(429,{detail:'The model service has reached its limit. Try again later.'});
+      console.error('Clarity API request failed', error.name, Number.isInteger(error.status) ? error.status : '');
       return json(503,{detail:'The service is busy. Try again.'});
     }
   };
