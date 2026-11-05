@@ -16,11 +16,17 @@
     savedAt: 0, ended: false, hasPlayed: false, restoreTime: null };
   let transcriptLines = [], activeCaption = -1;
   let openSetting = null, sleepTimer = null;
+  const volumeKey = "clarity:volume";
+  let volume = readVolume(), audioContext, volumeGain;
+  audio.volume = .5;
+  const nativeVolume = audio.volume === .5;
+  audio.volume = 1;
   const errors = {
-    service_unavailable: "The local service is unavailable. Start Clarity and try again.",
+    service_unavailable: "The service is busy. Try again.",
     service_timeout: "This is taking longer than expected. You can try again.",
     model_access: "The model connection needs attention. Check the API configuration.",
     model_limit: "The model service has reached a limit. Check your API balance and try again.",
+    daily_limit: "Today’s generation limit has been reached. Try again tomorrow.",
     invalid_result: "This part couldn't be prepared correctly. Try again.",
     interrupted: "Preparation was interrupted. Your source is still here.",
     generation_failed: "This part couldn't be prepared. Try again."
@@ -33,6 +39,10 @@
   const esc = (v) => String(v ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
   function store(key, value) { try { localStorage.setItem(key, JSON.stringify(value)); } catch {} }
   function retrieve(key, fallback) { try { return JSON.parse(localStorage.getItem(key)) ?? fallback; } catch { return fallback; } }
+  function readVolume() {
+    const saved = retrieve(volumeKey, 1);
+    return Number.isFinite(saved) ? Math.min(1, Math.max(0, saved)) : 1;
+  }
   function pref() { return retrieve("clarity:learning:" + L.session?.id, {}); }
   function savePref() {
     if (!L.session) return;
@@ -63,7 +73,7 @@
       return value;
     } catch (error) {
       if (error.name === "AbortError") throw new Error(tr("The connection took too long. Please try again."));
-      if (error instanceof TypeError) throw new Error(tr("Clarity's local service isn't available. Start Clarity and try again."));
+      if (error instanceof TypeError) throw new Error(tr("The connection was interrupted. Try again."));
       throw error;
     } finally { clearTimeout(timer); }
   }
@@ -85,51 +95,66 @@
   }
   async function generate(setup, expectedSample = null) {
     if (L.busy) return false;
-    L.busy = true;
-    $("#continue-button").disabled = true;
-    $("#continue-button").firstChild.nodeValue = tr("Preparing") + " ";
+    L.busy = createState.generating = true;
+    const form = $("#create-form"), examples = $(".example-library"), progress = $("#create-preparation");
     $("#generation-feedback").hidden = true;
+    $("#preparing-source").textContent = sourceName(setup);
+    form.hidden = examples.hidden = true;
+    progress.hidden = false;
+    $("#source").scrollIntoView({behavior:"instant", block:"start"});
+    progress.focus({preventScroll:true});
+    // Give the preparation view a readable interval even for prebuilt results.
+    const visibleInterval = new Promise(resolve => setTimeout(resolve, 650));
+    let session;
     try {
       const sampleId = expectedSample || await window.ClarityExamples.identify(setup.source.text);
-      const session = await api("/sessions", {
+      session = await api("/sessions", {
         method:"POST", body:{text:setup.source.text, name:sourceName(setup), mode:setup.mode,
           sample:!!sampleId, sampleId, inputType:setup.source.type}
       });
-      audio.pause(); L.ended = false;
-      adoptSession(session, true);
-      goToLearning(true);
-      beginPolling();
-      return true;
+      await visibleInterval;
     } catch (error) {
       showGenerationFeedback(error.message);
+    } finally {
+      L.busy = createState.generating = false;
+      progress.hidden = true;
+      form.hidden = examples.hidden = false;
+      updateSetup();
+    }
+    if (!session) {
+      $("#continue-button").focus();
       return false;
-    } finally { L.busy = false; updateSetup(); }
+    }
+    audio.pause(); L.ended = false;
+    adoptSession(session, true);
+    goToLearning(true);
+    beginPolling();
+    return true;
   }
-  async function openExample(id) {
+  async function openExample(id, directLink = false) {
     if (L.busy || createState.openingExample) return;
+    $('[data-action="add-source"]').click();
     createState.openingExample = true;
     const form = $("#create-form");
     const sampleButton = $('[data-action="sample"]');
     form.inert = true;
     sampleButton.disabled = true;
-    sampleButton.textContent = tr("Opening…");
     $("#generation-feedback").hidden = true;
     window.ClarityExamples.setOpening(id);
-    let opened;
+    updateSetup();
+    let setup;
     try {
-      const setup = await window.ClarityExamples.load(id);
-      opened = await generate(setup, id);
+      setup = await window.ClarityExamples.load(id);
     } catch {
       showGenerationFeedback(tr("Couldn't open this example. Try again."));
     } finally {
       createState.openingExample = false;
       form.inert = false;
       sampleButton.disabled = false;
-      sampleButton.textContent = tr("Explore a sample");
       window.ClarityExamples.setOpening(null);
       updateSetup();
     }
-    if (!opened && location.hash !== "#source") $('[data-action="add-source"]').click();
+    if (setup && directLink) await generate(setup, id);
   }
   $$("[data-example]").forEach(button => { button.onclick = () => openExample(button.dataset.example); });
   document.addEventListener("clarity:generate", event => { event.preventDefault(); generate(event.detail); });
@@ -272,7 +297,8 @@
         L.guideSid = L.session.id;
         const frame = $("#guide-frame"), sid = L.session.id;
         const sampleId = L.session.sampleId || (L.session.sample && L.session.guideTemplate === "bicycle-v1" ? "bicycle" : "");
-        const guideUrl = L.session.guideUrl || (L.session.sample && sampleId ? "/prepared/" + sampleId + ".html" : "");
+        const guideUrl = L.session.guideUrl || (L.session.sample && sampleId ? "/prepared/" + sampleId + ".html" :
+          L.session.guideTemplate === "structured-v1" ? "/api/clarity/sessions/" + sid + "/guide" : "");
         if (guideUrl) {
           fetch(apiBase + guideUrl, {cache:"no-cache",signal:AbortSignal.timeout(30000)})
             .then(response => { if (!response.ok) throw new Error("Guide unavailable"); return response.text(); })
@@ -371,6 +397,7 @@
     const frame = $("#guide-frame");
     frame.contentWindow?.postMessage({type:"clarity:select", id:currentNode()?.id}, "*");
     frame.contentWindow?.postMessage({type:"clarity:language", language:window.ClarityUI.language}, "*");
+    frame.contentWindow?.postMessage({type:"clarity:theme", theme:document.documentElement.dataset.theme}, "*");
     frame.contentWindow?.postMessage({type:"clarity:zoom", zoom:L.zoom}, "*");
     frame.contentWindow?.postMessage({type:"clarity:layout", active:L.view === "visual-guide" && (!mobile.active || mobile.tab === "learning"), expanded:L.expanded, viewportHeight:innerHeight}, "*");
     $("#zoom-reset").textContent = Math.round(L.zoom * 100) + "%";
@@ -378,6 +405,7 @@
     $("#zoom-in").disabled = L.zoom >= 1.6;
   }
   $("#guide-frame").addEventListener("load", sendGuideState);
+  document.addEventListener("clarity:theme", sendGuideState);
   window.addEventListener("message", event => {
     if (event.data?.type === "clarity:escape") {
       if (event.source === $("#guide-frame").contentWindow) handleEscape();
@@ -385,7 +413,7 @@
       return;
     }
     if (event.source === $("#guide-frame").contentWindow && event.data?.type === "clarity:guide-size") {
-      if (["bicycle-v1","explorable-v1"].includes(L.session?.guideTemplate) && Number.isFinite(event.data.height) && event.data.height > 0) {
+      if (["bicycle-v1","explorable-v1","structured-v1"].includes(L.session?.guideTemplate) && Number.isFinite(event.data.height) && event.data.height > 0) {
         $("#guide-content").style.setProperty("--guide-natural-height",Math.min(2200,event.data.height)+"px");
       }
       return;
@@ -408,7 +436,7 @@
     const authoredGuide = ["bicycle-v1","explorable-v1"].includes(L.session?.guideTemplate);
     area.dataset.view = L.view;
     area.classList.toggle("is-expanded", L.expanded);
-    area.classList.toggle("has-authored-guide", authoredGuide);
+    area.classList.toggle("has-authored-guide", authoredGuide || L.session?.guideTemplate === "structured-v1");
     $("#guide-card").hidden = !guideView;
     $("#expand-guide").hidden = !guideView || L.session.stages.guide.status !== "ready";
     $("#guide-zoom").hidden = authoredGuide;
@@ -428,7 +456,7 @@
     try {
       if (audio.paused) {
         if (audio.ended) { audio.currentTime = 0; L.ended = false; $("#learning-recap").hidden = true; }
-        await audio.play();
+        await Promise.all([applyPodcastVolume(true), audio.play()]);
       } else audio.pause();
       $("#audio-error").hidden = true;
     } catch {
@@ -530,6 +558,51 @@
   }
   document.addEventListener("click", dismissPlaybackSetting);
   document.addEventListener("focusin", dismissPlaybackSetting);
+  function applyPodcastVolume(activate = false) {
+    if (nativeVolume) {
+      audio.volume = volume;
+      return;
+    }
+    // Some mobile browsers leave HTMLMediaElement.volume fixed at 1.
+    if (!volumeGain && activate && volume !== 1 && window.AudioContext) {
+      const context = new AudioContext();
+      const gain = context.createGain();
+      context.createMediaElementSource(audio).connect(gain).connect(context.destination);
+      audioContext = context;
+      volumeGain = gain;
+    }
+    if (!volumeGain) {
+      audio.muted = volume === 0;
+      return;
+    }
+    audio.muted = false;
+    volumeGain.gain.value = volume;
+    if (activate && audioContext.state !== "running") return audioContext.resume();
+  }
+  const volumeSlider = $("#audio-volume");
+  function syncVolume() {
+    const percent = Math.round(volume * 100);
+    volumeSlider.value = percent;
+    volumeSlider.setAttribute("aria-valuetext", percent + "%");
+    $("#volume-value").value = percent + "%";
+    const button = $("#volume-button");
+    button.setAttribute("aria-label", tr("Volume") + " · " + percent + "%");
+    button.querySelector("use").setAttribute("href", volume ? "#icon-volume" : "#icon-muted");
+  }
+  volumeSlider.oninput = () => {
+    volume = Number(volumeSlider.value) / 100;
+    syncVolume();
+    store(volumeKey, volume);
+    applyPodcastVolume(true)?.catch(() => {});
+  };
+  window.addEventListener("storage", event => {
+    if (event.key !== volumeKey) return;
+    volume = readVolume();
+    applyPodcastVolume();
+    syncVolume();
+  });
+  applyPodcastVolume();
+  syncVolume();
   function syncPlaybackRate() {
     const rate = audio.playbackRate;
     $("#speed-value").textContent = rate + "×";
@@ -856,6 +929,7 @@
     if (L.session) renderSession();
     syncPlayback();
     syncPlaybackRate();
+    syncVolume();
     syncSleepTimer();
     if (L.showTranscript) renderTranscript();
     if (L.panel) $("#panel-title").textContent = tr(panelTitle());
@@ -866,7 +940,7 @@
   const resume = requested || retrieve("clarity:last-session", null);
   const demo = new URLSearchParams(location.search).get("demo");
   if (["bicycle","flatland","boids"].includes(demo)) {
-    openExample(demo);
+    openExample(demo, true);
   } else if (resume) loadSession(resume, location.hash === "#learning");
   else if (location.hash === "#learning") goToLearning();
 })();

@@ -8,6 +8,10 @@
 
 [functions]
   node_bundler = "esbuild"
+  included_files = ["prompts/visual-guide.txt"]
+
+[functions.clarity-generate-background]
+  external_node_modules = ["@spelling-creator/spellophone"]
 
 [[redirects]]
   from = "/api/clarity/*"

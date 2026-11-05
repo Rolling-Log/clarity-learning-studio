@@ -79,9 +79,11 @@
   }
   .site-header .nav::before, .site-header .nav::after,
   .site-header .nav .nav-links, .site-header .nav .menu-toggle { display: none; }
-  .site-header .brand { min-height: 44px; font-size: 21px; gap: 7px; }
+  .site-header .brand { min-height: 44px; margin-inline-start: 0; font-size: 21px; gap: 7px; }
   .site-header .brand svg { width: 23px; height: 23px; }
-  .site-header .language-button { min-height: 44px; padding-inline: 10px; font-size: 12px; }
+  .site-header :is(.language-button,.theme-button) { min-height: 44px; }
+  .site-header .language-button { inline-size: 66px; padding-inline: 10px; font-size: 12px; }
+  .site-header .theme-button { width: 44px; }
   .mobile-nav {
     position: fixed;
     z-index: 46;
@@ -154,10 +156,10 @@
   }
   html[lang="zh-CN"] #hero-title { letter-spacing: -.03em; }
   #hero-title:focus { outline: none; }
-  #home .hero-description { max-width: 320px; margin-top: 15px; }
-  #home .hero-description p { font-size: 14px; line-height: 1.5; text-wrap: balance; }
+  #home .hero-description { max-width: min(320px, 100%); margin-top: 15px; gap: 2px; }
+  #home .hero-description p { min-height: 2lh; display: grid; align-items: center; font-size: 14px; line-height: 1.5; text-wrap: balance; }
   #home .conveyor { flex: 1 1 auto; min-height: 190px; margin-top: clamp(15px, 3dvh, 28px); }
-  #home .badge-pill { font-size: 10px; height: 27px; line-height: 27px; }
+  #home .flow-caption { inline-size: min(248px, 100% - 24px); block-size: 29px; }
   #home .hero-action { width: 100%; padding: 8px 0 16px; }
   #home .hero-action .button { min-height: 48px; padding-inline: 24px; font-size: 14px; }
   #home .hero-footer { z-index: 4; inset: auto var(--mobile-gutter) 16px auto; }
@@ -247,12 +249,16 @@
   .mode-symbol .ui-icon { width: 20px; height: 20px; }
   .create-footer { display: block; padding: 1px 0 0; border: 0; }
   #continue-button { width: 100%; min-height: 49px; font-size: 14px; }
-  .example-library { margin-top: 11px; gap: 6px; }
-  .example-load { min-height: 44px; padding-inline: 10px; gap: 5px; font-size: 11px; }
+  .example-library { margin-top: 11px; gap: 0; flex-direction: column; align-items: flex-end; }
+  .example-choices { gap: 5px; }
+  .example-load { min-height: 44px; padding-inline: 8px; gap: 5px; font-size: 11px; }
   .example-load > svg { width: 16px; height: 16px; }
 
   .learning-title { margin-bottom: 15px; font-size: clamp(24px, 6.7vw, 33px); font-weight: 650; line-height: 1.16; }
   .result-toolbar { flex-direction: column; align-items: stretch; gap: 2px; }
+  .result-views { gap: 4px; }
+  .result-views .view-switch { flex: 1; min-width: 0; }
+  .result-views .view-switch button { inline-size: 100%; min-inline-size: 0; }
   .lesson-actions { gap: 1px; min-height: 46px; }
   .lesson-actions .lesson-action { min-width: 44px; min-height: 44px; padding: 0 7px; gap: 5px; font-size: 12px; }
   .lesson-actions .desktop-action-label { display: none; }
@@ -266,7 +272,7 @@
   }
   #expand-guide { margin-left: auto; width: 44px; }
   .podcast-card { padding: 24px 4px 16px; }
-  .player-caption { font-size: clamp(24px, 7vw, 34px); }
+  .player-caption { font-size: clamp(24px, 7vw, 34px); min-height: 2lh; display: grid; align-items: end; }
   .player-visual { height: clamp(92px, 17dvh, 155px); margin: 4px 0 0; }
   .player-visual:has(.podcast-caption:not([hidden])) { height: auto; min-height: 143px; grid-template-rows: minmax(88px, 1fr) auto; }
   .podcast-caption { font-size: 14px; min-height: 0; padding: 0 6px; }
@@ -287,6 +293,10 @@
   .play-button { width: 64px; height: 64px; }
   .player-reading, .player-settings { gap: 1px; }
   .player-controls .lesson-action { min-width: 44px; min-height: 44px; padding-inline: 6px; gap: 5px; font-size: 12px; }
+  .player-reading #captions-toggle { inline-size: 81px; }
+  .player-reading #transcript-toggle { inline-size: 88px; }
+  #volume-button, #audio-volume { min-height: 44px; }
+  #volume-button { width: 44px; }
   .settings-popover button { min-height: 44px; }
   .concept-lead, .learning-area.is-expanded .concept-lead { min-height: 0; padding-block: 15px 13px; }
   .concept-copy h3, .learning-area.is-expanded .concept-copy h3 { font-size: clamp(22px, 6.3vw, 29px); }
@@ -383,6 +393,11 @@
 @media (prefers-reduced-transparency: reduce) {
   body[data-mobile-tab] { --mobile-glass: #fcfbfd; }
   .mobile-nav { background: var(--surface); -webkit-backdrop-filter: none; backdrop-filter: none; }
+}
+
+@media (max-width: 370px) {
+  .player-reading :is(#captions-toggle, #transcript-toggle) { inline-size: 44px; }
+  .player-reading .lesson-action span { position: absolute; width: 1px; height: 1px; clip-path: inset(50%); overflow: hidden; white-space: nowrap; }
 }
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
   body[data-mobile-tab] { --mobile-glass: #fcfbfd; }

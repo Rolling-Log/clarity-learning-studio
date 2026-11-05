@@ -2,10 +2,8 @@
 (() => {
   const tr = (...args) => window.ClarityUI.t(...args);
   ClarityUI.extend({
-    "Examples":"示例", "Bicycle":"自行车", "Flatland":"平面国",
-    "Text · Quick":"粘贴文本 · 快速", "Book · Deep":"书籍 · 深度", "Paper · Deep":"论文 · 深度",
-    "Download book":"下载书籍", "Download paper":"下载论文", "Explore sample":"探索示例",
-    "Open {title} example":"打开{title}示例", "Opening…":"正在打开…",
+    "Bicycle":"自行车", "Flatland":"平面国",
+    "Load {title} example":"载入{title}示例",
     "Couldn't open this example. Try again.":"暂时无法打开示例，请重试。",
     "500,000 characters max":"最多 500,000 字符",
     "Keep your text under 500,000 characters.":"请将文本控制在 500,000 字符以内。",
@@ -18,33 +16,27 @@
     flatland:'<path d="M24 7v33M5 12c8-5 13-5 19-1 6-4 11-4 19 1v27c-8-5-13-5-19-1-6-4-11-4-19 1Z"/><path d="m10 18 8-1m-8 7 8-1m12-6 8 1m-8 5 8 1"/>',
     boids:'<path d="m7 8 11 5-11 5 3-5Zm22 6 11 5-11 5 3-5ZM15 29l11 5-11 5 3-5Z"/>'
   };
-  const entries = [["bicycle","Bicycle","Text · Quick"],["flatland","Flatland","Book · Deep"],["boids","Boids","Paper · Deep"]];
-  const panel = document.createElement("section");
-  panel.className = "example-library";
-  panel.innerHTML = entries.map(([id,title,kind]) =>
-    '<button type="button" class="example-load" data-example="' + id + '" data-title="' + title + '" data-kind="' + kind +
+  const entries = [["bicycle","Bicycle"],["flatland","Flatland"],["boids","Boids"]];
+  const panel = document.querySelector("#example-choices");
+  panel.innerHTML = entries.map(([id,title]) =>
+    '<button type="button" class="example-load" data-example="' + id + '" data-title="' + title +
     '"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
     icons[id] + '</svg><span></span></button>').join("");
-  document.querySelector("#create-form").after(panel);
-  document.querySelector("#try-example").closest(".source-support").hidden = true;
 
-  let opening = null;
   const buttons = [...panel.querySelectorAll("button")];
   function updateLabels() {
-    panel.setAttribute("aria-label", tr("Examples"));
     buttons.forEach(button => {
       const title = tr(button.dataset.title);
-      const active = opening === button.dataset.example;
-      button.title = tr(button.dataset.kind);
-      button.setAttribute("aria-label", active ? tr("Opening…") : tr("Open {title} example", {title}));
-      button.querySelector("span").textContent = active ? tr("Opening…") : title;
+      button.setAttribute("aria-label", tr("Load {title} example", {title}));
+      button.querySelector("span").textContent = title;
     });
   }
   function setOpening(id) {
-    opening = id;
     panel.setAttribute("aria-busy", String(!!id));
-    buttons.forEach(button => { button.disabled = !!id; });
-    updateLabels();
+    buttons.forEach(button => {
+      button.disabled = !!id;
+      button.classList.toggle("is-loading", button.dataset.example === id);
+    });
   }
   updateLabels();
   document.addEventListener("clarity:language", updateLabels);

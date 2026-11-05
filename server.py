@@ -17,7 +17,7 @@ from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
-from guide import assemble, validate_guide
+from guide import assemble, assemble_generated, validate_guide
 import sample
 import bicycle
 import catalog
@@ -47,7 +47,10 @@ def text_key(config: dict) -> str:
     return config.get("DEEPSEEK_API_KEY" if provider == "deepseek" else "OPENAI_API_KEY", "")
 
 def paid_enabled(config: dict) -> bool:
-    return config.get("CLARITY_ALLOW_PAID_API_CALLS", "false").lower() == "true"
+    return (
+        os.environ.get("CLARITY_LIVE_SESSION") == "true"
+        or config.get("CLARITY_ALLOW_PAID_API_CALLS", "false").lower() == "true"
+    )
 
 def require_paid_enabled(config: dict):
     if not paid_enabled(config):
@@ -222,12 +225,14 @@ async def make_guide(session: dict, models: dict | None):
             if output.startswith(fence):
                 output = re.sub("^" + fence + r"(?:json)?\s*|\s*" + fence + "$", "", output).strip()
             value = json.loads(output)
-        session["guide"] = validate_guide(value, session["passages"])
-        # This reviewed local fixture uses the same upstream renderer/bridge.
-        # User uploads continue through the source-grounded schema, never this fixture.
         if session["sample"]:
+            session["guide"] = validate_guide(value, session["passages"])
             session["guideTemplate"] = "explorable-v1"
-        document = await assemble(session["guide"], authored_fragment=catalog.fragment(session.get("sampleId", "bicycle")) if session["sample"] else None)
+            document = await assemble(session["guide"], authored_fragment=catalog.fragment(session.get("sampleId", "bicycle")))
+        else:
+            generated = await assemble_generated(value, session["passages"])
+            session["guide"], document = generated["guide"], generated["html"]
+            session["guideTemplate"] = "structured-v1"
         (DATA / (session["id"] + ".html")).write_text(document, "utf-8")
         session["title"] = session["guide"]["title"]
         if (session.get("audio") or {}).get("approximateCues"):

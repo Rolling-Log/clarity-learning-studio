@@ -18,26 +18,27 @@ Upload a PDF/TXT/Markdown file or paste text. Select **Quick Overview** for a co
 
 The examples have English/Chinese interfaces, prepared system narration, measured audio chapter cues, original-source links and prepared contextual answers.
 
-**Deployment scope:** the public site serves reviewed examples. Live model generation is intentionally disabled. Arbitrary uploaded text is not silently replaced by a sample. No model API key is required or shipped. The three bespoke scenes do not represent automatic generation of equally detailed 3D scenes from arbitrary documents.
+The hosted site also generates a podcast, a source-linked Visual Guide, and follow-up answers for new uploads. DeepSeek selects a comparison, mechanism, sequence, or interactive threshold diagram from the source. The three reviewed 3D scenes are authored examples.
 
 ## Run the Web deployment
 
-Requires Node.js 22 or newer; the deployment has no npm runtime dependencies.
+Requires Node.js 22.12 or newer.
 
 ```sh
+npm ci
 npm test
 npm run build
 npx netlify dev
 ```
 
-Netlify reads `netlify.toml`, publishes `dist/`, and bundles `netlify/functions/clarity.mjs`. The function verifies the actual source hash, returns reviewed learning sessions and contextual answers, and serves guide/audio URLs. Upload parsing happens in the browser. Playback position, language and hosted question history stay in that browser; private uploads are not stored by this demonstration service.
+Set `DEEPSEEK_API_KEY` in the Netlify project's production environment and redeploy to enable live generation. Netlify Functions call DeepSeek and synthesize MP3 narration with eSpeak NG. The background worker saves private sessions and audio in Netlify Blobs. Each session is retrieved by its random ID. Playback position, language, and question history stay in the browser. The public deployment limits live generation to 12 jobs and 36 follow-ups per UTC day, with separate per-client limits. With no provider key configured, the three reviewed examples still work.
 
 The checked-in `prepared/catalogue.json` and `web/prepared/*.html` let Netlify build without Python, external model services or the author's local workspace.
 
 ## Architecture and upstream reuse
 
 - **Open Notebook:** the included Python adapter uses the upstream source API, model transformations, podcast profiles/jobs/audio and source-chat endpoints in the local course workspace. The public demonstration uses reviewed exports and does not claim a cloud Notebook instance is running.
-- **Open Intelligent UI:** the original `assembleDocument` renderer, shared design system and `sendPrompt` bridge render isolated Visual Guides. The original renderer is bundled in `vendor/`; the hosted guides are exported through that renderer.
+- **Open Intelligent UI:** the original `assembleDocument` renderer, shared design system and `sendPrompt` bridge render isolated Visual Guides. Local and hosted live guides share the same validated layout contract and renderer.
 - **Three.js:** local, pinned 3D scenes, procedural bicycle geometry, sphere sections and a real-time flock simulation. No 3D model CDN or image stand-ins.
 - **PDF.js:** browser-side PDF text extraction.
 
@@ -48,7 +49,8 @@ web/                 Hero, upload form, player, bilingual UI and browser assets
 explorables/         Bicycle / Flatland / Boids scene code
 templates/           Isolated Visual Guide templates
 prepared/            Reviewed session exports (no credentials or private uploads)
-netlify/functions/   Budget-safe hosted example API
+netlify/functions/   Hosted API and background generation
+netlify/lib/         Source-linked lesson schema, renderer and hosted pipeline
 scripts/             Portable Web build and OIUI example exporter
 tests/               Hosted API contracts and budget guards
 server.py            Local FastAPI / Open Notebook adapter

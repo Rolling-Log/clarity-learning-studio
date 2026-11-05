@@ -58,6 +58,13 @@ class GenerationContract(unittest.IsolatedAsyncioTestCase):
             if self.quota_exhausted:
                 return httpx.Response(429, json={"detail":"Provider credits exhausted"})
             value = sample.guide("quick")
+            value["visual"] = {"type": "mechanism", "focus": "c3", "links": [
+                {"from": "c1", "to": "c3", "verb": "powers", "effect": "Pedaling drives the system."},
+                {"from": "c2", "to": "c3", "verb": "transfers", "effect": "The chain transfers force."},
+                {"from": "c4", "to": "c3", "verb": "selects", "effect": "The derailleur changes gears."},
+                {"from": "c3", "to": "c5", "verb": "turns", "effect": "The drivetrain turns the wheel."},
+                {"from": "c6", "to": "c3", "verb": "slows", "effect": "Braking resists wheel rotation."},
+            ]}
             if self.invalid_guide:
                 value["nodes"][0]["sourceIds"]=["S999"]
             return httpx.Response(200,json={"output":json.dumps(value)})

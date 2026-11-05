@@ -93,6 +93,7 @@ window.addEventListener('message',e=>{
   if(e.source!==parent)return;
   const d=e.data;
   if(d?.type==='clarity:select'&&d.id!==selected)select(d.id);
+  if(d?.type==='clarity:theme')document.documentElement.dataset.theme=d.theme==='dark'?'dark':'light';
   if(d?.type==='clarity:language'){
     const next=d.language==='zh'?'zh':'en';
     if(next!==language){language=next;translate();}

@@ -7,6 +7,12 @@
   <meta name="description" content="Turn papers, books, and long reads into podcasts and visual guides.">
   <link rel="icon" href="data:,">
   <title>Clarity — Less effort. More understanding.</title>
+  <script>
+    try {
+      const theme = localStorage.getItem("clarity:theme");
+      document.documentElement.dataset.theme = theme === "dark" ? "dark" : "light";
+    } catch {}
+  </script>
   <style id="embedded-fonts">@font-face {
   font-family: 'IBM Plex Mono';
   font-style: normal;
@@ -76,7 +82,7 @@
     .site-header { position: fixed; top: 16px; left: 0; right: 0; z-index: 40; display: flex; justify-content: center; pointer-events: none; }
     .nav {
       position: relative; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;
-      width: calc(100% - 64px); max-width: 1320px; height: 48px; padding: 0 10px 0 20px;
+      width: calc(100% - 64px); max-width: 1320px; height: 48px; padding: 0 10px;
       border: 1px solid #ffffffa6; border-radius: 100px; background: #ffffff36; isolation: isolate;
       box-shadow: 0 3px 14px #1d1b2508, 0 0 0 1px #7d7a8b10, inset 0 1px 0 #ffffffd9, inset 0 -1px 0 #7a768a17;
       pointer-events: auto;
@@ -91,10 +97,10 @@
     @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
       .nav { background: #f8f7f9f5; border-color: #dbdae0; }
     }
-    .brand { display: inline-flex; align-items: center; gap: 8px; width: fit-content; font-size: 21px; font-weight: 650; letter-spacing: -.055em; }
+    .brand { display: inline-flex; align-items: center; gap: 8px; width: fit-content; margin-inline-start: 10px; font-size: 21px; font-weight: 650; letter-spacing: -.055em; }
     .brand svg { width: 24px; height: 24px; color: var(--hot); }
-    .nav-links { display: flex; align-items: center; justify-content: center; gap: 30px; font-size: 12px; font-weight: 500; color: #555e62; }
-    .nav-links a { padding: 10px 0; transition: color .2s; white-space: nowrap; }
+    .nav-links { display: flex; align-items: center; justify-content: center; inline-size: 18rem; gap: 14px; font-size: 12px; font-weight: 500; color: #555e62; }
+    .nav-links a { padding: 10px 8px; line-height: 1.4; transition: color .2s; white-space: nowrap; }
     .nav-links a:hover { color: var(--hot); }
     .nav-links a[aria-current="location"] { color: var(--hot); }
     .nav-actions { display: flex; align-items: center; justify-self: end; gap: 9px; }
@@ -132,11 +138,15 @@
     .scan { position: absolute; left: 50%; width: 0; pointer-events: none; }
     .scan i { position: absolute; left: -1.5px; width: 3px; height: 100%; border-radius: 4px; background: linear-gradient(#6e60a4, #493c7d 12%, #493c7d 88%, #6e60a4); box-shadow: 0 0 10px 2px #493c7da0, 0 0 34px 10px #493c7d38; }
     .scan b { position: absolute; top: 4%; bottom: 4%; left: 0; width: 38px; background: linear-gradient(90deg, #6e60a450, transparent); filter: blur(6px); opacity: .8; }
-    .badge { position: absolute; left: 50%; transform: translateX(-50%); display: grid; justify-items: center; gap: 8px; pointer-events: none; white-space: nowrap; }
-    .badge-label { font-size: 9px; font-weight: 400; color: var(--muted); }
-    .badge-pill { display: flex; height: 27px; border-radius: 100px; overflow: hidden; box-shadow: 0 0 18px #3e3a4f16; font: 500 10px/27px var(--mono); }
-    .badge-input { min-width: 112px; padding: 0 12px; text-align: center; background: var(--hot); color: white; }
-    .badge-output { padding: 0 12px; color: var(--hot); background: var(--hot-soft); }
+    .flow-caption {
+      position: absolute; left: 50%; transform: translateX(-50%); pointer-events: none;
+      display: flex; justify-content: center; align-items: center; gap: .28em;
+      inline-size: min(420px, 100% - 24px); block-size: 32px;
+      font: 400 clamp(14px, 1.05vw, 18px)/1.2 var(--serif); white-space: nowrap; color: var(--muted);
+    }
+    .flow-output { color: var(--hot); font-style: italic; }
+    html[lang="zh-CN"] .flow-caption { gap: 0; }
+    html[lang="zh-CN"] .flow-output { font-style: normal; }
     .hero-action { position: relative; z-index: 3; display: grid; justify-items: center; gap: 10px; flex: none; align-self: center; padding: 16px 0 34px; }
     .hero-action .button { min-height: 46px; padding: 0 25px; font-size: 13px; }
     .action-note { margin: 0; font-size: 10px; color: #8b8a90; line-height: 1.3; }
@@ -232,8 +242,8 @@
     #continue-button { min-height: 42px; padding: 0 22px; gap: 15px; font-size: 11px; }
     #continue-button:disabled { color: #827f8b; background: #dedde4; cursor: not-allowed; transform: none; }
     @media (max-width: 1000px) {
-      .nav { padding: 0 10px 0 18px; }
-      .nav-links { gap: 22px; font-size: 11px; }
+      .brand { margin-inline-start: 8px; }
+      .nav-links { gap: 6px; font-size: 11px; }
       .auth-button { padding: 0 14px; font-size: 11px; }
       .create-workspace { gap: 22px 26px; padding: 24px; }
       .mode-panel { padding-left: 26px; }
@@ -265,7 +275,7 @@
       .nav-actions { gap: 3px; }
       .auth-button { min-height: 30px; padding: 0 11px; font-size: 10px; }
       .menu-toggle { display: block; }
-      .nav-links { display: none; position: absolute; top: calc(100% + 9px); left: 0; right: 0; padding: 10px; background: #f6f5f8f2; backdrop-filter: blur(18px) saturate(1.18); -webkit-backdrop-filter: blur(18px) saturate(1.18); border: 1px solid #ffffffc9; border-radius: 21px; box-shadow: 0 12px 24px #1e1c2510, inset 0 1px 0 #fff; }
+      .nav-links { display: none; position: absolute; top: calc(100% + 9px); left: 0; right: 0; inline-size: auto; padding: 10px; background: #f6f5f8f2; backdrop-filter: blur(18px) saturate(1.18); -webkit-backdrop-filter: blur(18px) saturate(1.18); border: 1px solid #ffffffc9; border-radius: 21px; box-shadow: 0 12px 24px #1e1c2510, inset 0 1px 0 #fff; }
       .nav[data-menu-open="true"] .nav-links { display: grid; gap: 2px; }
       .nav-links a { display: block; padding: 13px 14px; border-radius: 13px; font-size: 12px; }
       .nav-links a:hover { background: #e7e6eb; }
@@ -275,11 +285,6 @@
       .hero-description { margin-top: 16px; max-width: 330px; }
       .hero-description p { font-size: 12px; line-height: 1.6; }
       .conveyor { margin-top: 43px; }
-      .badge { gap: 6px; }
-      .badge-label { font-size: 8px; }
-      .badge-pill { font-size: 8px; height: 23px; line-height: 23px; }
-      .badge-input { min-width: 91px; padding: 0 10px; }
-      .badge-output { padding: 0 10px; }
       .hero-action { gap: 9px; padding: 14px 0 31px; }
       .hero-action .button { min-height: 44px; padding: 0 22px; font-size: 12px; }
       .action-note { font-size: 9px; }
@@ -393,10 +398,11 @@
       .file-ready.is-reading .file-emblem::after { animation: none; }
     }
   </style>
-  <link rel="stylesheet" href="learning.css?v=7825a67223ff">
-  <link rel="stylesheet" href="web-refinement.css?v=9196c645f14d">
-  <link rel="stylesheet" href="iris-theme.css?v=54f1180b2944">
-  <link rel="stylesheet" href="mobile.css?v=542c4976938f">
+  <link rel="stylesheet" href="learning.css?v=3ff7c218ee26">
+  <link rel="stylesheet" href="web-refinement.css?v=43b5b98a4fd2">
+  <link rel="stylesheet" href="iris-theme.css?v=537f67f19ca4">
+  <link rel="stylesheet" href="mobile.css?v=a711ecfea80e">
+  <link rel="stylesheet" href="hero-preview.css">
 </head>
 <body>
   <svg class="glass-defs" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
@@ -408,6 +414,8 @@
       <symbol id="icon-list" viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01"/></symbol>
       <symbol id="icon-captions" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M6.5 11h5m2.5 0h3.5m-11 3h2.5m2.5 0h6"/></symbol>
       <symbol id="icon-timer" viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M10 2h4m-2 7v4l2 1m4-7 1-1"/></symbol>
+      <symbol id="icon-volume" viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9H4Zm12 0a4.5 4.5 0 0 1 0 6m2.5-8.5a8 8 0 0 1 0 11"/></symbol>
+      <symbol id="icon-muted" viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9H4Zm12 1 4 4m0-4-4 4"/></symbol>
       <symbol id="icon-chevron" viewBox="0 0 24 24"><path d="m7 10 5 5 5-5"/></symbol>
       <symbol id="icon-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
       <symbol id="icon-close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
@@ -416,6 +424,8 @@
       <symbol id="icon-visual" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/><path d="M6.5 10v6a1.5 1.5 0 0 0 1.5 1.5h6M10 6.5h6a1.5 1.5 0 0 1 1.5 1.5v6"/></symbol>
       <symbol id="icon-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M5 21v-2a7 7 0 0 1 14 0v2"/></symbol>
       <symbol id="icon-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a17 17 0 0 1 0 18 17 17 0 0 1 0-18"/></symbol>
+      <symbol id="icon-moon" viewBox="0 0 24 24"><path d="M20.5 14.1A8.6 8.6 0 0 1 9.9 3.5a8.7 8.7 0 1 0 10.6 10.6Z"/></symbol>
+      <symbol id="icon-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4m0-14.2-1.4 1.4M6.3 17.7l-1.4 1.4"/></symbol>
       <symbol id="icon-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10h.01"/></symbol>
       <symbol id="icon-alert" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v6m0 4h.01"/></symbol>
       <symbol id="icon-expand" viewBox="0 0 24 24"><path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5"/></symbol>
@@ -451,8 +461,15 @@
         <a href="#learning">My podcasts</a>
       </div>
       <div class="nav-actions">
+        <button class="theme-button" id="theme-toggle" type="button" aria-label="Dark mode" aria-pressed="false"><svg class="ui-icon" aria-hidden="true"><use href="#icon-moon"/></svg></button>
         <button class="language-button" id="language-toggle" type="button" aria-label="Switch to Chinese"><svg class="ui-icon" aria-hidden="true"><use href="#icon-globe"/></svg><span>EN</span></button>
-        <div class="account-wrap"><button class="account-toggle" id="account-toggle" type="button" aria-label="Account" aria-haspopup="menu" aria-expanded="false" aria-controls="account-menu"><svg class="ui-icon" aria-hidden="true"><use href="#icon-user"/></svg></button><div class="account-menu" id="account-menu" role="menu" aria-label="Account" hidden><button type="button" role="menuitem" tabindex="-1">Log in</button><button type="button" role="menuitem" tabindex="-1">Sign up</button></div></div>
+        <div class="account-wrap">
+          <button class="account-toggle" id="account-toggle" type="button" aria-label="Account" aria-haspopup="menu" aria-expanded="false" aria-controls="account-menu"><svg class="ui-icon" aria-hidden="true"><use href="#icon-user"/></svg></button>
+          <div class="account-menu" id="account-menu" hidden>
+            <div role="menu" aria-label="Account" aria-describedby="account-note"><button type="button" role="menuitem" tabindex="-1" aria-disabled="true">Log in</button><button type="button" role="menuitem" tabindex="-1" aria-disabled="true">Sign up</button></div>
+            <p class="account-note" id="account-note">Log in and sign up are unavailable for now. Accounts may open later.</p>
+          </div>
+        </div>
         <button class="menu-toggle" id="menu-toggle" type="button" aria-label="Open navigation" aria-controls="primary-navigation" aria-expanded="false">
           <svg viewBox="0 0 18 18" fill="none" aria-hidden="true"><path d="M3 6h12M3 12h12" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
         </button>
@@ -465,30 +482,60 @@
         <h1 id="hero-title" tabindex="-1">Less effort.<span>More understanding.</span></h1>
         <div class="hero-description">
           <p>Turn long reads into podcasts and visual guides.</p>
+          <span class="info-tip">
+            <button class="info-button" type="button" aria-label="How Clarity works" aria-describedby="hero-help" aria-controls="hero-help" aria-expanded="false"><svg class="ui-icon" aria-hidden="true"><use href="#icon-info"/></svg></button>
+            <span class="tooltip" role="tooltip" id="hero-help" hidden>Add a paper, a book excerpt, or any long text. Choose how much detail you want, then listen to the main ideas or explore an interactive visual guide.</span>
+          </span>
         </div>
       </div>
-      <div class="conveyor" id="experience" role="region" aria-label="Text transformation. Drag horizontally or use the left and right arrow keys to explore." tabindex="0">
+      <div class="conveyor" id="experience" role="region" aria-label="Text transformation. Select a document or a visualization to preview it. Drag or use the arrow keys to browse." tabindex="0">
         <div class="track-layer inputs" aria-hidden="true"></div>
         <div class="track-layer outputs" aria-hidden="true"></div>
         <canvas class="fx" aria-hidden="true"></canvas>
         <div class="scan" aria-hidden="true"><b></b><i></i></div>
-        <div class="badge" aria-hidden="true">
-          <div class="badge-pill"><span class="badge-input">Research paper</span><span class="badge-output">Audio + visuals</span></div>
+        <div class="reel-targets"></div>
+        <div class="flow-caption" aria-hidden="true">
+          <span class="flow-source">Research paper</span>
+          <span class="flow-verb">becomes</span>
+          <span class="flow-output">audio and visuals.</span>
         </div>
       </div>
       <div class="hero-action">
-        <a class="button" id="start-button" href="#source">Get started <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 2v11m-4-4 4 4 4-4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+        <a class="button" id="start-button" href="#source"><span>Get started</span><span hidden>See it transformed</span><svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 2v11m-4-4 4 4 4-4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
       </div>
       <div class="hero-footer">
         <div class="motion-controls">
           <button class="motion-button" id="motion-button" type="button" aria-label="Pause animation" aria-pressed="false"></button>
         </div>
       </div>
+      <dialog class="hero-preview" id="hero-preview" aria-labelledby="hero-preview-title">
+        <button type="button" class="hero-preview-close" aria-label="Close conversion preview"><svg class="ui-icon" aria-hidden="true"><use href="#icon-close"/></svg></button>
+        <div class="hero-preview-stage">
+          <article class="hero-preview-paper">
+            <div class="hero-preview-edition"><span></span><span></span></div>
+            <h2 id="hero-preview-title"></h2>
+            <p class="hero-preview-excerpt" lang="en"><span></span><span class="hero-preview-excerpt-rest"></span></p>
+            <div class="hero-preview-print" aria-hidden="true" lang="en"></div>
+          </article>
+          <svg class="hero-preview-arrow" viewBox="0 0 40 16" fill="none" aria-hidden="true" hidden><path d="M1 8h36m-6-5 6 5-6 5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <div class="hero-preview-result" hidden>
+            <div class="hero-preview-art" aria-hidden="true"></div>
+            <button class="hero-preview-play" type="button"><svg class="ui-icon" aria-hidden="true"><use href="#icon-play"/></svg><span>Listen to preview</span></button>
+            <p class="hero-preview-audio-status sr-only" role="status"></p>
+            <audio preload="none"></audio>
+          </div>
+        </div>
+        <div class="hero-action hero-preview-action"></div>
+      </dialog>
     </section>
     <section class="source-section" id="source" aria-labelledby="source-title">
       <div class="source-inner">
         <div class="source-heading">
           <h2 id="source-title" tabindex="-1">Add your source</h2>
+          <span class="info-tip">
+            <button class="info-button" type="button" aria-label="About source material" aria-describedby="source-help" aria-controls="source-help" aria-expanded="false"><svg class="ui-icon" aria-hidden="true"><use href="#icon-info"/></svg></button>
+            <span class="tooltip" role="tooltip" id="source-help" hidden>Upload a text-based PDF, TXT, or Markdown file, or paste the passage you want to understand. Clarity uses this source for both the podcast and the visual guide.</span>
+          </span>
         </div>
         <form class="create-workspace" id="create-form">
           <section class="source-panel" aria-labelledby="source-label">
@@ -525,10 +572,9 @@
               </div>
             </div>
             <p class="source-error" id="source-error" role="alert" hidden></p>
-            <div class="source-support"><button class="quiet-button" id="try-example" type="button">Try an example <svg class="icon" aria-hidden="true"><use href="#icon-arrow"/></svg></button></div>
           </section>
           <fieldset class="mode-panel">
-            <legend class="panel-heading"><span class="step-number">02</span><span>Learning mode</span><span class="info-tip"><button class="info-button" type="button" aria-label="About learning modes" aria-describedby="mode-help"><svg class="ui-icon" aria-hidden="true"><use href="#icon-info"/></svg></button><span class="tooltip" role="tooltip" id="mode-help">Both modes include a podcast and a visual guide. You can switch views without generating again.</span></span></legend>
+            <legend class="panel-heading"><span class="step-number">02</span><span>Learning mode</span><span class="info-tip"><button class="info-button" type="button" aria-label="About learning modes" aria-describedby="mode-help" aria-controls="mode-help" aria-expanded="false"><svg class="ui-icon" aria-hidden="true"><use href="#icon-info"/></svg></button><span class="tooltip" role="tooltip" id="mode-help" hidden>Both modes include a podcast and a visual guide. You can switch views without generating again.</span></span></legend>
             <div class="mode-options">
               <label class="mode-option is-selected" id="quick-option">
                 <input class="mode-radio" type="radio" name="mode" value="quick" checked>
@@ -548,6 +594,21 @@
           </div>
           <p class="generation-feedback" id="generation-feedback" role="status" hidden></p>
         </form>
+        <div class="generation-scene create-preparation" id="create-preparation" role="status" tabindex="-1" hidden>
+          <div class="generation-signal" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
+          <h3>Preparing your learning</h3>
+          <p id="preparing-source" translate="no"></p>
+        </div>
+        <section class="example-library" aria-labelledby="examples-title">
+          <div class="example-heading">
+            <span id="examples-title">Examples</span>
+            <span class="info-tip">
+              <button class="info-button" type="button" aria-label="About the examples" aria-describedby="examples-help" aria-controls="examples-help" aria-expanded="false"><svg class="ui-icon" aria-hidden="true"><use href="#icon-info"/></svg></button>
+              <span class="tooltip" role="tooltip" id="examples-help" hidden>Bicycle fills in a short text. Flatland and Boids load a book and a research paper. Once the source is ready, select Generate to open the prepared podcast and visual guide.</span>
+            </span>
+          </div>
+          <div class="example-choices" id="example-choices"></div>
+        </section>
       </div>
     </section>
     <section class="learning-area" id="learning" aria-label="Your learning" hidden>
@@ -567,9 +628,15 @@
           </div>
           <div id="result-scene" hidden>
             <div class="result-toolbar">
-              <div class="view-switch" role="group" aria-label="Learning focus">
-                <button type="button" data-view="podcast" aria-pressed="true"><svg class="ui-icon" aria-hidden="true"><use href="#icon-audio"/></svg> Podcast</button>
-                <button type="button" data-view="visual-guide" aria-pressed="false"><svg class="ui-icon" aria-hidden="true"><use href="#icon-visual"/></svg> Visual Guide</button>
+              <div class="result-views">
+                <div class="view-switch" role="group" aria-label="Learning focus">
+                  <button type="button" data-view="podcast" aria-pressed="true"><svg class="ui-icon" aria-hidden="true"><use href="#icon-audio"/></svg> Podcast</button>
+                  <button type="button" data-view="visual-guide" aria-pressed="false"><svg class="ui-icon" aria-hidden="true"><use href="#icon-visual"/></svg> Visual Guide</button>
+                </div>
+                <span class="info-tip result-help">
+                  <button class="info-button" type="button" aria-label="About the learning views" aria-describedby="result-help" aria-controls="result-help" aria-expanded="false"><svg class="ui-icon" aria-hidden="true"><use href="#icon-info"/></svg></button>
+                  <span class="tooltip" role="tooltip" id="result-help" hidden>Switch between listening and exploring. Your playback position stays put, and View source takes you to the original material.</span>
+                </span>
               </div>
               <div class="lesson-actions">
                 <button class="lesson-action" id="chapters-toggle" type="button" aria-haspopup="dialog" aria-controls="learning-panel" hidden><svg class="ui-icon" aria-hidden="true"><use href="#icon-list"/></svg><span>Chapters</span></button>
@@ -619,6 +686,13 @@
                     <button class="lesson-action" type="button" id="transcript-toggle" aria-expanded="false" aria-controls="transcript-reader" hidden><svg class="ui-icon" aria-hidden="true"><use href="#icon-list"/></svg><span>Transcript</span></button>
                   </div>
                   <div class="player-settings">
+                    <div class="playback-setting">
+                      <button class="lesson-action" id="volume-button" type="button" aria-expanded="false" aria-controls="volume-menu" aria-label="Volume" title="Volume"><svg class="ui-icon" aria-hidden="true"><use href="#icon-volume"/></svg></button>
+                      <div class="settings-popover" id="volume-menu" hidden>
+                        <div class="volume-heading"><label for="audio-volume">Volume</label><output id="volume-value" for="audio-volume">100%</output></div>
+                        <input type="range" id="audio-volume" min="0" max="100" step="1" value="100">
+                      </div>
+                    </div>
                     <div class="playback-setting">
                       <button class="lesson-action" id="speed-button" type="button" aria-expanded="false" aria-controls="speed-menu" aria-label="Playback speed" title="Playback speed"><span id="speed-value">1×</span><svg class="ui-icon" aria-hidden="true"><use href="#icon-chevron"/></svg></button>
                       <div class="settings-popover" id="speed-menu" role="group" aria-label="Playback speed" hidden>
@@ -683,7 +757,7 @@
     <button class="phone-preview-toggle" id="phone-preview-toggle" hidden type="button" aria-label="Open phone preview"><svg viewBox="0 0 16 20" fill="none" aria-hidden="true"><rect x="3" y="1" width="10" height="18" rx="2.3" stroke="currentColor"/><path d="M6 3h4M7 17h2" stroke="currentColor" stroke-linecap="round"/></svg><span>Phone</span></button>
     <div class="phone-preview" id="phone-preview" role="dialog" aria-modal="true" aria-label="iPhone 18 Pro preview" hidden><button class="phone-close outline-button" id="phone-close" type="button"><span>Close preview</span><svg class="ui-icon" aria-hidden="true"><use href="#icon-close"/></svg></button><div class="phone-stage"><div class="phone-device"><div class="phone-camera" aria-hidden="true"></div><iframe id="phone-frame" title="Clarity phone preview"></iframe><div class="phone-home" aria-hidden="true"></div></div></div></div>
 
-  <script src="i18n.js?v=b73730207176"></script>
+  <script src="i18n.js?v=17182aff743f"></script>
   <script src="mobile.js?v=aa128099b0da"></script>
   <script>
     const tr = (...args) => window.ClarityUI.t(...args);
@@ -695,8 +769,9 @@
     const canvas = document.querySelector(".fx");
     const context = canvas.getContext("2d");
     const scan = document.querySelector(".scan");
-    const badge = document.querySelector(".badge");
-    const badgeInput = document.querySelector(".badge-input");
+    const flowCaption = document.querySelector(".flow-caption");
+    const flowSource = document.querySelector(".flow-source");
+    const flowVerb = document.querySelector(".flow-verb");
     const motionButton = document.querySelector("#motion-button");
     const motionPreference = matchMedia("(prefers-reduced-motion: reduce)");
     const palette = ["#54458d", "#6354a5", "#8370b8", "#a797ca", "#c1b4dc", "#ded5ed", "#f2eef8"];
@@ -709,7 +784,10 @@
           "Spacing separates these encounters. Each return begins with a little uncertainty, followed by a chance to correct an incomplete account. The schematic curves compare a single encounter with several opportunities to recall. They illustrate a pattern rather than measured experimental results."
         ], beats: [[65, 72], [182, 149], [288, 417]] },
       { type: "Book", title: "Thinking in systems", source: "book", output: "feedback", number: "02", aspect: .72,
-        paragraphs: ["A system is shaped by connections. A small change travels through a loop, alters what happens next and sometimes returns to its starting point. Following that loop can be more useful than treating each part as an isolated object."],
+        paragraphs: [
+          "A system is shaped by connections. A small change travels through a loop, alters what happens next and sometimes returns to its starting point. Following that loop can be more useful than treating each part as an isolated object.",
+          "A thermostat makes the loop visible. When the room cools, the heater turns on. As the room warms, the same sensor turns the heater off. The temperature is both the result of an action and the signal for the next one."
+        ],
         beats: [[180, 70], [298, 246], [180, 431]] },
       { type: "Long article", title: "How a forest shares", source: "article", output: "forest", number: "03", aspect: .72,
         paragraphs: [
@@ -734,6 +812,7 @@
     ];
 
     const ART = { ink: "#514c59", hot: "#7565b1", line: "#b9b1c5", faint: "#d9d5df", muted: "#89838e", soft: "#ece7f6" };
+    const nightArt = { ink: "#ded6ed", hot: "#bcabf2", line: "#807192", faint: "#4e435e", muted: "#b6a9c9", soft: "#3c324b" };
 
     function escapeXml(value) {
       return String(value).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
@@ -985,21 +1064,192 @@
       output.innerHTML = outputMarkup(sample, index);
       inputLayer.append(input);
       outputLayer.append(output);
-      return { input, output, sample, inputTexture: null, outputTexture: null, outputMask: null,
+      const item = { input, output, sample, inputTexture: null, outputTexture: null, outputMask: null,
         outputY: { scale: 1, shift: 0 }, arc: 0, center: 0, height: 0 };
+      item.targets = [false, true].map(converted => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "reel-target";
+        button.hidden = true;
+        button.setAttribute("aria-haspopup", "dialog");
+        button.setAttribute("aria-controls", "hero-preview");
+        button.addEventListener("click", event => {
+          if (!state.wasDragged || event.detail === 0) openHeroPreview(item, button, converted);
+        });
+        return button;
+      });
+      belt.querySelector(".reel-targets").append(...item.targets);
+      return item;
     });
 
     const state = {
       width: 0, height: 0, cardHeight: 0, centerY: 0, focal: 0, period: 1, ready: false,
       offset: 0, velocity: 0, hover: 0, isHovering: false, dragging: false,
       paused: motionPreference.matches, reduced: motionPreference.matches,
-      dragX: 0, dragTime: 0, dragOffset: 0, pendingDrag: false,
+      dragX: 0, dragTime: 0, dragOffset: 0, pendingDrag: false, wasDragged: false,
       time: 0, lastTimestamp: 0, frameId: 0, active: -1, sparks: []
     };
     const DEPTH = .8;
     const VIEW_ANGLE = 1.2;
     const AUTO_SPEED = .145 * 1.5;
     const TEXTURE_WIDTH = 720;
+
+    const heroPreview = document.querySelector("#hero-preview");
+    const startButton = document.querySelector("#start-button");
+    const startAction = startButton.parentElement;
+    const previewAction = heroPreview.querySelector(".hero-preview-action");
+    const [startLabel, convertLabel] = startButton.querySelectorAll("span");
+    const previewPaper = heroPreview.querySelector(".hero-preview-paper");
+    const previewTitle = heroPreview.querySelector("#hero-preview-title");
+    const [previewKind, previewNumber] = heroPreview.querySelectorAll(".hero-preview-edition span");
+    const [previewLead, previewRest] = heroPreview.querySelectorAll(".hero-preview-excerpt span");
+    const previewPrint = heroPreview.querySelector(".hero-preview-print");
+    const previewArrow = heroPreview.querySelector(".hero-preview-arrow");
+    const previewResult = heroPreview.querySelector(".hero-preview-result");
+    const previewArt = heroPreview.querySelector(".hero-preview-art");
+    const previewPlay = heroPreview.querySelector(".hero-preview-play");
+    const previewAudio = heroPreview.querySelector("audio");
+    const previewAudioStatus = heroPreview.querySelector(".hero-preview-audio-status");
+    let previewTarget = null;
+
+    function updateFlowCaption() {
+      const kind = items[state.active]?.sample.type || "Research paper";
+      flowSource.textContent = tr(kind);
+      flowVerb.textContent = tr(kind === "Lecture notes" ? "become" : "becomes");
+    }
+
+    function updateReelLabels() {
+      for (const { sample, targets } of items) {
+        const title = tr(sample.title);
+        targets[0].setAttribute("aria-label", tr("Preview source: {title}", { title }));
+        targets[1].setAttribute("aria-label", tr("Preview conversion: {title}", { title }));
+      }
+    }
+
+    function setPreviewMode(converted) {
+      heroPreview.classList.toggle("is-converted", converted);
+      previewArrow.toggleAttribute("hidden", !converted);
+      previewResult.hidden = !converted;
+      startButton.toggleAttribute("data-converting", !converted);
+      startLabel.hidden = !converted;
+      convertLabel.hidden = converted;
+      if (converted) startButton.removeAttribute("role");
+      else startButton.setAttribute("role", "button");
+    }
+
+    function animateFrom(element, from, duration, lift = 0) {
+      element.getAnimations().forEach(animation => animation.cancel());
+      if (state.reduced) return;
+      const to = element.getBoundingClientRect();
+      const dx = from.left + from.width / 2 - to.left - to.width / 2;
+      const dy = from.top + from.height / 2 - to.top - to.height / 2;
+      const sx = from.width / to.width;
+      const sy = from.height / to.height;
+      element.animate([
+        { transform: `translate(${dx}px, ${dy}px) scale(${sx}, ${sy})` },
+        { transform: `translate(${dx * .35}px, ${dy * .35 - lift}px) scale(${1 + (sx - 1) * .35}, ${1 + (sy - 1) * .35})`, offset: .65 },
+        { transform: "none" }
+      ], { duration, easing: "cubic-bezier(.2,.75,.25,1)" });
+    }
+
+    function revealPreviewResult() {
+      const bounds = previewPaper.getBoundingClientRect();
+      setPreviewMode(true);
+      animateFrom(previewPaper, bounds, 550, 16);
+      if (!state.reduced) {
+        for (const element of [previewArrow, previewResult]) {
+          element.animate([{ opacity: 0, transform: "translateX(-16px)" }, { opacity: 1, transform: "none" }],
+            { delay: 120, duration: 400, easing: "ease-out", fill: "backwards" });
+        }
+      }
+    }
+
+    function openHeroPreview({ sample, output }, target, converted) {
+      if (heroPreview.open) return;
+      const targetBounds = target.getBoundingClientRect();
+      const actionBounds = startButton.getBoundingClientRect();
+      previewTarget = target;
+      previewPaper.dataset.kind = sample.source;
+      previewKind.textContent = tr(sample.type);
+      previewNumber.textContent = sample.number;
+      previewTitle.textContent = tr(sample.title);
+      const excerpt = sample.paragraphs[0];
+      const lead = excerpt.match(/^[^.]+\./)?.[0] || excerpt;
+      previewLead.textContent = lead;
+      previewRest.textContent = excerpt.slice(lead.length);
+      previewPrint.replaceChildren(...sample.paragraphs.slice(1).map(text => {
+        const paragraph = document.createElement("p");
+        paragraph.textContent = text;
+        return paragraph;
+      }));
+      previewArt.innerHTML = nightArtwork(output.innerHTML);
+      previewAudio.src = `assets/hero/${sample.output}.mp3`;
+      previewAudioStatus.textContent = "";
+      startAction.style.minHeight = startAction.offsetHeight + "px";
+      heroPreview.style.setProperty("--preview-bottom", Math.max(16, innerHeight - actionBounds.bottom) + "px");
+      setPreviewMode(converted);
+      previewAction.append(startButton);
+      heroPreview.showModal();
+      startButton.focus({ preventScroll: true });
+      animateFrom(converted ? previewArt : previewPaper, targetBounds, 480, 10);
+      animateFrom(startButton, actionBounds, 330, 8);
+      if (converted && !state.reduced) previewPaper.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 380 });
+    }
+
+    function closeHeroPreview(restoreFocus = true) {
+      if (!heroPreview.open) return;
+      for (const element of [startButton, previewPaper, previewArt, previewArrow, previewResult]) {
+        element.getAnimations().forEach(animation => animation.cancel());
+      }
+      previewAudio.pause();
+      previewAudio.removeAttribute("src");
+      previewAudio.load();
+      heroPreview.close();
+      setPreviewMode(true);
+      startAction.append(startButton);
+      startAction.style.removeProperty("min-height");
+      if (restoreFocus) previewTarget?.focus({ preventScroll: true });
+      previewTarget = null;
+    }
+
+    startButton.addEventListener("click", event => {
+      if (!heroPreview.open) return;
+      if (heroPreview.classList.contains("is-converted")) {
+        closeHeroPreview(false);
+        return;
+      }
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      revealPreviewResult();
+    }, true);
+    startButton.addEventListener("keydown", event => {
+      if (event.key === " " && startButton.hasAttribute("data-converting")) {
+        event.preventDefault();
+        startButton.click();
+      }
+    });
+    heroPreview.querySelector(".hero-preview-close").addEventListener("click", () => closeHeroPreview());
+    heroPreview.addEventListener("click", event => { if (event.target === heroPreview) closeHeroPreview(); });
+    heroPreview.addEventListener("keydown", event => { if (event.key === "Escape") event.stopPropagation(); });
+    heroPreview.addEventListener("cancel", event => {
+      event.preventDefault();
+      closeHeroPreview();
+    });
+    previewPlay.addEventListener("click", () => {
+      if (!previewAudio.paused) {
+        previewAudio.pause();
+        return;
+      }
+      previewAudioStatus.textContent = "";
+      document.querySelector("#learning-audio").pause();
+      previewAudio.play().catch(error => {
+        if (error.name !== "AbortError" && heroPreview.open) previewAudioStatus.textContent = tr("Preview audio is unavailable.");
+      });
+    });
+    for (const event of ["play", "pause", "ended"]) previewAudio.addEventListener(event, () => {
+      previewPlay.querySelector("use").setAttribute("href", previewAudio.paused ? "#icon-play" : "#icon-pause");
+      previewPlay.querySelector("span").textContent = tr(previewAudio.paused ? "Listen to preview" : "Pause preview");
+    });
 
     function modulo(value, divisor) {
       return ((value % divisor) + divisor) % divisor;
@@ -1064,7 +1314,7 @@
       const scanTop = state.centerY - state.cardHeight / 2 - scanPadding;
       scan.style.top = scanTop + "px";
       scan.style.height = state.cardHeight + 2 * scanPadding + "px";
-      badge.style.top = (tabbed ? Math.max(4, scanTop - 41) : scanTop - (mobile ? 52 : 59)) + "px";
+      flowCaption.style.top = (tabbed ? Math.max(4, scanTop - 45) : scanTop - (mobile ? 52 : 59)) + "px";
       const dpr = Math.min(devicePixelRatio || 1, 2);
       canvas.width = Math.round(state.width * dpr);
       canvas.height = Math.round(state.height * dpr);
@@ -1074,11 +1324,27 @@
       render(0);
     }
 
+    function nightArtwork(markup) {
+      return markup.replace(/#[\da-f]{6}\b/gi, color => {
+        const key = Object.keys(ART).find(name => ART[name] === color);
+        return key ? nightArt[key] : color;
+      });
+    }
+
     async function makeTexture(panel, sample, css) {
       const clone = panel.cloneNode(true);
       const height = Math.round(TEXTURE_WIDTH / sample.aspect);
       clone.style.cssText = "position:relative;width:" + TEXTURE_WIDTH + "px;height:" + height + "px;transform:none;visibility:visible";
       const markup = new XMLSerializer().serializeToString(clone);
+      if (!panel.querySelector(".output-surface")) return rasterizeTexture(markup, height, css);
+      const [texture, nightTexture] = await Promise.all([
+        rasterizeTexture(markup, height, css), rasterizeTexture(nightArtwork(markup), height, css)
+      ]);
+      texture.night = nightTexture;
+      return texture;
+    }
+
+    async function rasterizeTexture(markup, height, css) {
       const svg = '<svg xmlns="http://www.w3.org/2000/svg" width="' + TEXTURE_WIDTH + '" height="' + height + '"><style>' + css + '</style><foreignObject width="100%" height="100%">' + markup + '</foreignObject></svg>';
       const image = new Image();
       image.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
@@ -1108,10 +1374,15 @@
       // Open silhouettes share an optical height without adding a card or a frame.
       const scale = height * .90 / (bottom - top + 1);
       const shift = height * .05 - top * scale;
-      const fitted = document.createElement("canvas");
-      fitted.width = width;
-      fitted.height = height;
-      fitted.getContext("2d").drawImage(texture, 0, shift, width, height * scale);
+      function fit(surface) {
+        const fitted = document.createElement("canvas");
+        fitted.width = width;
+        fitted.height = height;
+        fitted.getContext("2d").drawImage(surface, 0, shift, width, height * scale);
+        return fitted;
+      }
+      const fitted = fit(texture);
+      if (texture.night) fitted.night = fit(texture.night);
       item.outputTexture = fitted;
       item.outputY = { scale, shift: shift / height };
     }
@@ -1169,13 +1440,14 @@
       const xLeft = Math.max(0, geometry(left).x);
       const xRight = Math.min(state.width, geometry(right).x);
       const gate = state.width / 2;
+      const output = state.dark ? item.outputTexture.night || item.outputTexture : item.outputTexture;
       // Whole screen-pixel columns avoid dark seams between adjacent strips.
       for (let x = Math.floor(xLeft); x < xRight; x += 1) {
         const x0 = Math.max(x, xLeft);
         const x1 = Math.min(x + 1, xRight);
         if (x0 < gate) drawStrip(item.inputTexture, item, theta,
           angleAtX(x0), angleAtX(Math.min(gate, x1)), x0, Math.min(gate, x1));
-        if (x1 > gate) drawStrip(item.outputTexture, item, theta,
+        if (x1 > gate) drawStrip(output, item, theta,
           angleAtX(Math.max(gate, x0)), angleAtX(x1), Math.max(gate, x0), x1);
       }
       context.globalAlpha = 1;
@@ -1237,7 +1509,7 @@
         context.globalAlpha = Math.sin(phase * Math.PI) * .24 * smoothstep((state.width - point.x) / (state.width * .11));
         context.beginPath();
         context.ellipse(point.x, state.centerY + (yFraction - .5) * item.height * point.scale, rx, ry, 0, 0, Math.PI * 2);
-        context.strokeStyle = ART.hot;
+        context.strokeStyle = state.dark ? nightArt.hot : ART.hot;
         context.lineWidth = .75;
         context.stroke();
       });
@@ -1277,6 +1549,7 @@
       if (!state.ready) return;
       let crossing = null;
       items.forEach((item, index) => {
+        const hitAreas = [null, null];
         // At wide aspect ratios, one repetition can enter the left edge
         // while the previous repetition is still leaving the right edge.
         const base = item.center + state.offset;
@@ -1287,16 +1560,34 @@
           const theta = base + repeat * state.period;
           drawSurface(item, theta);
           drawSignalMotion(item, theta, index);
+          for (let side = 0; side < item.targets.length; side += 1) {
+            const left = Math.max(side ? 0 : -VIEW_ANGLE, theta - halfArc);
+            const right = Math.min(side ? VIEW_ANGLE : 0, theta + halfArc);
+            if (right <= left) continue;
+            const x = Math.max(state.width * .035, geometry(left).x);
+            const width = Math.min(state.width * .975, geometry(right).x) - x;
+            if (width < 26 || width <= (hitAreas[side]?.width || 0)) continue;
+            const height = item.height * geometry((left + right) / 2).scale;
+            hitAreas[side] = { x, y: state.centerY - height / 2, width, height };
+          }
           if (Math.abs(theta) >= halfArc) continue;
           crossing = { item, theta, index };
           drawDissolve(item, theta, index);
           if (state.active !== index) {
             state.active = index;
-            badgeInput.dataset.kind = item.sample.type;
-            badgeInput.textContent = tr(item.sample.type);
-            if (!state.reduced) badgeInput.animate([{ opacity: .35 }, { opacity: 1 }], { duration: 180, easing: "ease-out" });
+            updateFlowCaption();
+            if (!state.reduced) flowCaption.animate([{ opacity: .78 }, { opacity: 1 }], { duration: 180, easing: "ease-out" });
           }
         }
+        item.targets.forEach((target, side) => {
+          const area = hitAreas[side];
+          target.hidden = !area;
+          if (!area) return;
+          target.style.left = area.x + "px";
+          target.style.top = area.y + "px";
+          target.style.width = area.width + "px";
+          target.style.height = area.height + "px";
+        });
       });
       updateSparks(dt, crossing);
     }
@@ -1304,7 +1595,9 @@
     function tick(timestamp) {
       const dt = state.lastTimestamp ? Math.min((timestamp - state.lastTimestamp) / 1000, .05) : 0;
       state.lastTimestamp = timestamp;
-      if (state.ready && heroInView && !state.paused && !state.pendingDrag) {
+      const focused = belt.contains(document.activeElement) && document.activeElement.matches(":focus-visible");
+      const animating = !heroPreview.open && (!focused || state.dragging);
+      if (state.ready && heroInView && animating && !state.paused && !state.pendingDrag) {
         state.time += dt;
         state.hover += ((state.isHovering ? 1 : 0) - state.hover) * Math.min(1, dt * 4);
         if (!state.dragging) {
@@ -1313,7 +1606,7 @@
           state.offset = modulo(state.offset + state.velocity * dt, state.period);
         }
       }
-      if (heroInView && (!state.paused || state.dragging || state.pendingDrag)) render(dt);
+      if (heroInView && animating && (!state.paused || state.dragging || state.pendingDrag)) render(dt);
       state.frameId = requestAnimationFrame(tick);
     }
 
@@ -1340,20 +1633,21 @@
     belt.addEventListener("pointerleave", () => { state.isHovering = false; });
     belt.addEventListener("dragstart", (event) => { event.preventDefault(); });
     belt.addEventListener("pointerdown", (event) => {
-      if (event.button !== 0) return;
+      if (!event.isPrimary || event.button !== 0) return;
       state.pendingDrag = true;
+      state.wasDragged = false;
       state.dragX = event.clientX;
       state.dragTime = event.timeStamp;
       state.dragOffset = 0;
       state.velocity = 0;
-      if (event.pointerType === "mouse") belt.setPointerCapture(event.pointerId);
     });
     belt.addEventListener("pointermove", (event) => {
-      if (!state.pendingDrag) return;
+      if (!event.isPrimary || !state.pendingDrag) return;
       const dx = event.clientX - state.dragX;
       state.dragOffset += dx;
       if (!state.dragging && Math.abs(state.dragOffset) >= 3) {
         state.dragging = true;
+        state.wasDragged = true;
         belt.classList.add("is-dragging");
         belt.setPointerCapture(event.pointerId);
       }
@@ -1369,18 +1663,18 @@
     });
 
     function releasePointer(event) {
-      if (!state.pendingDrag) return;
+      if (!event.isPrimary || !state.pendingDrag) return;
       state.pendingDrag = false;
       state.dragging = false;
       belt.classList.remove("is-dragging");
       if (belt.hasPointerCapture(event.pointerId)) belt.releasePointerCapture(event.pointerId);
       if (state.paused) state.velocity = 0;
     }
-    belt.addEventListener("pointerup", releasePointer);
-    belt.addEventListener("pointercancel", releasePointer);
-    belt.addEventListener("lostpointercapture", releasePointer);
+    window.addEventListener("pointerup", releasePointer);
+    window.addEventListener("pointercancel", releasePointer);
+    belt.addEventListener("lostpointercapture", event => { if (event.target === belt) releasePointer(event); });
     belt.addEventListener("keydown", (event) => {
-      if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+      if (event.target !== belt || (event.key !== "ArrowLeft" && event.key !== "ArrowRight")) return;
       event.preventDefault();
       state.offset = modulo(state.offset + (event.key === "ArrowRight" ? .055 : -.055), state.period);
       render(0);
@@ -1422,7 +1716,7 @@
     const generationFeedback = document.querySelector("#generation-feedback");
     const MAX_FILE_SIZE = 20 * 1024 * 1024;
     const MAX_TEXT_LENGTH = 500000;
-    const createState = { input: "file", file: null, fileText: "", fileStatus: "empty", pages: null, reading: false, readToken: 0, fileReader: null, pdfTask: null, mode: "quick", openingExample: false };
+    const createState = { input: "file", file: null, fileText: "", fileStatus: "empty", pages: null, reading: false, readToken: 0, fileReader: null, pdfTask: null, mode: "quick", openingExample: false, generating: false };
     const modeSettings = {
       quick: { name: "Quick Overview", depth: "concise", initialView: "podcast" },
       deep: { name: "Deep Dive", depth: "detailed", initialView: "visual-guide" }
@@ -1459,8 +1753,8 @@
       if (createState.input === "text") setSourceError(tooLong ? "Keep your text under 500,000 characters." : "");
       const ready = activeSourceReady();
       const reading = createState.input === "file" && createState.reading;
-      continueButton.disabled = !ready || createState.openingExample;
-      continueButton.firstChild.nodeValue = tr(createState.input === "text" && sourceText.value.trim() === exampleText || createState.input === "file" && createState.sampleId ? "Explore sample" : "Generate") + " ";
+      continueButton.disabled = !ready || createState.openingExample || createState.generating;
+      continueButton.firstChild.nodeValue = tr(createState.generating ? "Preparing" : "Generate") + " ";
       sourceStateLabel.classList.toggle("is-ready", ready);
       sourceStateLabel.textContent = tr(reading ? "READING SOURCE" : ready ? "SOURCE READY" : createState.input === "file" && createState.fileStatus === "error" ? "CHECK SOURCE" : "NO SOURCE YET");
       fileReady.setAttribute("aria-busy", String(createState.reading));
@@ -1500,10 +1794,6 @@
     });
     sourceText.addEventListener("input", () => { clearGenerationFeedback(); updateSetup(); });
     document.querySelector("#clear-text").addEventListener("click", () => { sourceText.value = ""; clearGenerationFeedback(); updateSetup(); sourceText.focus({ preventScroll: true }); });
-    document.querySelector("#try-example").addEventListener("click", () => {
-      sourceText.value = exampleText;
-      switchSource("text", true);
-    });
     function cancelRead() {
       createState.readToken += 1;
       const reader = createState.fileReader;
@@ -1516,7 +1806,6 @@
     function removeFile(moveFocus = true) {
       cancelRead();
       createState.file = null;
-      createState.sampleId = null;
       createState.fileText = "";
       createState.fileStatus = "empty";
       createState.fileError = "";
@@ -1620,8 +1909,6 @@
         if (!text.trim() || text.includes("\0")) throw new Error(isPdf ? "No PDF text" : "No text");
         if (text.length > MAX_TEXT_LENGTH) throw new RangeError("Source too long");
         createState.fileText = text;
-        createState.sampleId = await window.ClarityExamples?.identify(text);
-        if (token !== createState.readToken) return;
         createState.fileStatus = "ready";
         createState.reading = false;
         fileMeta.textContent = file.name.split(".").pop().toUpperCase() + " · " + formatSize(file.size)
@@ -1684,7 +1971,7 @@
     }
     document.querySelector("#create-form").addEventListener("submit", (event) => {
       event.preventDefault();
-      if (!activeSourceReady() || createState.openingExample) return;
+      if (!activeSourceReady() || createState.openingExample || createState.generating) return;
       const request = new CustomEvent("clarity:generate", { cancelable: true, detail: buildLearningSetup() });
       if (document.dispatchEvent(request)) {
         generationFeedback.textContent = tr("The learning service could not start. Refresh the page and try again.");
@@ -1759,19 +2046,27 @@
       updateSetup(); syncMotionButton();
       if (sourceError.dataset.message) setSourceError(sourceError.dataset.message);
       if (!generationFeedback.hidden) generationFeedback.textContent = tr(generationFeedback.textContent);
-      badgeInput.textContent = tr(badgeInput.dataset.kind || "Research paper");
+      updateFlowCaption();
+      updateReelLabels();
     });
+    document.addEventListener("clarity:theme", () => {
+      state.dark = document.documentElement.dataset.theme === "dark";
+      render(0);
+    });
+    state.dark = document.documentElement.dataset.theme === "dark";
     new ResizeObserver(resize).observe(belt);
     new IntersectionObserver(([entry]) => { heroInView = entry.isIntersecting && entry.intersectionRatio > 0; }, { threshold: [0, .01] }).observe(hero);
     updateSetup();
     updateNavigationLocation();
     syncMotionButton();
+    updateFlowCaption();
+    updateReelLabels();
     resize();
     prepareTextures().catch((error) => console.error("Could not prepare the hero preview.", error));
     state.frameId = requestAnimationFrame(tick);
   </script>
-  <script src="examples.js?v=ae9896c000c1"></script>
-  <script src="learning.js?v=0b91f0889e74"></script>
-  <script src="web-controls.js?v=b2f55c78c110"></script>
+  <script src="examples.js?v=b7041afda4d5"></script>
+  <script src="learning.js?v=477024e8a41c"></script>
+  <script src="web-controls.js?v=bbb6bccff980"></script>
 </body>
 </html>

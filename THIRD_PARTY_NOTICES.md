@@ -8,6 +8,8 @@ The repository's MIT license applies to original Clarity code, not to the indepe
 | Open Intelligent UI | https://github.com/CopilotKit/OpenIntelligentUI | MIT; `vendor/OIUI-LICENSE.txt` |
 | Three.js 0.187.0 | https://threejs.org/ | MIT; `web/assets/THREE-LICENSE.txt` and bundled legal notices |
 | Mozilla PDF.js 6.5.438 | https://github.com/mozilla/pdf.js | Apache-2.0; `licenses/PDFJS-APACHE-2.0.txt` and bundled notices |
+| eSpeak NG via Spellophone | https://github.com/Spelling-Creator/spellophone | GPL-3.0-or-later; server-side npm dependency |
+| LAME JS encoder | https://github.com/breezystack/lamejs | LGPL-3.0; server-side npm dependency |
 | Fonts | See `web/font-licenses.txt` | Original font licenses retained |
 | *Flatland: A Romance of Many Dimensions*, Edwin A. Abbott, 1884 | https://www.gutenberg.org/ebooks/45506 | Project Gutenberg #45506; original file and Gutenberg notice retained in `web/examples/flatland.txt` |
 | *Flocks, Herds, and Schools: A Distributed Behavioral Model*, Craig W. Reynolds, SIGGRAPH 1987, Computer Graphics 21(4), pp. 25–34 | https://www.red3d.com/cwr/papers/1987/boids.html | © 1987 ACM. Copying is by permission of the Association for Computing Machinery for this noncommercial educational demonstration, under the notice retained on page 1 of `web/examples/boids.pdf`. The paper is not MIT-licensed. |

@@ -3,10 +3,11 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { handler } from '../netlify/functions/clarity.mjs';
+import { createHandler } from '../netlify/functions/clarity.mjs';
 import catalogue from '../prepared/catalogue.json' with { type:'json' };
 
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
+const handler=createHandler(()=>null,()=>false);
 const call=(route,body)=>handler({path:'/api/clarity'+route,httpMethod:body?'POST':'GET',body:body?JSON.stringify(body):undefined});
 const read=result=>JSON.parse(result.body);
 const sources={

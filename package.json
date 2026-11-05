@@ -4,10 +4,17 @@
   "private": true,
   "description": "Source-linked podcasts and interactive visual guides for complex ideas.",
   "type": "module",
-  "engines": { "node": ">=22" },
+  "engines": {
+    "node": ">=22.12"
+  },
   "scripts": {
     "build": "node scripts/build-site.mjs",
-    "test": "node --test tests/hosted-api.test.mjs"
+    "test": "node --test"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "@breezystack/lamejs": "1.2.7",
+    "@netlify/blobs": "11.1.7",
+    "@spelling-creator/spellophone": "0.2.1"
+  }
 }
