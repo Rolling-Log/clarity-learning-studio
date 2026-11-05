@@ -1,4 +1,4 @@
-// product-workspace/02-resources/upstream/open-intelligent-ui/packages/design-system/src/index.ts
+// ../../02-resources/upstream/open-intelligent-ui/packages/design-system/src/index.ts
 var THEME_CSS = `
 :root {
   --color-background-primary: #ffffff;
@@ -319,7 +319,7 @@ var IMPORTMAP_SCRIPT_TAG = `<script type="importmap">
 ${JSON.stringify(IMPORTMAP, null, 2).split("\n").map((line) => "  " + line).join("\n")}
   </script>`;
 
-// product-workspace/02-resources/upstream/open-intelligent-ui/apps/mcp/src/renderer.ts
+// ../../02-resources/upstream/open-intelligent-ui/apps/mcp/src/renderer.ts
 var BRIDGE_JS = `
 window.sendPrompt = function(text) {
   window.parent.postMessage({ type: 'send-prompt', text: text }, '*');
