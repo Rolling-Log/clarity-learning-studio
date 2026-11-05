@@ -1,0 +1,13 @@
+{
+  "name": "clarity-learning-studio",
+  "version": "0.16.0",
+  "private": true,
+  "description": "Source-linked podcasts and interactive visual guides for complex ideas.",
+  "type": "module",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "build": "node scripts/build-site.mjs",
+    "test": "node --test tests/hosted-api.test.mjs"
+  },
+  "license": "MIT"
+}

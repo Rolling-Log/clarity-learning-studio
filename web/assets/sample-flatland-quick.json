@@ -1,0 +1,45 @@
+{
+  "transcript": [
+    {
+      "chapterIndex": 0,
+      "speaker": "Clarity",
+      "dialogue": "Flatland, by Edwin Abbott Abbott, begins with a world confined to a plane  From above, we can see triangles and squares."
+    },
+    {
+      "chapterIndex": 1,
+      "speaker": "Clarity",
+      "dialogue": "The first half of the book is also a social satire  Shapes mark status."
+    },
+    {
+      "chapterIndex": 2,
+      "speaker": "Clarity",
+      "dialogue": "In a dream, the Square visits Lineland  Its king knows only one dimension and cannot understand a second."
+    },
+    {
+      "chapterIndex": 3,
+      "speaker": "Clarity",
+      "dialogue": "Now move the sphere through the plane  Before contact, there is no intersection."
+    },
+    {
+      "chapterIndex": 4,
+      "speaker": "Clarity",
+      "dialogue": "The Sphere eventually lifts the Square outside his world  A new viewpoint makes previously hidden interiors visible."
+    },
+    {
+      "chapterIndex": 5,
+      "speaker": "Clarity",
+      "dialogue": "The return to Flatland brings resistance, not celebration  The Square struggles to explain his discovery and is punished for it."
+    }
+  ],
+  "duration": 40.11950113378685,
+  "narration": "Prepared sample | local system voice",
+  "approximateCues": false,
+  "cues": [
+    0,
+    8.498049886621315,
+    13.431746031746032,
+    20.22984126984127,
+    25.433333333333334,
+    32.28154195011338
+  ]
+}

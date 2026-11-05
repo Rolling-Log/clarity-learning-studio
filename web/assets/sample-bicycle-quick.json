@@ -1,0 +1,27 @@
+{
+    "transcript":  [
+                       {
+                           "chapterIndex":  0,
+                           "speaker":  "Clarity",
+                           "dialogue":  "Inside a bicycle. Follow the power from your feet to the road. A pedal turns the crank and the front chainring. The chain pulls a rear sprocket, which drives the rear wheel. The tire pushes the road backward, and the road pushes the bicycle forward. Select a numbered part in the guide to see where each step happens."
+                       },
+                       {
+                           "chapterIndex":  1,
+                           "speaker":  "Clarity",
+                           "dialogue":  "Gears change the trade-off. With forty-two teeth at the front and twenty-eight at the rear, one pedal turn gives one point five wheel turns. Choose a smaller rear sprocket and you travel farther per pedal turn. A larger rear sprocket gives less distance, but more wheel torque for the same crank torque. Try changing the gear in the guide. The derailleur moves the chain to the chosen rear sprocket. Gears do not create extra power."
+                       },
+                       {
+                           "chapterIndex":  2,
+                           "speaker":  "Clarity",
+                           "dialogue":  "The frame holds the wheels and controls in place. Your handlebar steers the front wheel. On this example, the brake lever pulls a cable, and the brake pads squeeze the rim. Friction resists the wheel\u0027s rotation. Remember three connections: pedals to chain, chain to rear wheel, and tire to road. The guide\u0027s speed values come from its stated ideal model, not a measured ride."
+                       }
+                   ],
+    "duration":  76.9902947845805,
+    "narration":  "Prepared sample 路 local system voice",
+    "approximateCues":  false,
+    "cues":  [
+                 0,
+                 21.76077097505669,
+                 50.225396825396828
+             ]
+}

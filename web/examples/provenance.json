@@ -1,0 +1,19 @@
+[
+  {
+    "file": "flatland.txt",
+    "url": "https://www.gutenberg.org/cache/epub/45506/pg45506.txt",
+    "sha256": "17ff51ad538e3ce6950b85abffebb0cd9b130493caec313f1916785eabd1ce3c",
+    "bytes": 210793
+  },
+  {
+    "file": "boids.pdf",
+    "url": "https://www.red3d.com/cwr/papers/1987/SIGGRAPH87.pdf",
+    "sha256": "51d39235fc07ddeeb4dea0c7ad780a8c5785a7961982e52447da72a28fd103b0",
+    "bytes": 102978
+  },
+  {
+    "dependency": "three",
+    "version": "0.187.0",
+    "license": "MIT"
+  }
+]

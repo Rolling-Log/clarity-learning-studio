@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 600" fill="none" aria-hidden="true">
+  <defs>
+    <linearGradient id="frame-paint" x1="420" y1="210" x2="565" y2="432" gradientUnits="userSpaceOnUse"><stop stop-color="#aaa0c9"/><stop offset=".35" stop-color="#76669e"/><stop offset=".7" stop-color="#55466f"/><stop offset="1" stop-color="#9889b7"/></linearGradient>
+    <linearGradient id="metal" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#e0ddd7"/><stop offset=".3" stop-color="#99999a"/><stop offset=".5" stop-color="#ece9e3"/><stop offset=".72" stop-color="#77777c"/><stop offset="1" stop-color="#bcb8b8"/></linearGradient>
+    <linearGradient id="rubber" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#343238"/><stop offset=".5" stop-color="#48464a"/><stop offset="1" stop-color="#25242a"/></linearGradient>
+    <radialGradient id="sprocket"><stop stop-color="#57545a"/><stop offset=".55" stop-color="#beb9b5"/><stop offset=".87" stop-color="#77727a"/><stop offset="1" stop-color="#bfbab5"/></radialGradient>
+    <filter id="ground-shadow" x="-25%" y="-150%" width="150%" height="400%"><feGaussianBlur stdDeviation="9"/></filter>
+    <g id="wheel-spokes" stroke="#a6a1a2" stroke-width=".8" opacity=".85">
+      <path d="M0-136 0 136M-136 0H136M-96.2-96.2 96.2 96.2M-96.2 96.2 96.2-96.2M-52-125.7 52 125.7M-125.7-52 125.7 52M-125.7 52 125.7-52M-52 125.7 52-125.7M-26.5-133.4 26.5 133.4M-133.4-26.5 133.4 26.5M-133.4 26.5 133.4-26.5M-26.5 133.4 26.5-133.4M-75.6-113.1 75.6 113.1M-113.1-75.6 113.1 75.6M-113.1 75.6 113.1-75.6M-75.6 113.1 75.6-113.1"/>
+    </g>
+    <g id="wheel-unit"><circle r="149" stroke="url(#rubber)" stroke-width="14"/><circle r="141" stroke="#c5bbaa" stroke-width="5"/><circle r="136" stroke="#a3a0a1" stroke-width="3"/><circle r="132.5" stroke="#ece8e1" stroke-width="1.4"/><use href="#wheel-spokes"/><circle r="10" fill="url(#metal)" stroke="#77717a" stroke-width="1.4"/><circle r="3.2" fill="#514d54"/><path d="M52-124 55-131" stroke="#56515a" stroke-width="2.2" stroke-linecap="round"/></g>
+  </defs>
+  <g id="bike-drawing" fill="none">
+    <ellipse cx="550" cy="565" rx="375" ry="8" fill="#43353e" opacity=".12" filter="url(#ground-shadow)"/>
+    <path d="M105 563H975" stroke="#d6d0c8" stroke-width="1"/>
+    <g data-part="frame" class="bike-part">
+      <g transform="translate(270 405)"><g class="wheel-rotation rear-wheel"><use href="#wheel-unit"/></g></g>
+      <g transform="translate(820 405)"><g class="wheel-rotation front-wheel"><use href="#wheel-unit"/></g></g>
+      <path d="M270 405 440 223 482 405Z" stroke="#62555f" stroke-width="9" stroke-linejoin="round"/>
+      <path d="M270 405 440 223" stroke="#97808d" stroke-width="3" stroke-linecap="round"/>
+      <path d="M440 223 725 222 745 281 482 405 440 223Z" stroke="url(#frame-paint)" stroke-width="17" stroke-linejoin="round"/>
+      <path d="M447 219 720 218M493 392 733 281M443 232 478 388" stroke="#c9aab9" stroke-opacity=".45" stroke-width="2.2" stroke-linecap="round"/>
+      <path d="M725 222 745 281" stroke="#654356" stroke-width="20"/>
+      <path d="M728 221 745 277" stroke="#b18f9f" stroke-width="2.2"/>
+      <path d="M746 278Q750 326 815 402" stroke="url(#metal)" stroke-width="13" stroke-linecap="round"/>
+      <path d="M752 286Q763 337 821 400" stroke="#59535c" stroke-width="6" stroke-linecap="round"/>
+      <path d="M431 181 440 223" stroke="url(#metal)" stroke-width="10"/>
+      <path d="M394 174C405 169 425 172 441 175L474 176Q481 180 472 185C450 194 420 184 397 183Q389 181 394 174Z" fill="#39343c" stroke="#61545e" stroke-width="1.5"/>
+      <path d="M405 176Q427 175 448 179" stroke="#84717f" stroke-width="1.5" stroke-linecap="round"/>
+      <path d="M436 213 443 211M449 254 457 252M723 231 731 229" stroke="#d1bdc6" stroke-width="3"/>
+      <path d="m501 275 136-1" stroke="#d7bdc9" stroke-width="1.1" opacity=".75"/>
+      <text x="550" y="261" fill="#e8d9df" font-family="Arial,sans-serif" font-size="9" letter-spacing="5">CLARITY</text>
+      <circle cx="482" cy="405" r="13" fill="url(#metal)" stroke="#6b5e6a" stroke-width="3"/>
+    </g>
+    <g data-part="brakes" class="bike-part">
+      <path d="m723 220-12-44 43-12" stroke="url(#metal)" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M754 164H804Q820 165 815 178L803 187" stroke="#39343c" stroke-width="10" stroke-linecap="round"/>
+      <path d="M749 165H782" stroke="#89818a" stroke-width="2"/>
+      <path d="m787 175 10 21" stroke="#6f6873" stroke-width="5" stroke-linecap="round"/>
+      <path d="M793 187C778 214 772 254 750 273M786 182C677 161 569 174 440 226L363 286" stroke="#888089" stroke-width="1.2"/>
+      <path d="M741 272Q718 269 715 294M744 273Q762 276 766 301M359 284Q340 278 334 302M361 284Q374 295 374 309" stroke="url(#metal)" stroke-width="5.5" stroke-linecap="round"/>
+      <path d="m714 293 6 9m43-5 5 8m-435-6 7 6m32 0 5 8" stroke="#3c353e" stroke-width="6" stroke-linecap="round"/>
+    </g>
+    <g data-part="cassette" class="bike-part"><g transform="translate(270 405)">
+      <circle r="34" fill="url(#sprocket)" stroke="#635d67" stroke-width="2" stroke-dasharray="2.7 2.4"/><circle r="29" stroke="#d0cbc4" stroke-width="2" stroke-dasharray="2.5 2"/><circle r="24.5" stroke="#726c75" stroke-width="2.8" stroke-dasharray="2.3 2"/><circle r="20" stroke="#d1cbc6" stroke-width="2.3" stroke-dasharray="2 1.8"/><circle r="15" stroke="#605a64" stroke-width="3" stroke-dasharray="2 1.6"/><circle r="9" fill="url(#metal)"/><circle r="3" fill="#48414c"/>
+    </g></g>
+    <g data-part="crank" class="bike-part"><g transform="translate(482 405)"><g class="crank-rotation">
+      <circle r="48" fill="#c4beb7" stroke="#6d646f" stroke-width="3" stroke-dasharray="2.4 2.4"/>
+      <circle r="41" fill="#f0ece6" stroke="#8f8591" stroke-width="1.5"/>
+      <path d="M-6-10 0-34 11-28 10-5 32 7 27 19 5 11-13 29-24 21-9 1-30-17-21-28Z" fill="url(#metal)" stroke="#77707b" stroke-width="1"/>
+      <circle r="13" fill="#7d717d" stroke="#aaa1aa" stroke-width="1"/>
+      <path d="M0 0 55 33" stroke="#514a55" stroke-width="12" stroke-linecap="round"/><path d="M3 0 54 30" stroke="#9d939e" stroke-width="3" stroke-linecap="round"/>
+      <circle r="5" fill="url(#metal)"/><rect x="43" y="28" width="37" height="10" rx="3" fill="#464049" stroke="#aaa0a4" stroke-width="1.5"/>
+      <path d="M48 31H74" stroke="#b4aab1" stroke-width="1"/>
+    </g></g></g>
+    <g data-part="derailleur" class="bike-part">
+      <path d="M273 411 294 443 279 474" stroke="#77707b" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/><path d="m278 411 25 19-8 18-16-11" fill="#57515c" stroke="#aaa0a9" stroke-width="2"/>
+      <path d="m288 446-8 29" stroke="#bab2ba" stroke-width="5" stroke-linecap="round"/>
+      <circle cx="290" cy="443" r="9" fill="url(#sprocket)" stroke="#615968" stroke-width="2" stroke-dasharray="2 2"/><circle cx="279" cy="474" r="9" fill="url(#sprocket)" stroke="#615968" stroke-width="2" stroke-dasharray="2 2"/>
+      <circle cx="290" cy="443" r="2" fill="#d8d0d5"/><circle cx="279" cy="474" r="2" fill="#d8d0d5"/>
+    </g>
+    <g data-part="chain" class="bike-part">
+      <path class="chain-base" d="M270 376 480 357A48 48 0 0 1 490 452L282 483Q266 486 270 473L281 448Q283 440 277 433A29 29 0 0 1 270 376Z" stroke="#544d57" stroke-width="4.5" stroke-linejoin="round"/>
+      <path class="chain-links" d="M270 376 480 357A48 48 0 0 1 490 452L282 483Q266 486 270 473L281 448Q283 440 277 433A29 29 0 0 1 270 376Z" stroke="#c5b9c1" stroke-width="2.4" stroke-dasharray="2.5 4.2" stroke-linecap="round"/>
+    </g>
+    <path d="M479 405 451 375" stroke="#655b69" stroke-width="7" stroke-linecap="round" opacity=".55"/>
+  </g>
+</svg>

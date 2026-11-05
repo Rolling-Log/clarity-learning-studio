@@ -1,0 +1,45 @@
+{
+  "transcript": [
+    {
+      "chapterIndex": 0,
+      "speaker": "Clarity",
+      "dialogue": "Craig Reynolds's 1987 paper asks how a flock can move together without giving every bird a scripted path. Begin with separation. Each simulated agent steers away from close neighbors. Turn this rule off, reset the same seed, and compare the next few seconds. A steering preference reduces crowding, but it is not a guarantee that agents can never overlap."
+    },
+    {
+      "chapterIndex": 1,
+      "speaker": "Clarity",
+      "dialogue": "Alignment matches the average velocity of nearby agents. It gradually coordinates their headings. Turn alignment off while leaving the other two rules on. The agents can still gather and avoid crowding, yet travel in less coordinated directions. The order score measures mean heading agreement. It is a measurement of this teaching model, not an experimental value copied from the paper."
+    },
+    {
+      "chapterIndex": 2,
+      "speaker": "Clarity",
+      "dialogue": "Cohesion steers an agent toward the local center of its neighbors. It is different from alignment: location and heading are different information. It is also different from attraction toward one global center. Turn cohesion off and watch how the flock spreads. Resetting keeps the same initial conditions, making the comparison more useful."
+    },
+    {
+      "chapterIndex": 3,
+      "speaker": "Clarity",
+      "dialogue": "Select follow one agent. Its halo marks the distance limit, while the links identify neighbors within the forward-biased field of view. In this model that field spans two hundred and seventy degrees. Agents outside the neighborhood do not contribute to its three steering rules. Change the perception radius and observe how the local information changes."
+    },
+    {
+      "chapterIndex": 4,
+      "speaker": "Clarity",
+      "dialogue": "The group pattern emerges from repeated local decisions. No agent sees the whole flock and no leader assigns its route. Compare all three rules with a one-rule condition over several seconds. A global order score can be low even when several smaller groups are locally well organized. The score is useful evidence, but it is not a complete description of flocking."
+    },
+    {
+      "chapterIndex": 5,
+      "speaker": "Clarity",
+      "dialogue": "Finally, keep the limits visible. This example uses a small three-dimensional flock, weighted steering, a fixed time step and wrapping boundaries. Reynolds's paper describes richer flight dynamics, prioritized behavior, obstacle avoidance and animation control. Our controls explain the central idea; they do not recreate every detail of the original implementation or validate a model of real birds. The source links lead back to the original paper."
+    }
+  ],
+  "duration": 149.81913832199547,
+  "narration": "Prepared sample | local system voice",
+  "approximateCues": false,
+  "cues": [
+    0,
+    25.195102040816327,
+    51.029750566893426,
+    73.10997732426304,
+    96.30984126984127,
+    119.25528344671201
+  ]
+}

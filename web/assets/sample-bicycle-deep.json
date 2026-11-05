@@ -1,0 +1,27 @@
+{
+    "transcript":  [
+                       {
+                           "chapterIndex":  0,
+                           "speaker":  "Clarity",
+                           "dialogue":  "Inside a bicycle. Start with the whole bicycle in the guide, then follow the four drivetrain details below it. First, your foot presses a pedal. That force turns the crank and the front chainring. The front chainring pulls on the chain. The moving chain turns a selected rear sprocket. When the drivetrain is engaged, that sprocket drives the rear wheel. There is one final connection: the tire and the road. The tire pushes backward on the road. The road pushes forward on the tire, carrying the bicycle forward. The arrows in the guide trace the same sequence."
+                       },
+                       {
+                           "chapterIndex":  1,
+                           "speaker":  "Clarity",
+                           "dialogue":  "Now change the leverage. The gear ratio is front teeth divided by rear teeth. In our example, forty-two divided by twenty-eight equals one point five. That means one complete turn of the pedals produces one and a half turns of the rear wheel. Choose fourteen rear teeth and the ratio is three. The wheel travels farther per pedal turn, but the rear-wheel torque is lower for the same crank torque. A larger rear sprocket reverses that trade-off. It gives more rear-wheel torque and less distance per pedal turn. The derailleur selects the sprocket and takes up chain slack. Try the seven gear positions, then change the cadence. The displayed speed is calculated using a two point one metre wheel circumference. This is an ideal illustration, not a prediction of a real ride, and the gears never create additional power."
+                       },
+                       {
+                           "chapterIndex":  2,
+                           "speaker":  "Clarity",
+                           "dialogue":  "Finally, explore the frame, wheels and controls. The diamond frame connects two triangles. The wheels rotate around their hubs, and the tires are the bicycle\u0027s contact with the road. The handlebar turns the front wheel. This example uses rim brakes. Pulling a lever tensions a cable. The caliper brings the brake pads against the rim. Friction then resists rotation. Braking and steering depend on tire grip. Return to the drivetrain and trace the whole chain of events: your foot, the crank, the chain, a rear sprocket, the wheel, and finally the road. A useful visual guide lets you see each part in the whole, then explore what changes when you adjust one thing."
+                       }
+                   ],
+    "duration":  141.12435374149661,
+    "narration":  "Prepared sample 路 local system voice",
+    "approximateCues":  false,
+    "cues":  [
+                 0,
+                 39.813151927437644,
+                 94.188208616780045
+             ]
+}

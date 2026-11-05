@@ -1,0 +1,27 @@
+{
+  "approximateCues": false,
+  "duration": 75.80539682539683,
+  "cues": [
+    0.0,
+    24.845034013605442,
+    46.96045351473923
+  ],
+  "transcript": [
+    {
+      "dialogue": "Welcome to Clarity. This is Learning that lasts. Why do some ideas stay with us while others disappear? Our short reading makes one useful distinction. Reading a passage again can make it feel familiar. But familiarity is not the same as understanding. Close the page and try explaining the idea in your own words. Could you explain it to a friend?",
+      "speaker": "Clarity",
+      "chapterIndex": 0
+    },
+    {
+      "dialogue": "The places where you get stuck are useful. They show you where to look next. Maybe you remember a claim, but cannot explain its reason. Return to that part of the source, then try again. Space these attempts over time. The reading suggests that a short return tomorrow can be more useful than one long session today.",
+      "speaker": "Clarity",
+      "chapterIndex": 1
+    },
+    {
+      "dialogue": "Finally, connect the idea to an example from your own life. Then check the example against the original source. The aim is not to remember every sentence. Keep the central idea, understand how its parts connect, and notice when it might be useful. Here is your takeaway. Explain it. Revisit it. Connect it, and check it. You can explore the visual guide to follow those connections.",
+      "speaker": "Clarity",
+      "chapterIndex": 2
+    }
+  ],
+  "narration": "Prepared sample · local system voice"
+}

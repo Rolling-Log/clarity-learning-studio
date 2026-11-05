@@ -1,0 +1,32 @@
+{
+  "checked_at": "2026-11-04",
+  "repositories": [
+    {
+      "name": "Open Notebook",
+      "url": "https://github.com/lfnovo/open-notebook",
+      "commit": "5e285b7a2e435895c4ee99ad7e4b8d2af64c3239",
+      "version": "1.15.1",
+      "stars_at_check": 41530,
+      "repository_pushed_at": "2026-11-04T00:49:54Z",
+      "license": "MIT",
+      "directory": "02-resources/upstream/open-notebook",
+      "tracked_source_changes": false
+    },
+    {
+      "name": "Open Intelligent UI",
+      "url": "https://github.com/CopilotKit/OpenIntelligentUI",
+      "commit": "8391a94c1c3939c679e40ddd7bfc08a9ef690e70",
+      "stars_at_check": 4137,
+      "repository_pushed_at": "2026-10-13T23:42:37Z",
+      "license": "MIT",
+      "directory": "02-resources/upstream/open-intelligent-ui",
+      "tracked_source_changes": false
+    }
+  ],
+  "notes": [
+    "Star counts and repository push timestamps are a point-in-time observation, not a promise of future maintenance.",
+    "The projects use separate Python virtual environments and lockfiles because their agent dependencies differ.",
+    "Keep upstream license notices when reusing code.",
+    "Versioned output folders v2 and v3 are reserved and do not represent completed releases."
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "approximateCues": false,
+  "duration": 130.10979591836735,
+  "cues": [
+    0.0,
+    39.972471655328796,
+    79.92938775510204
+  ],
+  "transcript": [
+    {
+      "dialogue": "Welcome to Clarity. This is Learning that lasts. Let us start with a familiar experience. You read the same passage a few times. It begins to feel easy. But could you explain the idea with the page closed? The reading distinguishes familiarity from understanding. Recognising words is not the same as reconstructing the idea. Look at the first two concepts in the visual guide. Familiarity leads us to a test: recall. Close the source and explain the main point in your own words. This is an opportunity to notice what you understand, and what is still missing.",
+      "speaker": "Clarity",
+      "chapterIndex": 0
+    },
+    {
+      "dialogue": "Now follow the next connection: notice the gaps. Perhaps you remember the author's claim, but lose the reasoning that supports it. That gap tells you which passage to revisit. It gives your next reading a purpose. After checking the source, try reconstructing the idea again. The reading also suggests spacing these attempts over time. A short return tomorrow can be more useful than one long session today. This is an example from the source, not a timetable that must fit every person. The important connection in this reading is between returning later and getting another chance to reconstruct the idea.",
+      "speaker": "Clarity",
+      "chapterIndex": 1
+    },
+    {
+      "dialogue": "The last two concepts are connect and check. Connect the idea to an example from your own life. You might use this reading method on a topic you need to explain in a class or a meeting. That is an illustrative example. Then compare your explanation with the original source. Did the example preserve the meaning? Did you accidentally change the claim? The reading's goal is not to remember every sentence. It is to keep the central idea, understand how its parts connect, and know when it might be useful. As you explore the guide, select a concept to read its explanation or see the supporting passage. Your three takeaways are: explain the idea in your own words, let the gaps guide what you revisit, and connect an example before checking it against the source.",
+      "speaker": "Clarity",
+      "chapterIndex": 2
+    }
+  ],
+  "narration": "Prepared sample · local system voice"
+}

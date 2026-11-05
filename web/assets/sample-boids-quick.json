@@ -1,0 +1,45 @@
+{
+  "transcript": [
+    {
+      "chapterIndex": 0,
+      "speaker": "Clarity",
+      "dialogue": "Craig Reynolds's 1987 paper asks how a flock can move together without giving every bird a scripted path  Begin with separation."
+    },
+    {
+      "chapterIndex": 1,
+      "speaker": "Clarity",
+      "dialogue": "Alignment matches the average velocity of nearby agents  It gradually coordinates their headings."
+    },
+    {
+      "chapterIndex": 2,
+      "speaker": "Clarity",
+      "dialogue": "Cohesion steers an agent toward the local center of its neighbors  It is different from alignment: location and heading are different information."
+    },
+    {
+      "chapterIndex": 3,
+      "speaker": "Clarity",
+      "dialogue": "Select follow one agent  Its halo marks the distance limit, while the links identify neighbors within the forward-biased field of view."
+    },
+    {
+      "chapterIndex": 4,
+      "speaker": "Clarity",
+      "dialogue": "The group pattern emerges from repeated local decisions  No agent sees the whole flock and no leader assigns its route."
+    },
+    {
+      "chapterIndex": 5,
+      "speaker": "Clarity",
+      "dialogue": "Finally, keep the limits visible  This example uses a small three-dimensional flock, weighted steering, a fixed time step and wrapping boundaries."
+    }
+  ],
+  "duration": 46.99219954648526,
+  "narration": "Prepared sample | local system voice",
+  "approximateCues": false,
+  "cues": [
+    0,
+    8.317913832199546,
+    14.326077097505667,
+    22.44866213151927,
+    30.631383219954643,
+    37.40943310657596
+  ]
+}

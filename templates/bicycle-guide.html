@@ -1,0 +1,132 @@
+<style>
+:root{--accent:#6354a5;--soft:#edeaf5;--ink:#292630;--muted:#706b7b;--rule:#dedbe5;--paper:#fcfbfd;--color-text-primary:var(--ink);--color-text-secondary:var(--muted);--color-background-primary:var(--paper);--color-background-secondary:var(--soft);--color-border-tertiary:var(--rule)}
+*{box-sizing:border-box}html,body{margin:0;padding:0;background:transparent!important;color:var(--ink);font-family:Inter,"Segoe UI",Arial,sans-serif;font-size:13px;line-height:1.5}#content{padding:0!important}button,input{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:4px}button{color:inherit}button:disabled{cursor:default}button[hidden],[hidden]{display:none!important}
+.explorable{padding:0 2px 3px;max-width:1400px;margin:auto}.figure-top{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:2px 0 10px}.figure-top h2{margin:0;font:400 26px/1.2 Georgia,serif;letter-spacing:-.04em}.category-tabs{display:flex;gap:3px;align-items:center;flex-wrap:wrap}.category-tabs button{border:0;border-radius:20px;padding:7px 12px;background:none;color:var(--muted);font-size:11px;white-space:nowrap;transition:background .18s,color .18s}.category-tabs button:hover{background:#f0edf5;color:var(--ink)}.category-tabs button[aria-pressed=true]{background:var(--soft);color:var(--accent)}
+.figure-surface{position:relative;overflow:hidden;border-radius:15px;background:#f3f1f6;border:1px solid #e8e4ed}.figure-surface::after{content:"";position:absolute;inset:0;pointer-events:none;box-shadow:inset 0 1px 0 #ffffffa8;border-radius:inherit}.figure-legend{position:absolute;z-index:1;left:22px;top:17px;display:flex;align-items:center;gap:7px;font-size:10px;color:var(--muted)}.legend-line{height:2px;width:18px;background:var(--accent);border-radius:2px}.figure-index{position:absolute;right:21px;top:16px;color:#827b8d;font:9px ui-monospace,monospace;letter-spacing:.06em}.bike-stage{position:relative;width:100%;max-width:860px;margin:5px auto 4px;transform-origin:center;transition:transform .2s}.bike-stage>svg{display:block;width:100%;height:auto;overflow:visible}.bike-stage>svg,.detail-image svg{pointer-events:none}.bike-part{transition:opacity .3s}.figure-surface[data-category=drivetrain] [data-part=frame],.figure-surface[data-category=drivetrain] [data-part=brakes]{opacity:.84}.figure-surface[data-category=frame] [data-part]:not([data-part=frame]),.figure-surface[data-category=brakes] [data-part]:not([data-part=brakes]){opacity:.24}.figure-surface[data-category=brakes] [data-part=frame]{opacity:.4}
+.hotspot{position:absolute;z-index:3;width:28px;height:28px;min-width:28px;padding:0;display:grid;place-items:center;transform:translate(-50%,-50%);border-radius:50%;border:1px solid var(--accent);background:#fdfcff;color:var(--accent);font:10px ui-monospace,monospace;box-shadow:0 0 0 4px #fcfbfd8f;transition:background .2s,box-shadow .2s}.hotspot:active{transform:translate(-50%,-50%) scale(.98)}.hotspot:hover{background:var(--soft);box-shadow:0 0 0 6px #6354a515}.hotspot[aria-pressed=true]{background:var(--accent);color:white;box-shadow:0 0 0 5px #6354a520}.hotspot-name{position:absolute;left:50%;bottom:calc(100% + 10px);transform:translateX(-50%) translateY(3px);padding:5px 9px;border:1px solid var(--rule);border-radius:7px;background:#fcfbfdf5;color:var(--ink);font:10px/1.4 "Segoe UI",Arial,sans-serif;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .15s,transform .15s}.hotspot:hover .hotspot-name,.hotspot:focus-visible .hotspot-name{opacity:1;transform:translateX(-50%) translateY(0)}
+.power-path{position:absolute;left:23%;right:23%;top:15%;display:flex;align-items:center;gap:11px;color:var(--muted);font-size:10px;justify-content:center;white-space:nowrap}.power-path i{height:1px;flex:1;min-width:10px;background:#b8b0cc;position:relative}.power-path i::after{content:"";position:absolute;right:-1px;top:-2px;width:4px;height:4px;border-top:1px solid #b8b0cc;border-right:1px solid #b8b0cc;transform:rotate(45deg)}.power-path b{color:var(--accent);font-weight:500}.figure-bottom{display:flex;justify-content:space-between;align-items:center;position:absolute;bottom:12px;left:19px;right:17px;pointer-events:none}.figure-note{font:9px ui-monospace,monospace;color:#746c80}.motion-toggle{pointer-events:auto;display:flex;align-items:center;gap:6px;border:1px solid #dcd7e5;background:#fcfbfdc9;padding:5px 9px;border-radius:20px;font-size:10px;color:var(--muted)}.motion-toggle svg{width:11px;height:11px}
+.detail-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:12px}.detail-card{appearance:none;text-align:left;overflow:hidden;position:relative;display:flex;flex-direction:column;gap:0;width:100%;padding:0 0 12px;background:#fcfbfd;border:1px solid var(--rule);border-radius:12px;transition:border-color .2s,background .2s}.detail-card:hover{border-color:#a69cc0}.detail-card[aria-pressed=true]{border-color:var(--accent);box-shadow:inset 0 0 0 .5px var(--accent);background:#f8f6fc}.detail-image{display:block;position:relative;width:100%;height:98px;background:#f1eef5;overflow:hidden;border-bottom:1px solid #e9e5ef}.detail-image svg{display:block;width:100%;height:100%}.detail-number{position:absolute;left:9px;top:8px;font:9px ui-monospace,monospace;color:var(--accent);z-index:1}.detail-card strong{font-size:12px;font-weight:600;line-height:1.4;margin:10px 12px 3px}.detail-card>span:last-child{margin:0 12px;font-size:10.5px;line-height:1.55;color:var(--muted)}.detail-grid.single{grid-template-columns:1fr}.detail-grid.single .detail-card{display:grid;grid-template-columns:150px 1fr;padding:0;grid-template-rows:auto auto;column-gap:8px}.detail-grid.single .detail-image{grid-row:1 / 3;height:119px;border-right:1px solid #e4dfeb;border-bottom:0}.detail-grid.single .detail-card strong{align-self:end;margin-top:18px}.detail-grid.single .detail-card>span:last-child{max-width:580px;margin-bottom:18px;font-size:12px}
+.gear-lab{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);margin-top:23px;padding-top:21px;border-top:1px solid var(--rule);gap:25px}.lab-heading{display:flex;align-items:center;gap:9px;margin-bottom:13px}.lab-heading h3{margin:0;font:400 22px/1.2 Georgia,serif;letter-spacing:-.035em}.model-info{position:relative}.model-info>summary{display:grid;place-items:center;width:19px;height:19px;font-size:11px;border:1px solid #c6beD5;border-radius:50%;cursor:pointer;color:var(--muted);list-style:none}.model-info>summary::-webkit-details-marker{display:none}.model-info>div{position:absolute;z-index:7;bottom:29px;left:-130px;width:280px;border:1px solid var(--rule);border-radius:10px;padding:13px;background:#fcfbfd;box-shadow:0 6px 25px #31224012;color:var(--muted);font-size:11px;line-height:1.65}.control-label{display:flex;align-items:center;justify-content:space-between;margin:0 0 9px;font-size:11px}.control-label output{font:10px ui-monospace,monospace;color:var(--accent)}.gear-buttons{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}.gear-button{height:32px;border-radius:7px;border:1px solid var(--rule);background:transparent;font:11px ui-monospace,monospace;color:var(--muted)}.gear-button[aria-pressed=true]{background:var(--accent);border-color:var(--accent);color:white}.gear-endpoints{display:flex;justify-content:space-between;margin-top:6px;font-size:9px;color:var(--muted)}.cadence-row{margin-top:16px}.cadence-row input{display:block;width:100%;height:15px;margin:0;appearance:none;background:transparent;cursor:pointer;accent-color:var(--accent)}.cadence-row input::-webkit-slider-runnable-track{height:3px;border-radius:3px;background:linear-gradient(to right,var(--accent) var(--cadence-progress,50%),#ded8e9 var(--cadence-progress,50%))}.cadence-row input::-webkit-slider-thumb{appearance:none;width:12px;height:12px;margin-top:-4.5px;border-radius:50%;background:var(--accent);border:2px solid #fcfbfd;box-shadow:0 0 0 1px var(--accent)}.cadence-row input::-moz-range-track{height:3px;background:#ded8e9}.cadence-row input::-moz-range-thumb{width:10px;height:10px;background:var(--accent);border:2px solid white;border-radius:50%}
+.lab-output{background:#f1eef7;border-radius:13px;padding:15px 18px;display:flex;flex-direction:column;justify-content:center;min-width:0}.ratio-visual{display:flex;align-items:center;gap:14px;min-height:75px}.ratio-visual>svg{width:92px;height:69px;flex-shrink:0}.ratio-number{font:400 32px/1 Georgia,serif;letter-spacing:-.06em;color:var(--accent);margin-bottom:6px}.ratio-caption{font-size:10px;color:var(--muted)}.lab-metrics{display:grid;grid-template-columns:1fr 1fr;padding-top:12px;margin-top:10px;border-top:1px solid #dbd4e7;gap:12px}.lab-metrics strong{font-size:17px;font-weight:500;letter-spacing:-.03em}.lab-metrics small{font-size:10px;font-weight:400;color:var(--muted);margin-left:3px}.lab-metrics label{display:block;font-size:9px;color:var(--muted);margin-top:2px}.lab-takeaway{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:15px 0 0;font-size:11px;color:var(--muted)}.lab-takeaway b{font-weight:500;color:var(--accent)}.source-link{display:inline-flex;align-items:center;gap:4px;color:var(--accent);border:0;padding:3px 0;background:none;font-size:10px;white-space:nowrap}
+.animation-running .chain-links{animation:chain-flow 1s linear infinite}.animation-running .crank-rotation{animation:spin var(--crank-duration,1s) linear infinite}.animation-running .wheel-rotation{animation:spin var(--wheel-duration,.67s) linear infinite}.animation-running .ratio-front{animation:spin var(--crank-duration,1s) linear infinite;transform-origin:25px 34px}.animation-running .ratio-rear{animation:spin var(--wheel-duration,.67s) linear infinite;transform-origin:74px 34px}
+@keyframes chain-flow{to{stroke-dashoffset:-26.8}}@keyframes spin{to{transform:rotate(360deg)}}
+@media(max-width:720px){.figure-top{align-items:flex-start;flex-direction:column;gap:10px}.figure-top h2{font-size:23px}.category-tabs button{padding:6px 10px}.detail-image{height:83px}.detail-card strong{font-size:11px;margin-left:9px;margin-right:9px}.detail-card>span:last-child{font-size:10px;margin-left:9px;margin-right:9px}.gear-lab{gap:18px}.power-path{top:14%;gap:6px;font-size:9px}.figure-legend{left:15px;top:12px;font-size:9px}.figure-index{right:13px;top:12px}.figure-bottom{bottom:9px;left:12px;right:10px}.hotspot{width:25px;height:25px;min-width:25px;font-size:9px}.lab-output{padding:13px}.ratio-visual{gap:9px}.ratio-visual>svg{width:70px}.ratio-number{font-size:29px}.lab-heading h3{font-size:20px}}
+@media(max-width:520px){.detail-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.gear-lab{grid-template-columns:1fr}.figure-note,.figure-legend{display:none}.power-path{font-size:8px}.hotspot{width:23px;height:23px;min-width:23px}.category-tabs button{font-size:10px;padding:6px 8px}.detail-grid.single .detail-card{grid-template-columns:110px 1fr}.lab-metrics{padding-top:10px}.lab-output{padding:16px}.lab-takeaway{align-items:flex-start}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+</style>
+<div class="explorable" id="explorable">
+  <div class="figure-top"><h2 data-i18n="Follow the power.">Follow the power.</h2><div class="category-tabs" role="group" aria-label="Bicycle systems"><button type="button" data-category="all" aria-pressed="false" data-i18n="All">All</button><button type="button" data-category="drivetrain" aria-pressed="true" data-i18n="Drivetrain">Drivetrain</button><button type="button" data-category="frame" aria-pressed="false" data-i18n="Frame & wheels">Frame & wheels</button><button type="button" data-category="brakes" aria-pressed="false" data-i18n="Brakes & controls">Brakes & controls</button></div></div>
+  <div class="figure-surface" id="figure-surface" data-category="drivetrain">
+    <div class="figure-legend"><span class="legend-line"></span><span data-i18n="Single chainring · 7 rear gears">Single chainring · 7 rear gears</span></div><span class="figure-index">FIG. 01</span>
+    <div class="bike-stage" id="diagram-stage">__BICYCLE_SVG__
+      <div class="power-path" aria-hidden="true"><b data-i18n="Pedal">Pedal</b><i></i><span data-i18n="Chain">Chain</span><i></i><span data-i18n="Wheel">Wheel</span><i></i><span data-i18n="Road">Road</span></div>
+      <button type="button" class="hotspot" data-id="c1" style="left:48.8%;top:70.5%" aria-pressed="true"><span>1</span><span class="hotspot-name">Pedals & crank</span></button>
+      <button type="button" class="hotspot" data-id="c2" style="left:35%;top:61.1%" aria-pressed="false"><span>2</span><span class="hotspot-name">Chain</span></button>
+      <button type="button" class="hotspot" data-id="c3" style="left:24.8%;top:65.5%" aria-pressed="false"><span>3</span><span class="hotspot-name">Cassette</span></button>
+      <button type="button" class="hotspot" data-id="c4" style="left:27.2%;top:78.5%" aria-pressed="false"><span>4</span><span class="hotspot-name">Rear derailleur</span></button>
+      <button type="button" class="hotspot" data-id="c5" style="left:53%;top:38.5%" aria-pressed="false" hidden><span>5</span><span class="hotspot-name">Frame & wheels</span></button>
+      <button type="button" class="hotspot" data-id="c6" style="left:69.3%;top:46%" aria-pressed="false" hidden><span>6</span><span class="hotspot-name">Brakes & controls</span></button>
+    </div>
+    <div class="figure-bottom"><span class="figure-note" data-i18n="Select a numbered part">Select a numbered part</span><button class="motion-toggle" type="button" id="motion-toggle" aria-pressed="false"><svg viewBox="0 0 12 12" fill="none" aria-hidden="true"><path id="motion-icon" d="m4 2 5 4-5 4Z" fill="currentColor"/></svg><span data-i18n="Animate">Animate</span></button></div>
+  </div>
+  <div class="detail-grid" id="detail-grid" role="group" aria-label="Bicycle parts"></div>
+  <section class="gear-lab" aria-labelledby="lab-title">
+    <div class="lab-controls"><div class="lab-heading"><h3 id="lab-title" data-i18n="What changes when you shift?">What changes when you shift?</h3><details class="model-info"><summary aria-label="Model assumptions">i</summary><div><span data-i18n="Model assumptions text">Illustrative model: 42 front teeth, a 2.1 m wheel circumference, fully engaged drivetrain, no slipping or losses. Speed = cadence × (42 ÷ rear teeth) × 2.1 × 60 ÷ 1000. Not measured riding performance.</span></div></details></div><div class="control-label"><span id="gear-label" data-i18n="Rear gear">Rear gear</span><output id="rear-teeth">28 teeth</output></div><div class="gear-buttons" role="group" aria-labelledby="gear-label"></div><div class="gear-endpoints"><span data-i18n="Easier pedaling">Easier pedaling</span><span data-i18n="More travel per turn">More travel per turn</span></div><div class="cadence-row"><label class="control-label" for="cadence"><span data-i18n="Pedaling cadence">Pedaling cadence</span><output id="cadence-value" for="cadence">60 rpm</output></label><input id="cadence" type="range" min="30" max="100" value="60" step="1"></div></div>
+    <div class="lab-output" aria-live="polite" aria-atomic="true"><div class="ratio-visual"><svg viewBox="0 0 100 69" fill="none" aria-hidden="true"><path id="ratio-chain" d="M25 14 74 21A13 13 0 0 1 74 47L25 54A20 20 0 0 1 25 14Z" stroke="#b8afcd" stroke-width="1.5"/><g class="ratio-front"><circle cx="25" cy="34" r="20" stroke="#6354a5" stroke-width="2" stroke-dasharray="2 2"/><path d="M25 18V50M9 34H41" stroke="#b0a4cb" stroke-width="1"/><circle cx="25" cy="34" r="4" fill="#6354a5"/></g><g class="ratio-rear"><circle id="ratio-rear-circle" cx="74" cy="34" r="13" stroke="#6354a5" stroke-width="2" stroke-dasharray="2 2"/><path id="ratio-rear-spokes" d="M74 24V44M64 34H84" stroke="#b0a4cb"/><circle cx="74" cy="34" r="3" fill="#6354a5"/></g></svg><div><div class="ratio-number" id="ratio-number">1.50×</div><div class="ratio-caption" data-i18n="wheel turns / pedal turn">wheel turns / pedal turn</div></div></div><div class="lab-metrics"><div><strong id="distance-number">3.15<small>m</small></strong><label data-i18n="distance per pedal turn">distance per pedal turn</label></div><div><strong id="speed-number">11.3<small>km/h</small></strong><label data-i18n="calculated speed">calculated speed</label></div></div></div>
+  </section>
+  <div class="lab-takeaway"><span id="gear-takeaway">A larger rear sprocket gives <b>less distance, more torque.</b></span><button class="source-link" type="button" id="model-source"><span data-i18n="Source & model">Source & model</span><span aria-hidden="true">↗</span></button></div>
+</div>
+<script>
+(() => {
+  'use strict';
+  const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+  const parts=[
+    {id:'c1',name:'Pedals & crank',group:'drivetrain',crop:'415 325 175 175',short:'Your feet turn the front chainring.'},
+    {id:'c2',name:'Chain',group:'drivetrain',crop:'291 332 191 120',short:'Carries the pull to the rear sprocket.'},
+    {id:'c3',name:'Cassette',group:'drivetrain',crop:'214 349 112 112',short:'Different sprockets change the gear ratio.'},
+    {id:'c4',name:'Rear derailleur',group:'drivetrain',crop:'241 399 100 100',short:'Moves the chain and takes up slack.'},
+    {id:'c5',name:'Frame & wheels',group:'frame',crop:'315 173 470 290',short:'Two connected triangles hold the bicycle together. Wheels and tires connect it to the road.'},
+    {id:'c6',name:'Brakes & controls',group:'brakes',crop:'671 152 180 180',short:'A cable pulls the caliper. Pads squeeze the rim, and friction resists rotation.'}
+  ];
+  const zh={'Follow the power.':'沿着动力，看懂原理。','All':'全部','Drivetrain':'传动系统','Frame & wheels':'车架与车轮','Brakes & controls':'刹车与操控','Single chainring · 7 rear gears':'单牙盘 · 7 挡后飞轮','Pedal':'踩踏','Chain':'链条','Wheel':'车轮','Road':'路面','Select a numbered part':'点击编号，查看部件','Animate':'播放演示','Pause':'暂停演示','What changes when you shift?':'换挡，究竟改变了什么？','Rear gear':'后飞轮挡位','Easier pedaling':'踩踏更轻松','More travel per turn':'每圈前进更远','Pedaling cadence':'踩踏频率','wheel turns / pedal turn':'车轮转数 / 踩踏一圈','distance per pedal turn':'踩踏一圈的前进距离','calculated speed':'模型计算速度','Source & model':'原文与模型','Pedals & crank':'踏板与曲柄','Cassette':'后飞轮','Rear derailleur':'后拨链器','Your feet turn the front chainring.':'脚踩踏板，带动前牙盘转动。','Carries the pull to the rear sprocket.':'将拉力传递给后飞轮。','Different sprockets change the gear ratio.':'不同大小的齿片，改变传动比。','Moves the chain and takes up slack.':'切换链条位置，并收紧多余链条。','Two connected triangles hold the bicycle together. Wheels and tires connect it to the road.':'两个相连的三角形构成车架。车轮与轮胎把车身连接到路面。','A cable pulls the caliper. Pads squeeze the rim, and friction resists rotation.':'拉线牵动夹器，刹车块夹住轮圈，摩擦力阻碍转动。','Model assumptions text':'示例模型：前牙盘 42 齿，车轮周长 2.1 米，传动完全啮合，忽略打滑与损耗。速度 = 踩踏频率 ×（42 ÷ 后飞轮齿数）× 2.1 × 60 ÷ 1000。并非真实骑行测量。'};
+  let language='en',category='drivetrain',selected='c1',gear=0,cadence=60,running=false,zoom=1;
+  const teeth=[28,24,22,20,18,16,14], root=$('#explorable'), reduced=matchMedia('(prefers-reduced-motion: reduce)');
+  const en={'Model assumptions text':'Illustrative model: 42 front teeth, a 2.1 m wheel circumference, fully engaged drivetrain, no slipping or losses. Speed = cadence × (42 ÷ rear teeth) × 2.1 × 60 ÷ 1000. Not measured riding performance.'};
+  const t=s=>language==='zh'?(zh[s]||s):(en[s]||s);
+  function tell(payload){window.sendPrompt(JSON.stringify(payload));}
+  function renderCards(){
+    const visible=parts.filter(p=>category==='all'||p.group===category);
+    $('#detail-grid').classList.toggle('single',visible.length===1);
+    $('#detail-grid').innerHTML=visible.map(p=>'<button class="detail-card" type="button" data-id="'+p.id+'" aria-pressed="'+(p.id===selected)+'"><span class="detail-image"><span class="detail-number">'+p.id.slice(1).padStart(2,'0')+'</span><svg viewBox="'+p.crop+'" aria-hidden="true"><use href="#bike-drawing"/></svg></span><strong>'+t(p.name)+'</strong><span>'+t(p.short)+'</span></button>').join('');
+    $$('.detail-card').forEach(b=>b.addEventListener('click',()=>select(b.dataset.id,true)));
+  }
+  function select(id,notify=false){
+    const part=parts.find(p=>p.id===id);if(!part)return;
+    selected=id;
+    if(category!=='all'&&part.group!==category){category=part.group;renderCategory();}
+    $$('.hotspot,.detail-card').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.id===id)));
+    if(notify)tell({action:'concept',id});
+  }
+  function renderCategory(){
+    $('#figure-surface').dataset.category=category;
+    $$('.category-tabs button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.category===category)));
+    $$('.hotspot').forEach(b=>{const part=parts.find(p=>p.id===b.dataset.id);b.hidden=category!=='all'&&part.group!==category;});
+    $('.power-path').hidden=category==='frame'||category==='brakes';
+    renderCards();reportSize();
+  }
+  function setCategory(value){
+    category=value;
+    const choices=parts.filter(p=>category==='all'||p.group===category);
+    if(!choices.some(p=>p.id===selected)){selected=choices[0].id;tell({action:'concept',id:selected});}
+    renderCategory();select(selected);
+  }
+  function setRunning(value){
+    running=!!value;root.classList.toggle('animation-running',running);
+    $('#motion-toggle').setAttribute('aria-pressed',String(running));
+    $('#motion-toggle span').textContent=t(running?'Pause':'Animate');
+    $('#motion-icon').setAttribute('d',running?'M3 2h2v8H3ZM7 2h2v8H7Z':'m4 2 5 4-5 4Z');
+  }
+  function updateModel(){
+    const rear=teeth[gear],ratio=42/rear,distance=ratio*2.1,speed=cadence*distance*60/1000;
+    $('#rear-teeth').textContent=rear+(language==='zh'?' 齿':' teeth');
+    $('#cadence-value').textContent=cadence+(language==='zh'?' 转/分':' rpm');
+    $('#cadence').style.setProperty('--cadence-progress',((cadence-30)/70*100)+'%');
+    $('#cadence').setAttribute('aria-valuetext',$('#cadence-value').textContent);
+    $('#ratio-number').textContent=ratio.toFixed(2)+'×';
+    $('#distance-number').innerHTML=distance.toFixed(2)+'<small>m</small>';
+    $('#speed-number').innerHTML=speed.toFixed(1)+'<small>km/h</small>';
+    $$('.gear-button').forEach((b,i)=>{b.setAttribute('aria-pressed',String(i===gear));b.setAttribute('aria-label',language==='zh'?'第 '+(i+1)+' 挡，'+teeth[i]+' 齿':'Gear '+(i+1)+', '+teeth[i]+' teeth');});
+    const radius=rear/42*20;
+    $('#ratio-rear-circle').setAttribute('r',radius.toFixed(2));
+    $('#ratio-rear-spokes').setAttribute('d','M74 '+(34-radius+3)+'V'+(34+radius-3)+'M'+(74-radius+3)+' 34H'+(74+radius-3));
+    $('#ratio-chain').setAttribute('d','M25 14 74 '+(34-radius)+'A'+radius+' '+radius+' 0 0 1 74 '+(34+radius)+'L25 54A20 20 0 0 1 25 14Z');
+    root.style.setProperty('--crank-duration',(60/cadence).toFixed(4)+'s');
+    root.style.setProperty('--wheel-duration',(60/cadence/ratio).toFixed(4)+'s');
+    $('#gear-takeaway').innerHTML=language==='zh'?'更大的后齿片，换来<b>更短的前进距离、更大的扭矩。</b>':'A larger rear sprocket gives <b>less distance, more torque.</b>';
+    root.dataset.gear=String(gear+1);root.dataset.ratio=String(ratio);root.dataset.speed=String(speed);
+  }
+  function translate(){
+    document.documentElement.lang=language==='zh'?'zh-CN':'en';
+    $$('[data-i18n]').forEach(e=>e.textContent=t(e.dataset.i18n));
+    $('.category-tabs').setAttribute('aria-label',language==='zh'?'自行车系统':'Bicycle systems');
+    $('#detail-grid').setAttribute('aria-label',language==='zh'?'自行车部件':'Bicycle parts');
+    $('.model-info summary').setAttribute('aria-label',language==='zh'?'模型假设':'Model assumptions');
+    $$('.hotspot').forEach(b=>{const p=parts.find(p=>p.id===b.dataset.id);b.setAttribute('aria-label',b.dataset.id.slice(1)+'. '+t(p.name));b.querySelector('.hotspot-name').textContent=t(p.name);});
+    renderCards();updateModel();setRunning(running);reportSize();
+  }
+  let reportedHeight=0;
+  function reportSize(){requestAnimationFrame(()=>{const height=Math.ceil(root.getBoundingClientRect().height)+5;if(height!==reportedHeight){reportedHeight=height;window.parent.postMessage({type:'clarity:guide-size',height},'*');}});}
+  $('.gear-buttons').innerHTML=teeth.map((_,i)=>'<button type="button" class="gear-button" data-gear="'+i+'" aria-pressed="'+(i===0)+'">'+(i+1)+'</button>').join('');
+  $$('.gear-button').forEach(b=>b.addEventListener('click',()=>{gear=Number(b.dataset.gear);updateModel();select('c3',true);}));
+  $('#cadence').addEventListener('input',e=>{cadence=Number(e.target.value);updateModel();});
+  $$('.category-tabs button').forEach(b=>b.addEventListener('click',()=>setCategory(b.dataset.category)));
+  $$('.hotspot').forEach(b=>b.addEventListener('click',()=>select(b.dataset.id,true)));
+  $('#motion-toggle').addEventListener('click',()=>setRunning(!running));
+  $('#model-source').addEventListener('click',()=>tell({action:'source',id:'c3'}));
+  $('.category-tabs').addEventListener('keydown',e=>{const tabs=$$('.category-tabs button');let i=tabs.indexOf(document.activeElement);if(i<0)return;if(e.key==='ArrowRight')i=(i+1)%tabs.length;else if(e.key==='ArrowLeft')i=(i-1+tabs.length)%tabs.length;else if(e.key==='Home')i=0;else if(e.key==='End')i=tabs.length-1;else return;e.preventDefault();tabs[i].focus();tabs[i].click();});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'){if($('.model-info').open){$('.model-info').open=false;$('.model-info summary').focus();}else window.parent.postMessage({type:'clarity:escape'},'*');}});
+  window.addEventListener('message',e=>{if(e.source!==window.parent)return;const d=e.data;if(!d||typeof d!=='object')return;if(d.type==='clarity:select')select(d.id);if(d.type==='clarity:zoom'&&Number.isFinite(d.zoom)){zoom=Math.max(.7,Math.min(1.6,d.zoom));$('#diagram-stage').style.transform='scale('+zoom+')';}if(d.type==='clarity:language'){const next=d.language==='zh'?'zh':'en';if(next!==language){language=next;translate();}}});
+  new ResizeObserver(reportSize).observe(root);
+  renderCategory();translate();setRunning(!reduced.matches);
+})();
+</script>

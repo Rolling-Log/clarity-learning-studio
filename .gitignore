@@ -1,0 +1,14 @@
+__pycache__/
+*.pyc
+.env*
+!clarity.env.example
+*.env
+node_modules/
+.netlify/
+dist/
+.venv/
+runtime/
+output/
+*.log
+.DS_Store
+/README.txt

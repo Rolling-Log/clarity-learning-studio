@@ -1,0 +1,45 @@
+{
+  "transcript": [
+    {
+      "chapterIndex": 0,
+      "speaker": "Clarity",
+      "dialogue": "Flatland, by Edwin Abbott Abbott, begins with a world confined to a plane. From above, we can see triangles and squares. But the residents cannot leave the plane to look down on themselves. At eye level, edges appear as lines. Compare the overhead section and the eye-level strip in the guide. A limited view can be accurate and still incomplete."
+    },
+    {
+      "chapterIndex": 1,
+      "speaker": "Clarity",
+      "dialogue": "The first half of the book is also a social satire. Shapes mark status. Women, irregular figures, workers and priests are treated according to a rigid hierarchy. These are the fictional society's prejudices, not rules to endorse. The guide keeps that social story alongside the geometry. Open the book index to see how recognition, colour and priestly authority develop across the first twelve sections."
+    },
+    {
+      "chapterIndex": 2,
+      "speaker": "Clarity",
+      "dialogue": "In a dream, the Square visits Lineland. Its king knows only one dimension and cannot understand a second. The Square is frustrated by this refusal. Later, when a Sphere describes a third dimension, the Square makes a remarkably similar mistake. Switch between the one-dimensional and two-dimensional views. The repetition asks us to notice our own blind spots."
+    },
+    {
+      "chapterIndex": 3,
+      "speaker": "Clarity",
+      "dialogue": "Now move the sphere through the plane. Before contact, there is no intersection. At first contact, there is a single point. The circle grows as the sphere approaches its equator, then shrinks and disappears. The sphere never changes size. For the unit sphere in this model, the section radius is the square root of one minus the height squared. The overhead section is a teaching view, not what a Flatlander literally sees."
+    },
+    {
+      "chapterIndex": 4,
+      "speaker": "Clarity",
+      "dialogue": "The Sphere eventually lifts the Square outside his world. A new viewpoint makes previously hidden interiors visible. Rotate the scene to compare the whole sphere with its section. The Square then asks about still higher dimensions. This is a powerful analogy about the limits of experience. It is not, by itself, a proof of an extra spatial dimension."
+    },
+    {
+      "chapterIndex": 5,
+      "speaker": "Clarity",
+      "dialogue": "The return to Flatland brings resistance, not celebration. The Square struggles to explain his discovery and is punished for it. The ending brings perception and power together. What counts as knowledge, and who is allowed to change it? The guide covers the whole book in six themes, while the index preserves all twenty-two original sections. Use the source control to read the passages behind each theme."
+    }
+  ],
+  "duration": 158.39301587301586,
+  "narration": "Prepared sample | local system voice",
+  "approximateCues": false,
+  "cues": [
+    0,
+    24.390068027210884,
+    52.429659863945574,
+    77.55931972789115,
+    107.22367346938775,
+    131.4887074829932
+  ]
+}
