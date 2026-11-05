@@ -229,7 +229,23 @@
       $("#expand-guide").disabled = !ready;
       if (ready && L.guideSid !== L.session.id) {
         L.guideSid = L.session.id;
-        $("#guide-frame").src = apiBase + (L.session.guideUrl || "/api/clarity/sessions/" + L.session.id + "/guide");
+        const frame = $("#guide-frame"), sid = L.session.id;
+        if (L.session.guideUrl) {
+          // Keep reviewed HTML in the existing isolated frame, without a cross-document redirect.
+          frame.removeAttribute("src"); frame.srcdoc = "";
+          fetch(apiBase + L.session.guideUrl, {signal:AbortSignal.timeout(30000)})
+            .then(response => { if (!response.ok) throw new Error("Guide unavailable"); return response.text(); })
+            .then(html => { if (L.guideSid === sid) frame.srcdoc = html; })
+            .catch(() => {
+              if (L.guideSid !== sid) return;
+              L.guideSid = null;
+              L.session.stages.guide = {status:"error", error:"service_unavailable"};
+              renderPart("guide");
+            });
+        } else {
+          frame.removeAttribute("srcdoc");
+          frame.src = apiBase + "/api/clarity/sessions/" + sid + "/guide";
+        }
       }
     }
   }
