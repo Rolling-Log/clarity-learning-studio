@@ -106,9 +106,21 @@ function normalizeVisual(raw, nodes, ids, passages) {
     const links = list(raw.links, 1, 9, link => {
       requireValue(link);
       const from = concept(link.from), to = concept(link.to);
-      requireValue(from !== to && (from === focus || to === focus));
+      requireValue(from !== to);
       return {from, to, verb:text(link.verb, 80), effect:text(link.effect, 200)};
     });
+    const connected = new Set([focus]);
+    let previousSize;
+    do {
+      previousSize = connected.size;
+      for (const {from, to} of links) {
+        if (connected.has(from) || connected.has(to)) {
+          connected.add(from);
+          connected.add(to);
+        }
+      }
+    } while (connected.size > previousSize);
+    requireValue(connected.size === ids.size);
     visual = {type:raw.type, focus, links};
   }
   if (raw.type !== 'threshold') requireValue(used.size === ids.size);

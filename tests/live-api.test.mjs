@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { createHandler } from '../netlify/functions/clarity.mjs';
 import { runJob, sign, validJob } from '../netlify/lib/live.mjs';
 import { InvalidLesson, normalizeGuide } from '../netlify/lib/visual-contract.mjs';
+import { renderGuide } from '../netlify/lib/visual-renderer.mjs';
 import { narrate } from '../netlify/lib/narration.mjs';
 import { createModel } from '../netlify/lib/deepseek.mjs';
 import catalogue from '../prepared/catalogue.json' with { type:'json' };
@@ -149,4 +150,23 @@ test('guide validation rejects invented thresholds and the old generic node payl
   assert.throws(() => normalizeGuide(wrong,passages),InvalidLesson);
   delete wrong.visual;
   assert.throws(() => normalizeGuide(wrong,passages),InvalidLesson);
+});
+
+test('a mechanism can connect secondary concepts and preserves the direction of each relationship',() => {
+  const lesson = structuredClone(rawGuide);
+  lesson.visual = {
+    type:'mechanism', focus:'c4', links:[
+      {from:'c3',to:'c1',verb:'keeps on below the high limit',effect:'The heater continues to run in the band.'},
+      {from:'c4',to:'c3',verb:'allows retention',effect:'A distinct band holds the previous state.'},
+      {from:'c2',to:'c4',verb:'sets the upper limit',effect:'The heater stops at the high end.'}
+    ]
+  };
+  const guide = normalizeGuide(lesson,passages);
+  assert.deepEqual(guide.visual,lesson.visual);
+  const html = renderGuide(guide);
+  assert.match(html,/class="mechanism mechanism-network"/);
+  assert.match(html,/<li class="mechanism-link"><button[^>]+data-node="c3"[^>]*>State is retained<\/button><div class="link-verb">keeps on below the high limit[^]*?data-node="c1"[^>]*>Heating starts<\/button><\/li>/);
+
+  lesson.visual.links.splice(1,1);
+  assert.throws(() => normalizeGuide(lesson,passages),InvalidLesson);
 });

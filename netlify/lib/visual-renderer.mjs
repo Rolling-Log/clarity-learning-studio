@@ -49,8 +49,16 @@ function sequence(visual, node) {
 
 function mechanism(visual, node) {
   const focus = node(visual.focus);
-  return '<div class="mechanism"><div class="mechanism-focus">' + concept(focus.id, focus.label) +
-    '<p>' + escape(focus.explanation) + '</p></div><div class="mechanism-links">' + visual.links.map(link => {
+  const heading = '<div class="mechanism-focus">' + concept(focus.id, focus.label) +
+    '<p>' + escape(focus.explanation) + '</p></div>';
+  if (visual.links.some(link => link.from !== focus.id && link.to !== focus.id)) {
+    return '<div class="mechanism mechanism-network">' + heading + '<ul class="mechanism-links">' +
+      visual.links.map(({from,to,verb,effect}) =>
+        '<li class="mechanism-link">' + concept(from, node(from).label) + '<div class="link-verb">' +
+        escape(verb) + arrow + '<span class="link-effect">' + escape(effect) + '</span></div>' +
+        concept(to, node(to).label) + '</li>').join('') + '</ul></div>';
+  }
+  return '<div class="mechanism">' + heading + '<div class="mechanism-links">' + visual.links.map(link => {
       const outward = link.from === focus.id;
       const other = node(outward ? link.to : link.from);
       return '<div class="mechanism-link' + (outward ? '' : ' points-in') + '"><span class="link-verb">' +
@@ -125,6 +133,11 @@ body{font-family:system-ui,sans-serif!important}
 .mechanism-link:last-child{border-bottom:1px solid var(--line)}
 .link-verb{display:grid;gap:3px;font-size:11px;color:var(--accent);font-weight:650}
 .points-in svg{transform:rotate(180deg)}
+.mechanism-network{grid-template-columns:minmax(0,1fr)}
+.mechanism-network .mechanism-links{list-style:none;margin:0;padding:0}
+.mechanism-network .mechanism-link{grid-template-columns:minmax(0,1fr) minmax(0,1.4fr) minmax(0,1fr);gap:clamp(8px,2vw,20px)}
+.mechanism-network .link-verb{text-align:center;justify-items:center}
+.mechanism-network .link-effect{color:var(--muted);font-weight:400}
 @media(max-width:520px){.study{padding:19px 15px;font-size:13px}.mechanism{grid-template-columns:1fr}.sequence li{grid-template-columns:31px 1fr}.sequence-index{width:27px;height:27px}.sequence li:not(:last-child)::before{left:13px;top:27px}.study-outcome{padding-left:39px}.threshold-zones{gap:7px}.axis-labels{font-size:11px}.comparison th,.comparison td{font-size:12px}}
 </style>`;
 
