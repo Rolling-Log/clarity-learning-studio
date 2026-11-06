@@ -74,6 +74,19 @@ test('prepared questions return the selected concept and valid evidence',async()
     assert.equal((await call('/sessions/'+session.id+'/ask',{question:'Explain simply',conceptId:'invalid'})).statusCode,422);
   }
 });
+test('greetings work on prepared lessons with no model configured',async()=>{
+  const session=Object.values(catalogue.sessions).find(value=>value.sampleId==='flatland');
+  const route='/sessions/'+session.id+'/ask';
+  for (const [question, pattern] of [['Hi!',/^Hi!/],[' 嗨！ ',/^嗨！/]]) {
+    const result=await call(route,{question});
+    assert.equal(result.statusCode,200);
+    assert.match(read(result).answer,pattern);
+    assert.deepEqual(read(result).sourceIds,[]);
+  }
+  const result=await call(route,{question:'What does the Sphere demonstrate?'});
+  assert.equal(result.statusCode,503);
+  assert.equal(read(result).detail.code,'model_not_configured');
+});
 test('invalid JSON, unknown sessions and invalid settings are rejected',async()=>{
   assert.equal((await handler({path:'/api/clarity/sessions',httpMethod:'POST',body:'{'})).statusCode,400);
   assert.equal((await call('/sessions/no-such-session')).statusCode,404);

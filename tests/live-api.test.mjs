@@ -5,6 +5,7 @@ import { runJob, sign, validJob } from '../netlify/lib/live.mjs';
 import { InvalidLesson, normalizeGuide } from '../netlify/lib/visual-contract.mjs';
 import { narrate } from '../netlify/lib/narration.mjs';
 import { createModel } from '../netlify/lib/deepseek.mjs';
+import catalogue from '../prepared/catalogue.json' with { type:'json' };
 
 const source = 'Below or at 14 degrees the greenhouse heater starts.\n\nAt 19 degrees or above it stops.\n\nBetween these points it holds its last setting.';
 const passages = source.split('\n\n').map((text,i) => ({id:'S'+(i+1),text}));
@@ -24,7 +25,7 @@ const rawGuide = {
 const rawNarration = [{chapterIndex:0,sentences:['The greenhouse heater starts at fourteen degrees.','It stops at nineteen.']}];
 
 function harness({dispatchError = false} = {}) {
-  const data = new Map(), jobs = [];
+  const data = new Map(), jobs = [], questions = [];
   let counter = 0, generations = 0;
   const store = {
     async getWithMetadata(key) { return structuredClone(data.get(key) || null); },
@@ -44,9 +45,10 @@ function harness({dispatchError = false} = {}) {
       jobs.push([id,attempt]);
     },
     model:createModel('test-key',async (_url,request) => {
-      const [system] = JSON.parse(request.body).messages;
+      const [system,input] = JSON.parse(request.body).messages;
       const generate = system.content.includes('narration');
       if (generate) generations++;
+      else questions.push(JSON.parse(input.content));
       const value = generate ? {guide:rawGuide,narration:rawNarration} :
         {answer:'The heater holds its last setting in the band.',sourceIds:['S3','S999']};
       return Response.json({choices:[{finish_reason:'stop',message:{content:JSON.stringify(value)}}]});
@@ -54,7 +56,7 @@ function harness({dispatchError = false} = {}) {
   };
   const handler = createHandler(() => services, () => true);
   return {
-    jobs, services, generations:() => generations,
+    jobs, services, questions, generations:() => generations,
     request:(path,body,headers={}) => handler({path:'/api/clarity'+path,headers,
       httpMethod:body?'POST':'GET',body:body&&JSON.stringify(body)})
   };
@@ -105,6 +107,27 @@ test('a new file uses the live worker, renders a real diagram and plays indexed 
   await request(route+'/retry',{part:'all'});
   assert.equal(jobs.length,1);
   assert.deepEqual(JSON.parse((await request('/sessions')).body),[]);
+});
+
+test('a free-form question on a prepared example reaches the budgeted model with its passages',async () => {
+  const {request,questions} = harness();
+  const session = Object.values(catalogue.sessions).find(value => value.sampleId === 'flatland');
+  const node = session.guide.nodes[0];
+  const route = '/sessions/' + session.id + '/ask';
+  await request(route,{question:'你好'});
+  await request(route,{question:'Explain simply',conceptId:node.id});
+  assert.equal(questions.length,0);
+
+  const question = 'Hi, how does a sphere appear to a Flatlander?';
+  const result = await request(route,{question,conceptId:node.id});
+  assert.equal(result.statusCode,200);
+  const answer = JSON.parse(result.body);
+  assert.equal(answer.sample,false);
+  assert.equal(answer.conceptId,node.id);
+  assert.equal(questions[0].question,question);
+  assert.equal(questions[0].concept,node.label);
+  assert.ok(node.sourceIds.every(id => questions[0].source.some(p => p.id === id)));
+  assert.ok(!answer.sourceIds.includes('S999'));
 });
 
 test('dispatch failure is retryable and public creation is bounded',async () => {

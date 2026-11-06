@@ -1,5 +1,6 @@
 import { createHmac, randomUUID, timingSafeEqual } from 'node:crypto';
 import { getStore } from '@netlify/blobs';
+import replies from '../../prompts/follow-up-replies.json' with { type:'json' };
 import { createModel } from './deepseek.mjs';
 import { InvalidLesson } from './visual-contract.mjs';
 
@@ -78,7 +79,8 @@ async function reserve({store,key,ip}, kind) {
     const existing = await store.getWithMetadata(bucket,{type:'json'});
     const value = existing?.data || {total:0,clients:{}};
     if (value.total >= daily || (value.clients[client] || 0) >= perClient) {
-      throw new LiveError(429,'daily_limit','Today’s generation limit has been reached. Try again tomorrow.');
+      const action = kind === 'ask' ? 'question' : 'generation';
+      throw new LiveError(429,'daily_limit','Today’s ' + action + ' limit has been reached. Try again tomorrow.');
     }
     value.total++;
     value.clients[client] = (value.clients[client] || 0) + 1;
@@ -190,15 +192,27 @@ export async function runJob(services,id,attempt,narrate) {
   }
 }
 
-export async function askLive(services,session,body) {
+export async function answerQuestion(getServices,session,body) {
   const chapter = Math.min(body.chapterIndex || 0,session.guide.chapters.length - 1);
   const node = body.conceptId ? session.guide.nodes.find(n => n.id === body.conceptId) :
     session.guide.nodes.find(n => n.chapterIndex === chapter) || session.guide.nodes[0];
   if (!node) throw new LiveError(422,'invalid_concept','Select a concept from this guide.');
-  await reserve(services,'ask');
   const question = body.question.trim();
-  const answer = await services.model.ask({question,node,passages:session.passages});
-  return {...answer,id:randomUUID(),question,conceptId:node.id,contextLabel:node.label,sample:false,createdAt:now()};
+  const input = question.normalize('NFKC').toLowerCase().replace(/[.!?,，。！？…]+$/u,'').trimEnd();
+  const greeting = replies.greetings.find(reply => reply.inputs.includes(input));
+  const shortcut = session.sample && Object.keys(replies.shortcuts).find(key => replies.shortcuts[key].includes(input));
+  let reply;
+  if (greeting) {
+    reply = {answer:greeting.answer,sourceIds:[]};
+  } else if (shortcut) {
+    reply = {answer:node[shortcut] || node.explanation,sourceIds:node.sourceIds};
+  } else {
+    const services = getServices();
+    if (!services) throw new LiveError(503,'model_not_configured','Custom questions are temporarily unavailable.');
+    await reserve(services,'ask');
+    reply = await services.model.ask({question,node,passages:session.passages});
+  }
+  return {...reply,id:randomUUID(),question,conceptId:node.id,contextLabel:node.label,sample:Boolean(shortcut),createdAt:now()};
 }
 
 export async function readAudio(store,session,range) {

@@ -1,0 +1,16 @@
+{
+  "greetings": [
+    {
+      "inputs": ["hi", "hello", "hey", "hi clarity", "hello clarity"],
+      "answer": "Hi! What would you like to explore in this episode?"
+    },
+    {
+      "inputs": ["嗨", "你好", "您好", "哈喽", "哈啰", "你好呀"],
+      "answer": "嗨！这期内容里，有哪一部分你想多了解一点？"
+    }
+  ],
+  "shortcuts": {
+    "explanation": ["explain simply", "简单解释"],
+    "example": ["give an example", "举个例子"]
+  }
+}

@@ -157,6 +157,23 @@ class GenerationContract(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(response.status_code,422)
         self.assertEqual(self.calls,[])
 
+    async def test_sample_greeting_is_local_and_custom_question_uses_source_chat(self):
+        response = await self.client.post("/api/clarity/sessions", json={"text":sample.TEXT})
+        sid = response.json()["id"]
+        await server.TASKS[sid]
+        route = "/api/clarity/sessions/" + sid + "/ask"
+        self.calls.clear()
+        greeting = await self.client.post(route, json={"question":"嗨！"})
+        self.assertEqual(greeting.status_code, 200)
+        self.assertTrue(greeting.json()["answer"].startswith("嗨！"))
+        self.assertEqual(self.calls, [])
+        question = "后飞轮为什么需要不同大小的齿片？"
+        result = await self.client.post(route, json={"question":question})
+        self.assertEqual(result.status_code, 200, result.text)
+        self.assertFalse(result.json()["sample"])
+        message = next(p["message"] for _, path, p in self.calls if path.endswith("/messages"))
+        self.assertIn(question, message)
+
     async def test_missing_api_is_reported_before_a_billable_job(self):
         with patch.object(server,"configuration",return_value={"OPENAI_API_KEY":""}):
             response=await self.client.post("/api/clarity/sessions",json={"text":"Real new text"})

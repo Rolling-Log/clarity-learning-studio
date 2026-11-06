@@ -1,6 +1,6 @@
-import { createHash, randomUUID } from 'node:crypto';
+import { createHash } from 'node:crypto';
 import catalogue from '../../prepared/catalogue.json' with { type: 'json' };
-import { askLive, liveId, LiveError, publicSession, readAudio, readSession, retrySession, runtime, startSession } from '../lib/live.mjs';
+import { answerQuestion, liveId, LiveError, publicSession, readAudio, readSession, retrySession, runtime, startSession } from '../lib/live.mjs';
 import { renderGuide } from '../lib/visual-renderer.mjs';
 
 const headers={'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'};
@@ -92,14 +92,7 @@ async function routeRequest(event,servicesFor,hasModel){
     statusCode:302,headers:{Location:part==='guide'?'/prepared/'+value.sampleId+'.html':value.audio.url,'Cache-Control':'no-store'},body:''
   };
   if(part==='ask'&&method==='POST'){
-    const chapter=Math.min(body.chapterIndex||0,value.guide.chapters.length-1);
-    const node=body.conceptId?value.guide.nodes.find(n=>n.id===body.conceptId):value.guide.nodes.find(n=>n.chapterIndex===chapter)||value.guide.nodes[0];
-    if(!node) return invalid('Select a concept from this guide.');
-    const query=body.question.toLowerCase();
-    const example=/example|例子|举例/.test(query);
-    const explain=/simple|explain|what|how|why|mean|解释|什么|为何|怎么/.test(query);
-    const answer=example?node.example||node.explanation:explain?node.explanation:'Choose a question above.';
-    return json(200,{id:randomUUID(),question:body.question,answer,sourceIds:example||explain?node.sourceIds:[],conceptId:node.id,contextLabel:node.label,sample:true,createdAt:Date.now()/1000});
+    return json(200,await answerQuestion(()=>servicesFor(event),value,body));
   }
   return json(405,{detail:'Method not allowed.'});
 }
@@ -126,7 +119,7 @@ async function handleLiveSession(event,servicesFor,sid,part,method,body) {
   }
   if(part==='ask'&&method==='POST'){
     if(!session.guide) return json(409,{detail:'The guide is not ready yet.'});
-    return json(200,await askLive(services,session,body));
+    return json(200,await answerQuestion(()=>services,session,body));
   }
   return json(405,{detail:'Method not allowed.'});
 }

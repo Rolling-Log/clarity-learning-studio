@@ -12,7 +12,7 @@
   const phoneMode = new URLSearchParams(location.search).get("phone") === "1";
   const L = { session: null, view: "podcast", expanded: false, node: null, chapter: 0, zoom: 1,
     audioSid: null, guideSid: null, poll: null, busy: false, asking: false, panel: null,
-    returnFocus: null, showTranscript: false, captions: false, pendingQuestion: "", failedQuestion: "",
+    returnFocus: null, showTranscript: false, captions: false, pendingQuestion: "", failedQuestion: null,
     savedAt: 0, ended: false, hasPlayed: false, restoreTime: null };
   let transcriptLines = [], activeCaption = -1;
   let openSetting = null, sleepTimer = null;
@@ -66,7 +66,7 @@
       const value = await result.json();
       if (!result.ok) {
         const detail = value.detail;
-        const message = detail?.code === "live_generation_paused" ? "Choose an example to generate a result." :
+        const message = detail?.code === "live_generation_paused" && !route.endsWith("/ask") ? "Choose an example to generate a result." :
           detail?.message || (typeof detail === "string" ? detail : "Something couldn't be completed. Please try again.");
         throw new Error(tr(message));
       }
@@ -175,6 +175,7 @@
       $("#guide-content").style.removeProperty("--guide-natural-height");
       $("#learning-recap").hidden = true;
       L.showTranscript = false;
+      L.failedQuestion = null;
       closePlaybackSetting();
       setSleepTimer(0);
       $("#transcript-search").value = "";
@@ -804,10 +805,10 @@
       '</p><p class="question-answer">' + esc(item.sample ? tr(item.answer) : item.answer) + '</p><div class="answer-sources">' +
       item.sourceIds.map(id => '<button type="button" data-source-id="' + esc(id) + '">' + tr("Source {number}", {number:esc(id.slice(1))}) + ' ↗</button>').join("") + '</div></article>').join("");
     if (L.asking) html += '<article class="question-item"><p class="question-user">' + esc(tr(L.pendingQuestion)) + '</p><div class="question-pending" role="status" aria-label="' + tr("Preparing an answer") + '"><i></i><i></i><i></i></div></article>';
-    if (L.failedQuestion) html += '<div class="question-failure" role="status">' + tr("Couldn’t answer. Try again.") + '<button type="button" id="retry-question">' + tr("Try again") + '</button></div>';
+    if (L.failedQuestion) html += '<div class="question-failure" role="status">' + esc(tr(L.failedQuestion.message)) + '<button type="button" id="retry-question">' + tr("Try again") + '</button></div>';
     $("#question-history").innerHTML = html;
     $$("[data-source-id]").forEach(button => { button.onclick = () => openSource([button.dataset.sourceId], true); });
-    if ($("#retry-question")) $("#retry-question").onclick = () => askQuestion(L.failedQuestion);
+    if ($("#retry-question")) $("#retry-question").onclick = () => askQuestion(L.failedQuestion.text);
     $("#send-question").disabled = L.asking;
     $$("[data-question]").forEach(b => b.disabled = L.asking);
     $("#question-form-hint").textContent = L.asking ? tr("Thinking…") : "";
@@ -815,7 +816,7 @@
   }
   async function askQuestion(question) {
     if (L.asking || !question.trim() || !currentNode()) return;
-    L.asking = true; L.failedQuestion = ""; L.pendingQuestion = question.trim();
+    L.asking = true; L.failedQuestion = null; L.pendingQuestion = question.trim();
     $("#question-input").value = "";
     renderQuestions();
     const sid = L.session.id;
@@ -826,7 +827,9 @@
         L.session.questions.push(answer);
         if(L.session.sessionStorage === "browser") store("clarity:questions:" + sid, L.session.questions.slice(-50));
       }
-    } catch { L.failedQuestion = L.pendingQuestion; }
+    } catch (error) {
+      if (L.session.id === sid) L.failedQuestion = {text:L.pendingQuestion,message:error.message};
+    }
     finally { L.asking = false; L.pendingQuestion = ""; renderQuestions(); }
   }
   $("#question-form").onsubmit = event => { event.preventDefault(); askQuestion($("#question-input").value); };
