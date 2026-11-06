@@ -111,7 +111,7 @@ function normalizeVisual(raw, nodes, ids, passages) {
     });
     visual = {type:raw.type, focus, links};
   }
-  requireValue(used.size === ids.size);
+  if (raw.type !== 'threshold') requireValue(used.size === ids.size);
   return visual;
 }
 

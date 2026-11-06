@@ -6,10 +6,14 @@ const arrow = '<svg viewBox="0 0 24 16" aria-hidden="true"><path d="M2 8h19m-6-6
 const concept = (id, value) => '<button type="button" class="study-concept" data-node="' + id +
   '" aria-pressed="false">' + escape(value) + '</button>';
 
-function threshold({low, high, hold, quantity, unit}) {
+function threshold({low, high, hold, quantity, unit}, _node, nodes) {
   const gap = high.at - low.at;
   const number = value => Number(value.toPrecision(12));
   const limit = value => escape(value + ' ' + unit);
+  const zoneIds = new Set([low.id,hold.id,high.id]);
+  const supporting = nodes.filter(node => !zoneIds.has(node.id));
+  const details = supporting.length ? '<ul class="threshold-details">' + supporting.map(node =>
+    '<li>' + concept(node.id,node.label) + '<p>' + escape(node.explanation) + '</p></li>').join('') + '</ul>' : '';
   return '<section class="threshold" data-low="' + low.at + '" data-high="' + high.at + '">' +
     '<div class="threshold-reading"><div><label for="study-range">' + escape(quantity) + '</label>' +
     '<output id="study-reading" for="study-range">' + low.at + '</output> <span class="unit">' + escape(unit) + '</span></div>' +
@@ -24,7 +28,7 @@ function threshold({low, high, hold, quantity, unit}) {
         limit(low.at) + ' &lt; ' + escape(quantity) + ' &lt; ' + limit(high.at)) + '</span>' +
       concept(entry.id, entry.state) + '</div>').join('') + '</div>' +
     '<div class="threshold-actions"><button type="button" data-jump="' + low.at + '">' + label('Set to', '调至') + ' ' + limit(low.at) + '</button>' +
-    '<button type="button" data-jump="' + high.at + '">' + label('Set to', '调至') + ' ' + limit(high.at) + '</button></div></section>';
+    '<button type="button" data-jump="' + high.at + '">' + label('Set to', '调至') + ' ' + limit(high.at) + '</button></div>' + details + '</section>';
 }
 
 function comparison(visual, node) {
@@ -96,6 +100,9 @@ body{font-family:system-ui,sans-serif!important}
 .threshold-actions{display:flex;justify-content:flex-end;gap:7px;margin-top:22px}
 .threshold-actions button{border:1px solid var(--line);padding:8px 11px;border-radius:8px;font-size:12px}
 .threshold-actions button:hover{border-color:var(--accent)}
+.threshold-details{list-style:none;margin:22px 0 0;padding:0}
+.threshold-details li{border-top:1px solid var(--line);padding:13px 0 0;margin-top:12px}
+.threshold-details p{margin-top:5px;color:var(--muted);line-height:1.48}
 .comparison{border-collapse:collapse;width:100%;table-layout:fixed}
 .comparison th,.comparison td{padding:13px clamp(5px,1.6vw,17px);vertical-align:top;text-align:left;border-bottom:1px solid var(--line)}
 .comparison thead th{border-bottom:2px solid var(--accent);color:var(--accent)}
@@ -187,5 +194,5 @@ export function renderGuide(guide) {
   const [en, zh, draw] = layouts[visual.type];
   return assembleDocument(style + '<article class="study" lang="' + escape(guide.language) + '">' +
     '<header class="study-header"><span class="study-kicker">' + label(en, zh) + '</span><h1>' +
-    escape(guide.summary) + '</h1></header>' + draw(visual, id => nodes.get(id)) + '</article>' + script);
+    escape(guide.summary) + '</h1></header>' + draw(visual, id => nodes.get(id), guide.nodes) + '</article>' + script);
 }

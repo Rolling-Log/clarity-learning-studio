@@ -13,9 +13,10 @@ const rawGuide = {
   nodes:[
     {id:'c1',label:'Heating starts',explanation:'At 14 degrees or below the heater turns on.',sourceIds:['S1'],chapterIndex:0},
     {id:'c2',label:'Heating stops',explanation:'At 19 degrees or above the heater turns off.',sourceIds:['S2'],chapterIndex:0},
-    {id:'c3',label:'State is retained',explanation:'The heater holds its setting between the two thresholds.',sourceIds:['S3'],chapterIndex:0}
+    {id:'c3',label:'State is retained',explanation:'The heater holds its setting between the two thresholds.',sourceIds:['S3'],chapterIndex:0},
+    {id:'c4',label:'The switching gap',explanation:'The heater uses a different value to turn off than to turn on.',sourceIds:['S1','S2'],chapterIndex:0}
   ],
-  chapters:[{title:'The temperature band',summary:'Two thresholds control the heater.',nodeIds:['c1','c2','c3'],sourceIds:['S1','S2','S3']}],
+  chapters:[{title:'The temperature band',summary:'Two thresholds control the heater.',nodeIds:['c1','c2','c3','c4'],sourceIds:['S1','S2','S3']}],
   takeaways:['The two switching temperatures are different.'],
   visual:{type:'threshold',quantity:'Temperature',unit:'°C',
     low:{id:'c1',at:14,state:'Heating'},high:{id:'c2',at:19,state:'Off'},hold:{id:'c3',state:'Hold previous setting'}}
@@ -90,6 +91,7 @@ test('a new file uses the live worker, renders a real diagram and plays indexed 
   assert.equal(guide.statusCode,200);
   assert.match(guide.body,/id="study-range"/);
   assert.match(guide.body,/data-high="19"/);
+  assert.match(guide.body,/data-node="c4"[^>]*>The switching gap/);
   const audio = await request(route+'/audio',null,{range:'bytes=0-127'});
   assert.equal(audio.statusCode,206);
   assert.match(audio.headers['Content-Range'],/^bytes 0-127\//);
